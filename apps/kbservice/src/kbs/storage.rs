@@ -17,7 +17,7 @@ pub trait Storer {
     /// save given knowledge base in the repository.
     async fn save_kb(&self, kb: KnowledgeBase) -> Result<KBID, Error>;
     /// save given category in the repository.
-    async fn save_category(&self, kb: Category) -> Result<String, Error>;
+    async fn save_category(&self, category: Category) -> Result<String, Error>;
 }
 
 impl Debug for dyn Storer {

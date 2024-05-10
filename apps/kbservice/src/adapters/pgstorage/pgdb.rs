@@ -29,6 +29,10 @@ impl Store {
             connection: db_pool,
         }
     }
+
+    pub async fn close(&self) {
+        (&self).connection.close().await
+    }
 }
 
 #[async_trait]
@@ -62,7 +66,7 @@ impl kb_storage for Store {
     /// get a Knowledge base with the given key.
     async fn get_kb_by_key(&self, key: String) -> Result<KnowledgeBase, Error> {
         match sqlx::query("SELECT * FROM kbs WHERE KB_KEY = $1")
-            .bind(key)
+            .bind(key.clone())
             .map(|row: PgRow| KnowledgeBase {
                 id: KBID(row.get("KB_ID")),
                 key: row.get("KB_KEY"),
@@ -168,5 +172,24 @@ impl kb_storage for Store {
         }
     }
     /// save given category in the repository.
-    async fn save_category(&self, kb: Category) -> Result<String, Error> {}
+    async fn save_category(&self, category: Category) -> Result<String, Error> {
+        debug!("adding new category to postgresql db: {:?}", category);
+
+        match sqlx::query("INSERT INTO CATEGORIES (CATEGORY_NAME, CATEGORY_DESC) VALUES ($1, $2) RETURNING CATEGORY_NAME")
+            .bind(category.name)
+            .bind(category.description)
+            .map(|row: PgRow| row.get("CATEGORY_NAME"))
+            .fetch_one(&self.connection)
+            .await
+        {
+            Ok(category_name) => {
+                debug!("category was added to postgres database: {:?}", category_name);
+                Ok(category_name)
+            }
+            Err(e) => {
+                tracing::event!(tracing::Level::ERROR, "{:?}", e);
+                Err(Error::DatabaseQueryError)
+            }
+        }
+    }
 }

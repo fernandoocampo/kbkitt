@@ -66,19 +66,19 @@ impl kb_storage for Store {
     }
     /// get a Knowledge base with the given key.
     async fn get_kb_by_key(&self, key: String) -> Result<KnowledgeBase, Error> {
-        match sqlx::query("SELECT * FROM kbs WHERE KB_KEY = $1")
+        match sqlx::query("SELECT KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY = $1")
             .bind(key.clone())
             .map(|row: PgRow| KnowledgeBase {
-                id: KBID(row.get("KB_ID")),
-                key: row.get("KB_KEY"),
-                value: row.get("KB_VALUE"),
-                notes: row.get("NOTES"),
-                kind: row.get("KIND"),
-                tags: row
-                    .get::<String, _>("TAGS")
+                id: KBID(row.get("kb_id")),
+                key: row.get("kb_key"),
+                value: row.get("kb_value"),
+                notes: row.get("notes"),
+                kind: row.get("kind"),
+                tags: row.get::<String, _>("tags")
                     .split(" ")
                     .map(|s| s.to_string())
-                    .collect::<Vec<String>>(),
+                    .map(|s| s.replace("'", ""))
+                    .collect::<Vec<String>>()
             })
             .fetch_one(&self.connection)
             .await

@@ -39,3 +39,9 @@ test-get-kb-by-id : ## test get kb by id in the persistence layer.
 	INTEGRATION_TEST=1 cargo test --package kbservice --bin kbservice \
 	-- adapters::pgstorage::pgdb_test::pgstorage_test::test_get_kb_by_id \
 	--exact --show-output
+
+.PHONY: test-get-kb-by-key
+test-get-kb-by-key : ## test get kb by key in the persistence layer.
+	INTEGRATION_TEST=1 cargo test --package kbservice --bin kbservice \
+	-- adapters::pgstorage::pgdb_test::pgstorage_test::test_get_kb_by_key \
+	--exact --show-output

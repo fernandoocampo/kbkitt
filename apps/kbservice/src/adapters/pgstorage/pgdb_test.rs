@@ -3,7 +3,7 @@ mod pgstorage_test {
     use log::info;
     use std::env;
 
-    use crate::types::kbs::{KBID, KnowledgeBase};
+    use crate::types::kbs::{KnowledgeBase, KBID};
     use crate::{adapters::pgstorage::pgdb, kbs::storage::Storer};
 
     use tokio::runtime::Runtime;
@@ -16,11 +16,16 @@ mod pgstorage_test {
         if !is_integration_test() {
             info!("==== skipping test");
             assert_eq!(true, true);
-            return
+            return;
         }
         info!("==== running integration test");
 
         let id = KBID(String::from("681cca89-890b-4667-8ca0-e328546e268c"));
+        /*
+        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS)
+        VALUES ('681cca89-890b-4667-8ca0-e328546e268c', 'red', 'remember this color', 'one color', 'concepts', 'color concepts')
+        RETURNING KB_ID
+        */
         let want = KnowledgeBase {
             id: KBID(String::from("681cca89-890b-4667-8ca0-e328546e268c")),
             key: String::from("red"),
@@ -48,16 +53,14 @@ mod pgstorage_test {
         match env::var(INTEGRATION_TEST) {
             Ok(val) => {
                 matches!(val.as_str(), "true" | "t" | "1")
-            },
-            Err(_) => {
-                false
-            },
+            }
+            Err(_) => false,
         }
     }
 
     async fn new_db_storage() -> pgdb::Store {
-        let db_url = "postgres://kb_user:kb_pwd@localhost:5432/knowledgebase";
-    
+        let db_url = "postgres://kbdb:kbpwd@localhost:5432/kbdb";
+
         pgdb::Store::new(db_url).await
     }
 }

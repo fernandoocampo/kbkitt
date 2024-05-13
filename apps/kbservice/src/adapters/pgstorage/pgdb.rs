@@ -100,20 +100,20 @@ impl kb_storage for Store {
     /// get a list of knowledge base entries where their keys contain the given keywords.
     async fn search_by_key(&self, filter: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
         match sqlx::query(
-            "SELECT KB_ID, KB_KEY, KIND, TAGS FROM kbs WHERE KB_KEY LIKE $1 LIMIT $2 OFFSET $3",
+            "SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY LIKE $1 LIMIT $2 OFFSET $3",
         )
         .bind(format!("%{}%", filter.keyword))
         .bind(filter.limit)
         .bind(filter.offset)
         .map(|row: PgRow| KBItem {
-            id: KBID(row.get("KB_ID")),
-            key: row.get("KB_KEY"),
-            kind: row.get("KIND"),
-            tags: row
-                .get::<String, _>("TAGS")
+            id: KBID(row.get("kb_id")),
+            key: row.get("kb_key"),
+            kind: row.get("kind"),
+            tags: row.get::<String, _>("tags")
                 .split(" ")
                 .map(|s| s.to_string())
-                .collect::<Vec<String>>(),
+                .map(|s| s.replace("'", ""))
+                .collect::<Vec<String>>()
         })
         .fetch_all(&self.connection)
         .await
@@ -131,18 +131,19 @@ impl kb_storage for Store {
 
     /// get a list of knowledge base entries where their keys contain the given keywords.
     async fn search(&self, filter: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
-        match sqlx::query("SELECT KB_ID, KB_KEY, KIND, TAGS FROM kbs WHERE TAGS @@ to_tsquery($1) LIMIT $2 OFFSET $3")
+        match sqlx::query("SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE TAGS @@ to_tsquery($1) LIMIT $2 OFFSET $3")
             .bind(format!("'{}'", filter.keyword))
             .bind(filter.limit)
             .bind(filter.offset)
             .map(|row: PgRow| KBItem {
-                id: KBID(row.get("KB_ID")),
-                key: row.get("KB_KEY"),
-                kind: row.get("KIND"),
-                tags: row.get::<String, _>("TAGS")
+                id: KBID(row.get("kb_id")),
+                key: row.get("kb_key"),
+                kind: row.get("kind"),
+                tags: row.get::<String, _>("tags")
                     .split(" ")
                     .map(|s| s.to_string())
-                    .collect::<Vec<String>>(),
+                    .map(|s| s.replace("'", ""))
+                    .collect::<Vec<String>>()
             })
             .fetch_all(&self.connection)
             .await {
@@ -161,14 +162,14 @@ impl kb_storage for Store {
     async fn save_kb(&self, kb: KnowledgeBase) -> Result<KBID, Error> {
         debug!("adding kb to postgresql db: {:?}", kb);
 
-        match sqlx::query("INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ($1, $2, $3, $4, $5, $6) RETURNING KB_ID")
+        match sqlx::query("INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ($1, $2, $3, $4, $5, to_tsvector($6)) RETURNING KB_ID")
             .bind(kb.id.to_string())
             .bind(kb.key)
             .bind(kb.value)
             .bind(kb.notes)
             .bind(kb.kind)
-            .bind(kb.tags)
-            .map(|row: PgRow| KBID(row.get("KB_ID")))
+            .bind(kb.tags.join(" "))
+            .map(|row: PgRow| KBID(row.get("kb_id")))
             .fetch_one(&self.connection)
             .await
         {

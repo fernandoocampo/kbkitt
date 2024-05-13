@@ -45,3 +45,21 @@ test-get-kb-by-key : ## test get kb by key in the persistence layer.
 	INTEGRATION_TEST=1 cargo test --package kbservice --bin kbservice \
 	-- adapters::pgstorage::pgdb_test::pgstorage_test::test_get_kb_by_key \
 	--exact --show-output
+
+.PHONY: test-search-by-key
+test-search-by-key : ## test search by key in the persistence layer.
+	INTEGRATION_TEST=1 cargo test --package kbservice --bin kbservice \
+	-- adapters::pgstorage::pgdb_test::pgstorage_test::test_search_by_key \
+	--exact --show-output
+
+.PHONY: test-search
+test-search : ## test search in the persistence layer.
+	INTEGRATION_TEST=1 cargo test --package kbservice --bin kbservice \
+	-- adapters::pgstorage::pgdb_test::pgstorage_test::test_search \
+	--exact --show-output
+
+.PHONY: test-save-kb
+test-save-kb : ## test save key in the persistence layer.
+	INTEGRATION_TEST=1 cargo test --package kbservice --bin kbservice \
+	-- adapters::pgstorage::pgdb_test::pgstorage_test::test_save_kb \
+	--exact --show-output

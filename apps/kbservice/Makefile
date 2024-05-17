@@ -63,3 +63,9 @@ test-save-kb : ## test save key in the persistence layer.
 	INTEGRATION_TEST=1 cargo test --package kbservice --bin kbservice \
 	-- adapters::pgstorage::pgdb_test::pgstorage_test::test_save_kb \
 	--exact --show-output
+
+.PHONY: test-save-category
+test-save-category : ## test save category in the persistence layer.
+	INTEGRATION_TEST=1 cargo test --package kbservice --bin kbservice \
+	-- adapters::pgstorage::pgdb_test::pgstorage_test::test_save_category \
+	--exact --show-output --nocapture

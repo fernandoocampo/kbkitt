@@ -4,6 +4,7 @@ use crate::types::categories::Category;
 use crate::types::kbs::{KBItem, KBQueryFilter, KnowledgeBase, KBID};
 
 use async_trait::async_trait;
+use log::error;
 use tracing::debug;
 
 use sqlx::postgres::{PgPool, PgPoolOptions, PgRow};
@@ -86,6 +87,7 @@ impl kb_storage for Store {
             Ok(kb) => Ok(kb),
             Err(sqlx::Error::RowNotFound) => Ok(KnowledgeBase::default()),
             Err(e) => {
+                error!("getting kb by key {:?}: {:?}", key, e);
                 tracing::event!(
                     tracing::Level::ERROR,
                     "querying kb by key {:?} : {:?}",
@@ -100,7 +102,7 @@ impl kb_storage for Store {
     /// get a list of knowledge base entries where their keys contain the given keywords.
     async fn search_by_key(&self, filter: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
         match sqlx::query(
-            "SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY LIKE $1 LIMIT $2 OFFSET $3",
+            "SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY LIKE $1 ORDER BY KB_KEY LIMIT $2 OFFSET $3",
         )
         .bind(format!("%{}%", filter.keyword))
         .bind(filter.limit)
@@ -123,6 +125,7 @@ impl kb_storage for Store {
                 Ok(kbs)
             }
             Err(e) => {
+                error!("searching kb by key {:?}: {:?}", filter.keyword, e);
                 tracing::event!(tracing::Level::ERROR, "{:?}", e);
                 Err(Error::DatabaseQueryError)
             }
@@ -131,7 +134,7 @@ impl kb_storage for Store {
 
     /// get a list of knowledge base entries where their keys contain the given keywords.
     async fn search(&self, filter: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
-        match sqlx::query("SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE TAGS @@ to_tsquery($1) LIMIT $2 OFFSET $3")
+        match sqlx::query("SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE TAGS @@ to_tsquery($1) ORDER BY KB_KEY LIMIT $2 OFFSET $3")
             .bind(format!("'{}'", filter.keyword))
             .bind(filter.limit)
             .bind(filter.offset)
@@ -152,6 +155,7 @@ impl kb_storage for Store {
                 Ok(kbs)
             }
             Err(e) => {
+                error!("searching kbs with keywords: {:?}", e);
                 tracing::event!(tracing::Level::ERROR, "{:?}", e);
                 Err(Error::DatabaseQueryError)
             }
@@ -178,6 +182,7 @@ impl kb_storage for Store {
                 Ok(kb_id)
             }
             Err(e) => {
+                error!("inserting new kb: {:?}", e);
                 tracing::event!(tracing::Level::ERROR, "{:?}", e);
                 Err(Error::DatabaseQueryError)
             }
@@ -190,7 +195,7 @@ impl kb_storage for Store {
         match sqlx::query("INSERT INTO CATEGORIES (CATEGORY_NAME, CATEGORY_DESC) VALUES ($1, $2) RETURNING CATEGORY_NAME")
             .bind(category.name)
             .bind(category.description)
-            .map(|row: PgRow| row.get("CATEGORY_NAME"))
+            .map(|row: PgRow| row.get("category_name"))
             .fetch_one(&self.connection)
             .await
         {
@@ -199,6 +204,7 @@ impl kb_storage for Store {
                 Ok(category_name)
             }
             Err(e) => {
+                error!("inserting new category: {:?}", e);
                 tracing::event!(tracing::Level::ERROR, "{:?}", e);
                 Err(Error::DatabaseQueryError)
             }

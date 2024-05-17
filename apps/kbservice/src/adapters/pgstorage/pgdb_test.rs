@@ -3,6 +3,7 @@ mod pgstorage_test {
     use log::info;
     use std::env;
 
+    use crate::types::categories::Category;
     use crate::types::kbs::{KBItem, KBQueryFilter, KnowledgeBase, KBID};
     use crate::{adapters::pgstorage::pgdb, kbs::storage::Storer};
 
@@ -99,15 +100,15 @@ mod pgstorage_test {
         info!("==== running integration test");
 
         let query = KBQueryFilter {
-            keyword: String::from("red"),
+            keyword: String::from("rick"),
             limit: Some(10),
             offset: 0,
         };
         /*
         INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('6411a28b-640a-43d9-b901-1c4b15d91568', 'frederick', 'long name', 'multiple names', 'names', 'name names');
-        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('5a2579f7-83b9-4891-8dbc-e0024b5f3505', 'red', 'short name', 'just one name', 'names', 'name names');
-        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('22cfc4fb-f9b6-4f6e-9158-9982347ad2a7', 'overstructured', 'an excessively rigid structure', 'names', 'words', 'over words');
-        SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY LIKE '%red%' LIMIT 10 OFFSET 0;
+        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('5a2579f7-83b9-4891-8dbc-e0024b5f3505', 'rick', 'short name', 'just one name', 'names', 'name names');
+        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('22cfc4fb-f9b6-4f6e-9158-9982347ad2a7', 'patrick', 'a saint', 'names', 'words', 'over words');
+        SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY LIKE '%rick%' LIMIT 10 OFFSET 0;
         */
         let want: Vec<KBItem> = vec![
             KBItem {
@@ -117,16 +118,16 @@ mod pgstorage_test {
                 tags: vec![String::from("name"), String::from("names")],
             },
             KBItem {
-                id: KBID(String::from("5a2579f7-83b9-4891-8dbc-e0024b5f3505")),
-                key: String::from("red"),
-                kind: String::from("names"),
-                tags: vec![String::from("name"), String::from("names")],
-            },
-            KBItem {
                 id: KBID(String::from("22cfc4fb-f9b6-4f6e-9158-9982347ad2a7")),
-                key: String::from("overstructured"),
+                key: String::from("patrick"),
                 kind: String::from("words"),
                 tags: vec![String::from("over"), String::from("words")],
+            },
+            KBItem {
+                id: KBID(String::from("5a2579f7-83b9-4891-8dbc-e0024b5f3505")),
+                key: String::from("rick"),
+                kind: String::from("names"),
+                tags: vec![String::from("name"), String::from("names")],
             },
         ];
         let runtime = Runtime::new().expect("Unable to create a runtime");
@@ -161,9 +162,9 @@ mod pgstorage_test {
         };
         /*
         INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('6411a28b-640a-43d9-b901-1c4b15d91568', 'frederick', 'long name', 'multiple names', 'names', 'name names');
-        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('5a2579f7-83b9-4891-8dbc-e0024b5f3505', 'red', 'short name', 'just one name', 'names', 'name names');
-        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('22cfc4fb-f9b6-4f6e-9158-9982347ad2a7', 'overstructured', 'an excessively rigid structure', 'names', 'words', 'over words');
-        SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE TAGS @@ to_tsquery('names') LIMIT 10 OFFSET 0;
+        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('5a2579f7-83b9-4891-8dbc-e0024b5f3505', 'rick', 'short name', 'just one name', 'names', 'name names');
+        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('22cfc4fb-f9b6-4f6e-9158-9982347ad2a7', 'patrick', 'a saint', 'names', 'words', 'over words');
+        SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE TAGS @@ to_tsquery('names') ORDER BY KB_KEY LIMIT 10 OFFSET 0;
         */
         let want: Vec<KBItem> = vec![
             KBItem {
@@ -174,7 +175,7 @@ mod pgstorage_test {
             },
             KBItem {
                 id: KBID(String::from("5a2579f7-83b9-4891-8dbc-e0024b5f3505")),
-                key: String::from("red"),
+                key: String::from("rick"),
                 kind: String::from("names"),
                 tags: vec![String::from("name"), String::from("names")],
             },
@@ -225,6 +226,36 @@ mod pgstorage_test {
         }
 
         runtime.block_on(store.close());
+    }
+
+    #[test]
+    fn test_save_category() {
+        // Given
+        if !is_integration_test() {
+            info!("==== skipping test");
+            assert_eq!(true, true);
+            return;
+        }
+        info!("==== running integration test");
+
+        let new_category = Category {
+            name: String::from("names"),
+            description: String::from("set of well known names"),
+        };
+
+        let want = String::from("names");
+
+        let runtime = Runtime::new().expect("unable to create a runtime");
+        let storage = runtime.block_on(new_db_storage());
+        
+        // When
+        let result = runtime.block_on(storage.save_category(new_category));
+
+        // Then
+        match result {
+            Ok(got) => assert_eq!(want, got),
+            Err(err) => panic!("unexpected error: {:?}", err)
+        }
     }
 
     fn is_integration_test() -> bool {

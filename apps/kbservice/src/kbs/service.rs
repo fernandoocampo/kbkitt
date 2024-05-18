@@ -65,7 +65,28 @@ impl<T: Storer> Service<T> {
         }
     }
 
-    pub async fn search_by_key(&self, query_params: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
+    pub async fn search(&self, query_params: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
+        let mut result: Vec<KBItem> = vec![];
+
+        if query_params.key.is_empty() && query_params.keyword.is_empty() {
+            return Ok(result);
+        }
+        if !query_params.key.is_empty() {
+            result = match self.search_by_key(query_params).await {
+                Ok(res) => res,
+                Err(e) => return Err(e),
+            };
+        } else if !query_params.keyword.is_empty() {
+            result = match self.search_by_keyword(query_params).await {
+                Ok(res) => res,
+                Err(e) => return Err(e),
+            };
+        }
+
+        Ok(result)
+    }
+
+    async fn search_by_key(&self, query_params: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
         debug!("start searching by key: {:?}", query_params);
 
         match self.store.search_by_key(query_params).await {
@@ -78,7 +99,7 @@ impl<T: Storer> Service<T> {
         }
     }
 
-    pub async fn search(&self, query_params: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
+    async fn search_by_keyword(&self, query_params: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
         debug!("start search: {:?}", query_params);
 
         match self.store.search(query_params).await {

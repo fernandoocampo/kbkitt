@@ -69,3 +69,15 @@ test-save-category : ## test save category in the persistence layer.
 	INTEGRATION_TEST=1 cargo test --package kbservice --bin kbservice \
 	-- adapters::pgstorage::pgdb_test::pgstorage_test::test_save_category \
 	--exact --show-output --nocapture
+
+.PHONY: test-list-categories
+test-list-categories : ## test listing categories without keywords
+	INTEGRATION_TEST=1 cargo test --package kbservice --bin kbservice \
+	-- adapters::pgstorage::pgdb_test::pgstorage_test::test_list_categories \
+	--exact --show-output --nocapture
+
+.PHONY: test-list-categories-with-keyword
+test-list-categories-with-keyword : ## test listing categories without keywords
+	INTEGRATION_TEST=1 cargo test --package kbservice --bin kbservice \
+	-- adapters::pgstorage::pgdb_test::pgstorage_test::test_list_categories_with_keyword \
+	--exact --show-output --nocapture

@@ -1,6 +1,14 @@
 use core::fmt;
+use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
+
+const LIMIT_KEY: &str = "limit";
+const OFFSET_KEY: &str = "offset";
+const KEY_KEY: &str = "key";
+const KEYWORD_KEY: &str = "keyword";
+const DEFAULT_LIMIT: u16 = 5;
+const DEFAULT_OFFSET: u16 = 0;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Eq, Hash, PartialEq, PartialOrd, Ord)]
 pub struct KBID(pub String);
@@ -32,13 +40,21 @@ pub struct KBItem {
     pub tags: Vec<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Eq, Hash, PartialEq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Serialize, Deserialize, Eq, Hash, PartialEq, PartialOrd, Ord, Default)]
 pub struct KBQueryFilter {
+    /// value used to search kbs by tags.
     pub keyword: String,
+    /// value used to search kbs by keys.
+    pub key: String,
     /// determines the number of rows.
-    pub limit: Option<i32>,
+    pub limit: Option<u16>,
     /// skips the offset rows before beginning to return the rows.
-    pub offset: i32,
+    pub offset: u16,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Eq, Hash, PartialEq, PartialOrd, Ord)]
+pub struct SaveKBSuccess {
+    pub id: String,
 }
 
 impl Default for KnowledgeBase {
@@ -86,5 +102,51 @@ impl NewKnowledgeBase {
 impl fmt::Display for KBID {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+pub fn extract_filter_params(params: HashMap<String, String>) -> KBQueryFilter {
+    let mut filter = KBQueryFilter::default();
+    if params.contains_key(LIMIT_KEY) {
+        match params.get(LIMIT_KEY) {
+            Some(item) => match item.parse::<u16>() {
+                Ok(value) => filter.limit = Some(value),
+                Err(_) => filter.limit = Some(DEFAULT_LIMIT),
+            },
+            _ => filter.limit = Some(DEFAULT_LIMIT),
+        };
+    }
+    if params.contains_key(OFFSET_KEY) {
+        match params.get(OFFSET_KEY) {
+            Some(item) => match item.parse::<u16>() {
+                Ok(value) => filter.offset = value,
+                Err(_) => filter.offset = DEFAULT_OFFSET,
+            },
+            _ => filter.offset = DEFAULT_OFFSET,
+        };
+    }
+
+    if params.contains_key(KEY_KEY) {
+        match params.get(KEY_KEY) {
+            Some(value) => filter.key = value.into(),
+            _ => filter.key = "".to_string(),
+        }
+    }
+
+    if params.contains_key(KEYWORD_KEY) {
+        match params.get(KEYWORD_KEY) {
+            Some(value) => filter.keyword = value.into(),
+            _ => filter.keyword = "".to_string(),
+        }
+    }
+
+    filter
+}
+
+impl SaveKBSuccess {
+    pub fn new(kb_id: KBID) -> Self {
+        SaveKBSuccess {
+            id: kb_id.to_string(),
+        }
     }
 }

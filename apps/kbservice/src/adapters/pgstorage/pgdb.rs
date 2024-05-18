@@ -1,6 +1,6 @@
 use crate::errors::error::Error;
 use crate::kbs::storage::Storer as kb_storage;
-use crate::types::categories::Category;
+use crate::types::categories::{Category, CategoryFilter};
 use crate::types::kbs::{KBItem, KBQueryFilter, KnowledgeBase, KBID};
 
 use async_trait::async_trait;
@@ -32,7 +32,7 @@ impl Store {
     }
 
     pub async fn close(&self) {
-        (&self).connection.close().await
+        (self).connection.close().await
     }
 }
 
@@ -49,9 +49,9 @@ impl kb_storage for Store {
                 notes: row.get("notes"),
                 kind: row.get("kind"),
                 tags: row.get::<String, _>("tags")
-                    .split(" ")
+                    .split(' ')
                     .map(|s| s.to_string())
-                    .map(|s| s.replace("'", ""))
+                    .map(|s| s.replace('\'', ""))
                     .collect::<Vec<String>>()
             })
             .fetch_one(&self.connection)
@@ -76,9 +76,9 @@ impl kb_storage for Store {
                 notes: row.get("notes"),
                 kind: row.get("kind"),
                 tags: row.get::<String, _>("tags")
-                    .split(" ")
+                    .split(' ')
                     .map(|s| s.to_string())
-                    .map(|s| s.replace("'", ""))
+                    .map(|s| s.replace('\'', ""))
                     .collect::<Vec<String>>()
             })
             .fetch_one(&self.connection)
@@ -104,17 +104,17 @@ impl kb_storage for Store {
         match sqlx::query(
             "SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY LIKE $1 ORDER BY KB_KEY LIMIT $2 OFFSET $3",
         )
-        .bind(format!("%{}%", filter.keyword))
-        .bind(filter.limit)
-        .bind(filter.offset)
+        .bind(format!("%{}%", filter.key))
+        .bind(i32::from(filter.limit.unwrap_or(5)))
+        .bind(i32::from(filter.offset))
         .map(|row: PgRow| KBItem {
             id: KBID(row.get("kb_id")),
             key: row.get("kb_key"),
             kind: row.get("kind"),
             tags: row.get::<String, _>("tags")
-                .split(" ")
+                .split(' ')
                 .map(|s| s.to_string())
-                .map(|s| s.replace("'", ""))
+                .map(|s| s.replace('\'', ""))
                 .collect::<Vec<String>>()
         })
         .fetch_all(&self.connection)
@@ -136,16 +136,16 @@ impl kb_storage for Store {
     async fn search(&self, filter: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
         match sqlx::query("SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE TAGS @@ to_tsquery($1) ORDER BY KB_KEY LIMIT $2 OFFSET $3")
             .bind(format!("'{}'", filter.keyword))
-            .bind(filter.limit)
-            .bind(filter.offset)
+            .bind(i32::from(filter.limit.unwrap_or(5)))
+            .bind(i32::from(filter.offset))
             .map(|row: PgRow| KBItem {
                 id: KBID(row.get("kb_id")),
                 key: row.get("kb_key"),
                 kind: row.get("kind"),
                 tags: row.get::<String, _>("tags")
-                    .split(" ")
+                    .split(' ')
                     .map(|s| s.to_string())
-                    .map(|s| s.replace("'", ""))
+                    .map(|s| s.replace('\'', ""))
                     .collect::<Vec<String>>()
             })
             .fetch_all(&self.connection)
@@ -205,6 +205,43 @@ impl kb_storage for Store {
             }
             Err(e) => {
                 error!("inserting new category: {:?}", e);
+                tracing::event!(tracing::Level::ERROR, "{:?}", e);
+                Err(Error::DatabaseQueryError)
+            }
+        }
+    }
+
+    /// get a list of categories.
+    async fn list_categories(&self, filter: CategoryFilter) -> Result<Vec<Category>, Error> {
+        let query = match filter.keyword {
+            Some(name) => {
+                sqlx::query("SELECT CATEGORY_NAME, CATEGORY_DESC FROM categories WHERE CATEGORY_NAME LIKE $1 ORDER BY CATEGORY_NAME LIMIT $2 OFFSET $3")
+                .bind(format!("%{}%", name))
+                .bind(i32::from(filter.limit.unwrap_or(5)))
+                .bind(i32::from(filter.offset))
+            },
+            None => {
+                sqlx::query("SELECT CATEGORY_NAME, CATEGORY_DESC FROM categories ORDER BY CATEGORY_NAME LIMIT $1 OFFSET $2")
+                .bind(i32::from(filter.limit.unwrap_or(5)))
+                .bind(i32::from(filter.offset))
+            }
+        };
+
+        match query
+            .map(|row: PgRow| Category {
+                name: row.get("category_name"),
+                description: row.get("category_desc"),
+            })
+            .fetch_all(&self.connection)
+            .await
+        {
+            Ok(kbs) => {
+                debug!("found some kbs: {:?}", kbs);
+                Ok(kbs)
+            }
+            Err(e) => {
+                println!("searching kbs with keywords: {:?}", e);
+                error!("searching kbs with keywords: {:?}", e);
                 tracing::event!(tracing::Level::ERROR, "{:?}", e);
                 Err(Error::DatabaseQueryError)
             }

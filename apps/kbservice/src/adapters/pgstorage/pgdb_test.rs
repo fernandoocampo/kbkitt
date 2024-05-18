@@ -3,7 +3,7 @@ mod pgstorage_test {
     use log::info;
     use std::env;
 
-    use crate::types::categories::Category;
+    use crate::types::categories::{Category, CategoryFilter};
     use crate::types::kbs::{KBItem, KBQueryFilter, KnowledgeBase, KBID};
     use crate::{adapters::pgstorage::pgdb, kbs::storage::Storer};
 
@@ -100,7 +100,8 @@ mod pgstorage_test {
         info!("==== running integration test");
 
         let query = KBQueryFilter {
-            keyword: String::from("rick"),
+            key: String::from("rick"),
+            keyword: Default::default(),
             limit: Some(10),
             offset: 0,
         };
@@ -157,6 +158,7 @@ mod pgstorage_test {
 
         let query = KBQueryFilter {
             keyword: String::from("names"),
+            key: Default::default(),
             limit: Some(10),
             offset: 0,
         };
@@ -247,14 +249,104 @@ mod pgstorage_test {
 
         let runtime = Runtime::new().expect("unable to create a runtime");
         let storage = runtime.block_on(new_db_storage());
-        
+
         // When
         let result = runtime.block_on(storage.save_category(new_category));
 
         // Then
         match result {
             Ok(got) => assert_eq!(want, got),
-            Err(err) => panic!("unexpected error: {:?}", err)
+            Err(err) => panic!("unexpected error: {:?}", err),
+        }
+    }
+
+    #[test]
+    fn test_list_categories() {
+        // Given
+        if !is_integration_test() {
+            info!("==== skipping test");
+            assert_eq!(true, true);
+            return;
+        }
+        info!("==== running integration test");
+
+        let filter = CategoryFilter::default();
+        /*
+        INSERT INTO categories (CATEGORY_NAME, CATEGORY_DESC) VALUES ('concepts', 'a principle or idea');
+        INSERT INTO categories (CATEGORY_NAME, CATEGORY_DESC) VALUES ('software', 'any topic related to software development');
+        INSERT INTO categories (CATEGORY_NAME, CATEGORY_DESC) VALUES ('personal', 'any personal data');
+        SELECT CATEGORY_NAME, CATEGORY_DESC FROM categories ORDER BY CATEGORY_NAME LIMIT 5 OFFSET 0;
+        */
+
+        let want = vec![
+            Category {
+                name: "concepts".to_string(),
+                description: "a principle or idea".to_string(),
+            },
+            Category {
+                name: "names".to_string(),
+                description: "set of well known names".to_string(),
+            },
+            Category {
+                name: "personal".to_string(),
+                description: "any personal data".to_string(),
+            },
+            Category {
+                name: "software".to_string(),
+                description: "any topic related to software development".to_string(),
+            },
+        ];
+
+        let runtime = Runtime::new().expect("unable to create runtime");
+        let storage = runtime.block_on(new_db_storage());
+
+        // When
+        let result = runtime.block_on(storage.list_categories(filter));
+
+        // Then
+        match result {
+            Ok(got) => assert_eq!(want, got),
+            Err(err) => panic!("unexpected error: {:?}", err),
+        }
+    }
+
+    #[test]
+    fn test_list_categories_with_keyword() {
+        // Given
+        if !is_integration_test() {
+            info!("==== skipping test");
+            assert_eq!(true, true);
+            return;
+        }
+        info!("==== running integration test");
+
+        let filter = CategoryFilter {
+            keyword: Some(String::from("ftw")),
+            limit: Some(5),
+            offset: 0,
+        };
+        /*
+        INSERT INTO categories (CATEGORY_NAME, CATEGORY_DESC) VALUES ('concepts', 'a principle or idea');
+        INSERT INTO categories (CATEGORY_NAME, CATEGORY_DESC) VALUES ('software', 'any topic related to software development');
+        INSERT INTO categories (CATEGORY_NAME, CATEGORY_DESC) VALUES ('personal', 'any personal data');
+        SELECT CATEGORY_NAME, CATEGORY_DESC FROM categories WHERE CATEGORY_NAME LIKE '%ftw%' ORDER BY CATEGORY_NAME LIMIT 5 OFFSET 0;
+        */
+
+        let want = vec![Category {
+            name: "software".to_string(),
+            description: "any topic related to software development".to_string(),
+        }];
+
+        let runtime = Runtime::new().expect("unable to create runtime");
+        let storage = runtime.block_on(new_db_storage());
+
+        // When
+        let result = runtime.block_on(storage.list_categories(filter));
+
+        // Then
+        match result {
+            Ok(got) => assert_eq!(want, got),
+            Err(err) => panic!("unexpected error: {:?}", err),
         }
     }
 

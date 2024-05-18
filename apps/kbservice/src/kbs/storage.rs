@@ -1,5 +1,5 @@
 use crate::errors::error::Error;
-use crate::types::categories::Category;
+use crate::types::categories::{Category, CategoryFilter};
 use crate::types::kbs::{KBItem, KBQueryFilter, KnowledgeBase, KBID};
 use async_trait::async_trait;
 use std::fmt::{Debug, Error as FmtError, Formatter};
@@ -18,6 +18,8 @@ pub trait Storer {
     async fn save_kb(&self, kb: KnowledgeBase) -> Result<KBID, Error>;
     /// save given category in the repository.
     async fn save_category(&self, category: Category) -> Result<String, Error>;
+    /// get a list of categories based on the given filter
+    async fn list_categories(&self, filter: CategoryFilter) -> Result<Vec<Category>, Error>;
 }
 
 impl Debug for dyn Storer {

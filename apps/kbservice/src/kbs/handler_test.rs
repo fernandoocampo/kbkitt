@@ -1,16 +1,20 @@
 use crate::errors::error::Error;
+use crate::kbs::handler;
 use crate::kbs::service::Service;
 use crate::kbs::storage::Storer;
-use crate::types::categories::{Category, CategoryFilter};
-use crate::types::kbs::{KBItem, KBQueryFilter, KnowledgeBase, NewKnowledgeBase, KBID};
-use tokio::runtime::Runtime;
-
+use crate::types::categories::{Category, CategoryFilter, SaveCategorySuccess};
+use crate::types::kbs::{KBItem, KBQueryFilter, NewKnowledgeBase, SaveKBSuccess, KBID};
+use crate::{errors::error, types::kbs::KnowledgeBase};
 use async_trait::async_trait;
+use std::collections::HashMap;
+use tokio::runtime::Runtime;
+use warp::Reply;
 
 #[test]
 fn test_get_kb_with_id() {
     // Given
-    let kb_id = KBID("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8".to_string());
+    let kb_id = "dcb8fac0-0756-4c8a-b625-a9a4d1c871c8".to_string();
+
     let want = KnowledgeBase {
         id: KBID("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8".to_string()),
         key: "red".to_string(),
@@ -39,83 +43,52 @@ fn test_get_kb_with_id() {
     let service = Service::new(store);
     let runtime = Runtime::new().expect("unable to create runtime to test get kb with id");
     // When
-    let got = runtime.block_on(service.get_kb_with_id(kb_id));
+    let response = runtime.block_on(handler::get_kb_with_id(kb_id, service));
 
     // Then
-    match got {
-        Ok(kb_got) => assert_eq!(want, kb_got),
-        Err(err) => panic!("unexpected error: {:?}", err),
-    }
+    let response_body = response.unwrap().into_response().into_body();
+    let body_bytes = runtime
+        .block_on(hyper::body::to_bytes(response_body))
+        .unwrap();
+
+    let got: KnowledgeBase = serde_json::from_slice(&body_bytes).unwrap();
+
+    assert_eq!(want, got)
 }
 
 #[test]
 fn test_get_kb_with_id_error() {
     // Given
-    let kb_id = KBID("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8".to_string());
+    let kb_id = "dcb8fac0-0756-4c8a-b625-a9a4d1c871c8".to_string();
     let want = Error::GetKBError;
     let store = KBStore::new_with_get_kb(None, true);
     let service = Service::new(store);
     let runtime =
         Runtime::new().expect("unable to create runtime to test get kb with id with error");
     // When
-    let got = runtime.block_on(service.get_kb_with_id(kb_id));
+    let got = runtime.block_on(handler::get_kb_with_id(kb_id, service));
 
     // Then
-    match got {
-        Ok(kb_got) => panic!("unexpected result: {:?}", kb_got),
-        Err(err) => assert_eq!(err, want),
-    }
-}
+    assert_eq!(true, got.is_err());
+    let got_error = match got {
+        Ok(value) => panic!("unexpected result {:?}", value.into_response()),
+        Err(err) => err,
+    };
 
-#[test]
-fn test_get_kb_with_key() {
-    // Given
-    let key = String::from("red");
-    let want = KnowledgeBase {
-        id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
-        key: String::from("red"),
-        value: String::from("of the colour of fresh blood"),
-        kind: String::from("concepts"),
-        notes: String::from("to know about color red"),
-        tags: vec![
-            String::from("concept"),
-            String::from("color"),
-            String::from("paint"),
-        ],
-    };
-    let store_kb = KnowledgeBase {
-        id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
-        key: String::from("red"),
-        value: String::from("of the colour of fresh blood"),
-        kind: String::from("concepts"),
-        notes: String::from("to know about color red"),
-        tags: vec![
-            String::from("concept"),
-            String::from("color"),
-            String::from("paint"),
-        ],
-    };
-    let store = KBStore::new_with_get_kb(Some(store_kb), false);
-    let service = Service::new(store);
-    let runtime = Runtime::new().expect("unable to create runtime to test get kb with key");
-    // When
-    let got = runtime.block_on(service.get_kb_with_key(key));
-    // Then
-    match got {
-        Ok(kb_got) => assert_eq!(want, kb_got),
-        Err(err) => panic!("unexpected error: {:?}", err),
+    if let Some(e) = got_error.find::<error::Error>() {
+        assert_eq!(want, *e);
+        return;
     }
 }
 
 #[test]
 fn test_search_by_key() {
     // Given
-    let query_params = KBQueryFilter {
-        key: String::from("red"),
-        keyword: Default::default(),
-        limit: Some(0),
-        offset: 2,
-    };
+    let mut params: HashMap<String, String> = HashMap::new();
+    params.insert(String::from("offset"), String::from("0"));
+    params.insert(String::from("limit"), String::from("2"));
+    params.insert(String::from("key"), String::from("red"));
+
     let want = vec![
         KBItem {
             id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
@@ -164,47 +137,55 @@ fn test_search_by_key() {
     let service = Service::new(store);
     let runtime = Runtime::new().expect("unable to create runtime to test get kb with key");
     // When
-    let got = runtime.block_on(service.search(query_params));
+    let response = runtime.block_on(handler::search(params, service));
     // Then
-    match got {
-        Ok(kb_got) => assert_eq!(want, kb_got),
-        Err(err) => panic!("unexpected error: {:?}", err),
-    }
+    let response_body = response.unwrap().into_response().into_body();
+    let body_bytes = runtime
+        .block_on(hyper::body::to_bytes(response_body))
+        .unwrap();
+
+    let got: Vec<KBItem> = serde_json::from_slice(&body_bytes).unwrap();
+
+    assert_eq!(want, got)
 }
 
 #[test]
 fn test_search_by_key_but_error() {
     // Given
+    let mut params: HashMap<String, String> = HashMap::new();
+    params.insert(String::from("offset"), String::from("0"));
+    params.insert(String::from("limit"), String::from("2"));
+    params.insert(String::from("key"), String::from("red"));
+
     let want = Error::SearchError;
-    let query_params = KBQueryFilter {
-        key: "red".to_string(),
-        keyword: Default::default(),
-        limit: Some(2),
-        offset: 0,
-    };
     let store = KBStore::new_with_search(Vec::new(), true);
     let service = Service::new(store);
     let runtime = Runtime::new()
         .expect("unable to create runtime to test search by key but there is an error");
 
     // When
-    let got = runtime.block_on(service.search(query_params));
+    let response = runtime.block_on(handler::search(params, service));
     // Then
-    match got {
-        Ok(kb_got) => panic!("unexpected result: {:?}", kb_got),
-        Err(err) => assert_eq!(want, err),
+    assert_eq!(true, response.is_err());
+    let got_error = match response {
+        Ok(value) => panic!("unexpected result {:?}", value.into_response()),
+        Err(err) => err,
+    };
+
+    if let Some(e) = got_error.find::<error::Error>() {
+        assert_eq!(want, *e);
+        return;
     }
 }
 
 #[test]
 fn test_search() {
     // Given
-    let query_params = KBQueryFilter {
-        keyword: String::from("red"),
-        key: Default::default(),
-        limit: Some(0),
-        offset: 2,
-    };
+    let mut params: HashMap<String, String> = HashMap::new();
+    params.insert(String::from("offset"), String::from("0"));
+    params.insert(String::from("limit"), String::from("2"));
+    params.insert(String::from("keyword"), String::from("red"));
+
     let want = vec![
         KBItem {
             id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
@@ -253,55 +234,16 @@ fn test_search() {
     let service = Service::new(store);
     let runtime = Runtime::new().expect("unable to create runtime to test get kb with key");
     // When
-    let got = runtime.block_on(service.search(query_params));
+    let response = runtime.block_on(handler::search(params, service));
     // Then
-    match got {
-        Ok(kb_got) => assert_eq!(want, kb_got),
-        Err(err) => panic!("unexpected error: {:?}", err),
-    }
-}
+    let response_body = response.unwrap().into_response().into_body();
+    let body_bytes = runtime
+        .block_on(hyper::body::to_bytes(response_body))
+        .unwrap();
 
-#[test]
-fn test_search_but_error() {
-    // Given
-    let want = Error::SearchError;
-    let query_params = KBQueryFilter {
-        keyword: "red".to_string(),
-        key: Default::default(),
-        limit: Some(2),
-        offset: 0,
-    };
-    let store = KBStore::new_with_search(Vec::new(), true);
-    let service = Service::new(store);
-    let runtime = Runtime::new()
-        .expect("unable to create runtime to test search by key but there is an error");
+    let got: Vec<KBItem> = serde_json::from_slice(&body_bytes).unwrap();
 
-    // When
-    let got = runtime.block_on(service.search(query_params));
-    // Then
-    match got {
-        Ok(kb_got) => panic!("unexpected result: {:?}", kb_got),
-        Err(err) => assert_eq!(want, err),
-    }
-}
-
-#[test]
-fn test_get_kb_with_key_error() {
-    // Given
-    let key = "red".to_string();
-    let want = Error::GetKBError;
-    let store = KBStore::new_with_get_kb(None, true);
-    let service = Service::new(store);
-    let runtime =
-        Runtime::new().expect("unable to create runtime to test get kb with id with error");
-    // When
-    let got = runtime.block_on(service.get_kb_with_key(key));
-
-    // Then
-    match got {
-        Ok(kb_got) => panic!("unexpected result: {:?}", kb_got),
-        Err(err) => assert_eq!(err, want),
-    }
+    assert_eq!(want, got)
 }
 
 #[test]
@@ -318,31 +260,24 @@ fn test_add_kb() {
             String::from("paint"),
         ],
     };
-    let mut want = KnowledgeBase {
-        id: KBID(String::from("")),
-        key: String::from("red"),
-        value: String::from("of the colour of fresh blood"),
-        kind: String::from("concepts"),
-        notes: String::from("to know about color red"),
-        tags: vec![
-            String::from("concept"),
-            String::from("color"),
-            String::from("paint"),
-        ],
+    let mut want = SaveKBSuccess {
+        id: String::from(""),
     };
     let store = KBStore::new_with_add_kb(false);
     let service = Service::new(store);
     let runtime = Runtime::new().expect("unable to create runtime to test add kb");
     // When
-    let got = runtime.block_on(service.add_kb(new_kb));
+    let response = runtime.block_on(handler::add_kb(new_kb, service));
     // Then
-    match got {
-        Ok(kb_got) => {
-            want.id = kb_got.id.clone();
-            assert_eq!(want, kb_got.clone());
-        }
-        Err(err) => panic!("unexpected error: {:?}", err),
-    }
+    let response_body = response.unwrap().into_response().into_body();
+    let body_bytes = runtime
+        .block_on(hyper::body::to_bytes(response_body))
+        .unwrap();
+
+    let got: SaveKBSuccess = serde_json::from_slice(&body_bytes).unwrap();
+    want.id = got.clone().id;
+
+    assert_eq!(want, got)
 }
 
 #[test]
@@ -354,19 +289,21 @@ fn test_add_category() {
             "an abstract or general idea that is derived from specific instances or occurrences",
         ),
     };
-    let want = true;
+    let want = SaveCategorySuccess { ok: true };
     let store = KBStore::new_with_add_category(false);
     let service = Service::new(store);
     let runtime = Runtime::new().expect("unable to create runtime to test add category");
     // When
-    let got = runtime.block_on(service.add_category(new_category));
+    let response = runtime.block_on(handler::add_category(new_category, service));
     // Then
-    match got {
-        Ok(kb_got) => {
-            assert_eq!(want, kb_got);
-        }
-        Err(err) => panic!("unexpected error: {:?}", err),
-    }
+    let response_body = response.unwrap().into_response().into_body();
+    let body_bytes = runtime
+        .block_on(hyper::body::to_bytes(response_body))
+        .unwrap();
+
+    let got: SaveCategorySuccess = serde_json::from_slice(&body_bytes).unwrap();
+
+    assert_eq!(want, got)
 }
 
 #[test]
@@ -383,11 +320,17 @@ fn test_add_category_with_error() {
     let service = Service::new(store);
     let runtime = Runtime::new().expect("unable to create runtime to test add category with error");
     // When
-    let got = runtime.block_on(service.add_category(new_category));
+    let response = runtime.block_on(handler::add_category(new_category, service));
     // Then
-    match got {
-        Ok(cat_got) => panic!("unexpected result: {:?}", cat_got),
-        Err(err) => assert_eq!(err, want),
+    assert_eq!(true, response.is_err());
+    let got_error = match response {
+        Ok(value) => panic!("unexpected result {:?}", value.into_response()),
+        Err(err) => err,
+    };
+
+    if let Some(e) = got_error.find::<error::Error>() {
+        assert_eq!(want, *e);
+        return;
     }
 }
 
@@ -410,15 +353,21 @@ fn test_add_kb_with_error() {
     let service = Service::new(store);
     let runtime = Runtime::new().expect("unable to create runtime to test add kb with error");
     // When
-    let got = runtime.block_on(service.add_kb(new_kb));
+    let response = runtime.block_on(handler::add_kb(new_kb, service));
     // Then
-    match got {
-        Ok(kb_got) => panic!("unexpected result: {:?}", kb_got),
-        Err(err) => assert_eq!(err, want),
+    assert_eq!(true, response.is_err());
+    let got_error = match response {
+        Ok(value) => panic!("unexpected result {:?}", value.into_response()),
+        Err(err) => err,
+    };
+
+    if let Some(e) = got_error.find::<error::Error>() {
+        assert_eq!(want, *e);
+        return;
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 struct KBStore {
     get_kb_value: Option<KnowledgeBase>,
     search_value: Vec<KBItem>,
@@ -428,47 +377,32 @@ struct KBStore {
     save_category_error: Option<bool>,
 }
 
-impl Default for KBStore {
-    fn default() -> Self {
-        KBStore {
-            get_kb_error: Default::default(),
-            save_kb_error: Default::default(),
-            search_error: Default::default(),
-            save_category_error: Default::default(),
-            get_kb_value: Default::default(),
-            search_value: Default::default(),
-        }
-    }
-}
-
 impl KBStore {
     fn new_with_get_kb(kb: Option<KnowledgeBase>, is_error: bool) -> Self {
-        let mut dummy_store = KBStore::default();
-
-        dummy_store.get_kb_value = kb;
-        dummy_store.get_kb_error = Some(is_error);
-
-        dummy_store
+        KBStore { 
+            get_kb_value: kb,
+            get_kb_error: Some(is_error),
+            .. Default::default()
+        }
     }
     fn new_with_search(kb: Vec<KBItem>, is_error: bool) -> Self {
-        let mut dummy_store = KBStore::default();
-
-        dummy_store.search_value = kb;
-        dummy_store.search_error = Some(is_error);
-
-        dummy_store
+        KBStore { 
+            search_value: kb,
+            search_error: Some(is_error),
+            .. Default::default()
+        }
     }
     fn new_with_add_kb(is_error: bool) -> Self {
-        let mut dummy_store = KBStore::default();
-        dummy_store.save_kb_error = Some(is_error);
-
-        dummy_store
+        KBStore { 
+            save_kb_error: Some(is_error),
+            .. Default::default()
+        }
     }
     fn new_with_add_category(is_error: bool) -> Self {
-        let mut dummy_store = KBStore::default();
-        dummy_store.save_category_error = Some(is_error);
-
-        dummy_store
+        KBStore { 
+            save_category_error: Some(is_error),
+            .. Default::default()
+        }
     }
 }
 

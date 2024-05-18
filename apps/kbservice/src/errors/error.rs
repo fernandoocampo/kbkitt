@@ -1,4 +1,7 @@
 use std::fmt::{Display, Formatter, Result};
+use std::num::ParseIntError;
+
+use warp::reject::Reject;
 
 #[derive(Debug, PartialEq)]
 pub enum Error {
@@ -10,6 +13,8 @@ pub enum Error {
     DuplicateKBError,
     DuplicateCategory,
     DatabaseQueryError,
+    MissingParameters,
+    ParseError(ParseIntError),
 }
 
 impl Display for Error {
@@ -23,6 +28,10 @@ impl Display for Error {
             Error::DuplicateCategory => write!(f, "Category already exists"),
             Error::SearchError => write!(f, "Unable to search knowledge base"),
             Error::DatabaseQueryError => write!(f, "Unable to query repository"),
+            Error::MissingParameters => write!(f, "Missing parameter"),
+            Error::ParseError(ref err) => write!(f, "Cannot parse parameter: {err}"),
         }
     }
 }
+
+impl Reject for Error {}

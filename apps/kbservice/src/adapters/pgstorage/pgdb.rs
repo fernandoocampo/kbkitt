@@ -11,15 +11,33 @@ use sqlx::postgres::{PgPool, PgPoolOptions, PgRow};
 use sqlx::Row;
 
 #[derive(Debug, Clone)]
+pub struct DBData {
+    pub user: String,
+    pub pwd: String,
+    pub host: String,
+    pub db_name: String,
+    pub port: u16,
+}
+
+#[derive(Debug, Clone)]
 pub struct Store {
     pub connection: PgPool,
 }
 
+impl DBData {
+    pub fn build_url_connection(&self) -> String {
+        format!(
+            "postgres://{}:{}@{}:{}/{}",
+            self.user, self.pwd, self.host, self.port, self.db_name,
+        )
+    }
+}
+
 impl Store {
-    pub async fn new(db_url: &str) -> Self {
+    pub async fn new(db_data: DBData) -> Self {
         let db_pool = match PgPoolOptions::new()
             .max_connections(5)
-            .connect(db_url)
+            .connect(db_data.build_url_connection().as_str())
             .await
         {
             Ok(pool) => pool,

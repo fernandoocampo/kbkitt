@@ -3,6 +3,7 @@ mod pgstorage_test {
     use log::info;
     use std::env;
 
+    use crate::adapters::pgstorage::pgdb::DBData;
     use crate::types::categories::{Category, CategoryFilter};
     use crate::types::kbs::{KBItem, KBQueryFilter, KnowledgeBase, KBID};
     use crate::{adapters::pgstorage::pgdb, kbs::storage::Storer};
@@ -10,6 +11,26 @@ mod pgstorage_test {
     use tokio::runtime::Runtime;
 
     const INTEGRATION_TEST: &str = "INTEGRATION_TEST";
+
+    #[test]
+    fn test_build_db_url() {
+        // Given
+        let db_data = DBData {
+            user: "kibi".to_string(),
+            pwd: "kibipwd".to_string(),
+            host: "localhost".to_string(),
+            db_name: "kbs".to_string(),
+            port: 5432,
+        };
+
+        let want = "postgres://kibi:kibipwd@localhost:5432/kbs".to_string();
+
+        // When
+        let got = db_data.build_url_connection();
+
+        // Then
+        assert_eq!(want, got);
+    }
 
     #[test]
     fn test_get_kb_by_id() {
@@ -360,8 +381,14 @@ mod pgstorage_test {
     }
 
     async fn new_db_storage() -> pgdb::Store {
-        let db_url = "postgres://kbdb:kbpwd@localhost:5432/kbdb";
+        let db_data = DBData {
+            db_name: "kbdb".to_string(),
+            host: "localhost".to_string(),
+            port: 5432,
+            pwd: "kbpwd".to_string(),
+            user: "kbdb".to_string(),
+        };
 
-        pgdb::Store::new(db_url).await
+        pgdb::Store::new(db_data).await
     }
 }

@@ -65,27 +65,7 @@ trace
 
 ## How to call the API?
 
-* Register a User endpoint
-
-```sh
-curl -H "Content-Type: application/json" \
---data '{"email": "esme@anydomain.com", "password": "123456"}' \
--X POST http://localhost:3030/signup
-
-{"id":"98bd8597-1ead-4cc3-adfc-453441b3002a"}
-```
-
-* login User endpoint
-
-```sh
-curl -H "Content-Type: application/json" \
---data '{"email": "esme@anydomain.com", "password": "123456"}' \
--X POST http://localhost:3030/login
-
-"v2.local.RU8RaG9_YX_f1rXCSIDOfryxkrItp6A5cE8FeZlHVzAiswFHU7N0EYyvUbpkQIbVPD5meuxA6a0ZyDJT_Hnv3pp685U8Hm0Z38BYgPBMuBbcd3Tn0bg2eBHEoBj-L0TcOwhOKD_UwzSQEFq07cI9EIdoo1HiGejRBblYQuqsRhZJWBmKaOk3pG01hadgUzvLMauKYg6RdazW8o9zyFX17IAojeQehaHNl0CSN95DGhFALxhTbdCpbBK0aG4JVmWKXDoYC5GFUD-IkkV02wAx1BQDBjTO4-8cYpjCRzxuBpFjE4mIS7FenPJ3T4s-QS4herES3gLDzpfRtlQ8Du6nGzZYD9GGF0_0bK5BZSk.a2V5LWlkOmdhbmRhbGYw"
-```
-
-* Create a person endpoint
+* Create a kb endpoint
 
 ```sh
 curl -H "Content-Type: application/json" \

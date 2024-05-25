@@ -379,29 +379,29 @@ struct KBStore {
 
 impl KBStore {
     fn new_with_get_kb(kb: Option<KnowledgeBase>, is_error: bool) -> Self {
-        KBStore { 
+        KBStore {
             get_kb_value: kb,
             get_kb_error: Some(is_error),
-            .. Default::default()
+            ..Default::default()
         }
     }
     fn new_with_search(kb: Vec<KBItem>, is_error: bool) -> Self {
-        KBStore { 
+        KBStore {
             search_value: kb,
             search_error: Some(is_error),
-            .. Default::default()
+            ..Default::default()
         }
     }
     fn new_with_add_kb(is_error: bool) -> Self {
-        KBStore { 
+        KBStore {
             save_kb_error: Some(is_error),
-            .. Default::default()
+            ..Default::default()
         }
     }
     fn new_with_add_category(is_error: bool) -> Self {
-        KBStore { 
+        KBStore {
             save_category_error: Some(is_error),
-            .. Default::default()
+            ..Default::default()
         }
     }
 }

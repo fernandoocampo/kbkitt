@@ -1,0 +1,4 @@
+{
+    "go.testTimeout": "10s",
+    "go.goroot": "/Users/Fernando_Ocampo/sdk/go1.22.5"
+}

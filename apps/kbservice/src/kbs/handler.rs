@@ -91,48 +91,48 @@ pub async fn add_category(
 pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
     if let Some(Error::KBNotFound) = r.find() {
         Ok(warp::reply::with_status(
-            "Route not found".to_string(),
+            "KB not found".to_string(),
             StatusCode::NOT_FOUND,
         ))
     } else if let Some(Error::GetKBError) = r.find() {
         Ok(warp::reply::with_status(
-            "Route not found".to_string(),
-            StatusCode::NOT_FOUND,
+            "Unable to get KB".to_string(),
+            StatusCode::INTERNAL_SERVER_ERROR,
         ))
     } else if let Some(Error::CreateKBError) = r.find() {
         Ok(warp::reply::with_status(
-            "Route not found".to_string(),
-            StatusCode::NOT_FOUND,
+            "Unable to create KB".to_string(),
+            StatusCode::INTERNAL_SERVER_ERROR,
         ))
     } else if let Some(Error::CreateCategoryError) = r.find() {
         Ok(warp::reply::with_status(
-            "Route not found".to_string(),
-            StatusCode::NOT_FOUND,
+            "Unable to create category".to_string(),
+            StatusCode::INTERNAL_SERVER_ERROR,
         ))
     } else if let Some(Error::SearchError) = r.find() {
         Ok(warp::reply::with_status(
-            "Route not found".to_string(),
-            StatusCode::NOT_FOUND,
+            "Unable to search KBs".to_string(),
+            StatusCode::INTERNAL_SERVER_ERROR,
         ))
     } else if let Some(Error::DuplicateKBError) = r.find() {
         Ok(warp::reply::with_status(
-            "Route not found".to_string(),
-            StatusCode::NOT_FOUND,
+            "KB already exists".to_string(),
+            StatusCode::CONFLICT,
         ))
     } else if let Some(Error::DuplicateCategory) = r.find() {
         Ok(warp::reply::with_status(
-            "Route not found".to_string(),
-            StatusCode::NOT_FOUND,
+            "Category already exists".to_string(),
+            StatusCode::CONFLICT,
         ))
     } else if let Some(Error::DatabaseQueryError) = r.find() {
         Ok(warp::reply::with_status(
-            "Route not found".to_string(),
-            StatusCode::NOT_FOUND,
+            "Service Database is not available".to_string(),
+            StatusCode::INTERNAL_SERVER_ERROR,
         ))
     } else {
         Ok(warp::reply::with_status(
-            "Route not found".to_string(),
-            StatusCode::NOT_FOUND,
+            "Unexpected error".to_string(),
+            StatusCode::INTERNAL_SERVER_ERROR,
         ))
     }
 }

@@ -3,6 +3,7 @@ package kbs
 import (
 	"context"
 	"fmt"
+	"strings"
 )
 
 type KBServiceClient interface {
@@ -36,9 +37,35 @@ func (s *Service) Add(ctx context.Context, newKB NewKB) (*KB, error) {
 
 	id, err := s.kbClient.Create(ctx, newKB)
 	if err != nil {
-		return nil, fmt.Errorf("unable to add kb: %w", err)
+		return nil, fmt.Errorf("failed to add kb: %w", err)
 	}
 
 	kb := newKB.toKB(id)
 	return &kb, nil
+}
+
+func (s *Service) GetByID(ctx context.Context, id string) (*KB, error) {
+	if strings.TrimSpace(id) == "" {
+		return nil, fmt.Errorf("the given id is not valid, because it is empty")
+	}
+
+	kb, err := s.kbClient.Get(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get kb: %w", err)
+	}
+
+	return kb, nil
+}
+
+func (s *Service) Search(ctx context.Context, filter KBQueryFilter) ([]KBItem, error) {
+	if IsStringEmpty(filter.Key) && IsStringEmpty(filter.Keyword) {
+		return nil, nil
+	}
+
+	kbs, err := s.kbClient.Search(ctx, filter)
+	if err != nil {
+		return nil, fmt.Errorf("failed to search kb: %w", err)
+	}
+
+	return kbs, nil
 }

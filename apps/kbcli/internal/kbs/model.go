@@ -2,7 +2,9 @@ package kbs
 
 import (
 	"errors"
+	"fmt"
 	"slices"
+	"strings"
 )
 
 type KB struct {
@@ -32,8 +34,10 @@ type KBItem struct {
 type KBQueryFilter struct {
 	Keyword string
 	Key     string
-	Limit   uint16
-	Offset  uint16
+	// determines the number of rows.
+	Limit uint16
+	// skips the offset rows before beginning to return the rows.
+	Offset uint16
 }
 
 var (
@@ -42,6 +46,15 @@ var (
 	errEmptyKBKind  = errors.New("kb kind is empty")
 	errEmptyKBTags  = errors.New("kb tags is empty")
 )
+
+func NewKBQueryFilter(key, keyword string) KBQueryFilter {
+	return KBQueryFilter{
+		Key:     key,
+		Keyword: keyword,
+		Limit:   5,
+		Offset:  0,
+	}
+}
 
 func (n NewKB) validate() error {
 	var err error
@@ -65,6 +78,14 @@ func (n NewKB) validate() error {
 	return err
 }
 
+func (k KBQueryFilter) validate() error {
+	if IsStringEmpty(k.Key) && IsStringEmpty(k.Keyword) {
+		return fmt.Errorf("invalid data to search kbs")
+	}
+
+	return nil
+}
+
 func (n NewKB) toKB(id string) KB {
 	return KB{
 		ID:    id,
@@ -74,4 +95,18 @@ func (n NewKB) toKB(id string) KB {
 		Kind:  n.Kind,
 		Tags:  slices.Clone(n.Tags),
 	}
+}
+
+func (k KB) String() string {
+	return fmt.Sprintf(`ID: %s
+Key: %s
+Value: %s
+Notes: %s
+Kind: %s
+Tags: %+v
+`, k.ID, k.Key, k.Value, k.Notes, k.Kind, k.Tags)
+}
+
+func IsStringEmpty(value string) bool {
+	return len(strings.TrimSpace(value)) == 0
 }

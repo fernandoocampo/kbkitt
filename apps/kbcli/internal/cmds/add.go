@@ -1,10 +1,9 @@
 package cmds
 
 import (
-	"bufio"
+	"context"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
 	"github.com/spf13/cobra"
@@ -35,12 +34,6 @@ const (
 	tagsLabel  = "tags (comma separated values): "
 )
 
-// values
-const (
-	yes      = "yes"
-	yesShort = "y"
-)
-
 var addKBData addKBParams
 
 func makeAddCommand() *cobra.Command {
@@ -62,69 +55,48 @@ func makeAddCommand() *cobra.Command {
 
 func makeRunAddKBCommand() func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
+		service, err := newService()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "unable to load service: %s", err)
+			fmt.Println()
+			os.Exit(1)
+		}
+
 		fillMissingFields()
 
-		newKB := addKBData.toNewKB()
+		ctx := context.Background()
+		newKB, err := service.Add(ctx, addKBData.toNewKB())
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "unable to add new kb:", err)
+			fmt.Println()
+			os.Exit(1)
+		}
 
-		fmt.Printf("%+v", newKB)
+		fmt.Println("kb added successfully")
+		fmt.Println(newKB)
+		fmt.Println()
 	}
 }
 
 func fillMissingFields() {
-	if isStringEmpty(addKBData.key) {
+	if kbs.IsStringEmpty(addKBData.key) {
 		addKBData.key = requestStringValue(keyLabel)
 	}
-	if isStringEmpty(addKBData.value) {
+	if kbs.IsStringEmpty(addKBData.value) {
 		addKBData.value = requestStringValue(valueLabel)
 	}
-	if isStringEmpty(addKBData.notes) {
+	if kbs.IsStringEmpty(addKBData.notes) {
 		addKBData.notes = requestStringValue(notesLabel)
 	}
-	if isStringEmpty(addKBData.kind) {
+	if kbs.IsStringEmpty(addKBData.kind) {
 		addKBData.kind = requestStringValue(kindLabel)
 	}
 	if len(addKBData.tags) == 0 {
+		fmt.Println()
 		fmt.Println(missingTags)
 		fmt.Println()
 		addKBData.tags = readCSVFromStdin(tagLabel)
 	}
-}
-
-func requestStringValue(label string) string {
-	var output string
-	fmt.Print(label)
-
-	scanner := bufio.NewScanner(os.Stdin)
-	if scanner.Scan() {
-		output = scanner.Text()
-	}
-
-	return output
-}
-
-func readCSVFromStdin(label string) []string {
-	var result []string
-	for {
-		var value string
-		fmt.Print(label)
-		fmt.Scan(&value)
-
-		result = append(result, value)
-
-		var done string
-		fmt.Print(areYouDoneLabel)
-		fmt.Scan(&done)
-
-		if strings.EqualFold(done, yes) || strings.EqualFold(done, yesShort) {
-			fmt.Println()
-			break
-		}
-	}
-	return result
-}
-
-func isStringEmpty(value string) bool {
-	return len(strings.TrimSpace(value)) == 0
 }
 
 func (a addKBParams) toNewKB() kbs.NewKB {

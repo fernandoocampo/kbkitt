@@ -7,12 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	Version    string
-	BuildDate  string
-	CommitHash string
-)
-
 func makeRootCommand() *cobra.Command {
 	newCmd := cobra.Command{
 		Use:   "kb",
@@ -32,6 +26,8 @@ func Execute() {
 	rootCommand := makeRootCommand()
 	rootCommand.AddCommand(makeVersionCommand())
 	rootCommand.AddCommand(makeAddCommand())
+	rootCommand.AddCommand(makeGetCommand())
+	rootCommand.AddCommand(makeConfigureCommand())
 
 	if err := rootCommand.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)

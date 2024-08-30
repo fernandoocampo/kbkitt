@@ -40,6 +40,20 @@ impl<T: Storer> Service<T> {
     }
 
     pub async fn add_kb(&self, new_kb: NewKnowledgeBase) -> Result<KnowledgeBase, Error> {
+        debug!("checking if kb already exists: {:?}", new_kb.key);
+
+        match self.get_kb_with_key(new_kb.clone().key).await {
+            Ok(kb) => {
+                if kb.id != KBID("".to_string()) {
+                    return Err(Error::DuplicateKBError)
+                }
+            },
+            Err(e) => {
+                error!("reading if kb already exists: {:?}", e);
+                return Err(Error::CreateKBError)
+            }
+        }
+
         debug!("start adding kb: {:?}", new_kb);
 
         let kb_to_save = new_kb.to_knowledge_base();

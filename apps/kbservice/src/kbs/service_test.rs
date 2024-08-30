@@ -330,7 +330,8 @@ fn test_add_kb() {
             String::from("paint"),
         ],
     };
-    let store = KBStore::new_with_add_kb(false);
+    let non_existing_kb = Some(KnowledgeBase::default());
+    let store = KBStore::new_with_add_kb(non_existing_kb, false);
     let service = Service::new(store);
     let runtime = Runtime::new().expect("unable to create runtime to test add kb");
     // When
@@ -405,8 +406,9 @@ fn test_add_kb_with_error() {
             String::from("paint"),
         ],
     };
+    let non_existing_kb = Some(KnowledgeBase::default());
     let want = Error::CreateKBError;
-    let store = KBStore::new_with_add_kb(true);
+    let store = KBStore::new_with_add_kb(non_existing_kb, true);
     let service = Service::new(store);
     let runtime = Runtime::new().expect("unable to create runtime to test add kb with error");
     // When
@@ -458,8 +460,11 @@ impl KBStore {
 
         dummy_store
     }
-    fn new_with_add_kb(is_error: bool) -> Self {
+    fn new_with_add_kb(kb: Option<KnowledgeBase>, is_error: bool) -> Self {
         let mut dummy_store = KBStore::default();
+
+        dummy_store.get_kb_value = kb;
+        dummy_store.get_kb_error = Some(false);
         dummy_store.save_kb_error = Some(is_error);
 
         dummy_store

@@ -92,14 +92,18 @@ func readCSVFromStdin(label string) []string {
 
 		result = append(result, value)
 
-		var done string
-		fmt.Print(areYouDoneLabel)
-		fmt.Scan(&done)
-
-		if yes(done) {
+		if areYouSure(areYouDoneLabel) {
 			fmt.Println()
 			break
 		}
 	}
 	return result
+}
+
+func areYouSure(label string) bool {
+	var done string
+	fmt.Print(label)
+	fmt.Scan(&done)
+
+	return yes(done)
 }

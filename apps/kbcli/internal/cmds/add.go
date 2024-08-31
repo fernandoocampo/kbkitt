@@ -20,8 +20,11 @@ type addKBParams struct {
 
 // add messages
 const (
-	areYouDoneLabel = "are you done? [y/n]: "
-	missingTags     = "it seems tag values are missing, they will be useful to find this kb entry, Please indicate some..."
+	areYouDoneLabel     = "are you done? [y/n]: "
+	kbToSaveLabel       = "...KB to save..."
+	saveQuestionLabel   = "do you want to save it? [y/n]: "
+	kbAddedSuccessfully = "kb added successfully"
+	missingTags         = "it seems tag values are missing, they will be useful to find this kb entry, Please indicate some of them..."
 )
 
 // field labels
@@ -65,17 +68,37 @@ func makeRunAddKBCommand() func(cmd *cobra.Command, args []string) {
 		fillMissingFields()
 
 		ctx := context.Background()
-		newKB, err := service.Add(ctx, addKBData.toNewKB())
+		newKBToSave := addKBData.toNewKB()
+
+		if !confirmKBData(&newKBToSave) {
+			fmt.Println("bye")
+			os.Exit(0)
+		}
+
+		newKB, err := service.Add(ctx, newKBToSave)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "unable to add new kb:", err)
 			fmt.Println()
 			os.Exit(1)
 		}
 
-		fmt.Println("kb added successfully")
+		fmt.Println(kbAddedSuccessfully)
 		fmt.Println(newKB)
 		fmt.Println()
 	}
+}
+
+func confirmKBData(newKB *kbs.NewKB) bool {
+	fmt.Println(kbToSaveLabel)
+	fmt.Println()
+	fmt.Println(newKB)
+	fmt.Println()
+	if areYouSure(saveQuestionLabel) {
+		fmt.Println()
+		return true
+	}
+	fmt.Println()
+	return false
 }
 
 func fillMissingFields() {

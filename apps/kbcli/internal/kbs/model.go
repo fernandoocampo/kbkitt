@@ -107,6 +107,15 @@ Tags: %+v
 `, k.ID, k.Key, k.Value, k.Notes, k.Kind, k.Tags)
 }
 
+func (n NewKB) String() string {
+	return fmt.Sprintf(`Key: %s
+Value: %s
+Notes: %s
+Kind: %s
+Tags: %+v
+`, n.Key, n.Value, n.Notes, n.Kind, n.Tags)
+}
+
 func IsStringEmpty(value string) bool {
 	return len(strings.TrimSpace(value)) == 0
 }

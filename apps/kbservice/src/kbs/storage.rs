@@ -1,6 +1,6 @@
 use crate::errors::error::Error;
 use crate::types::categories::{Category, CategoryFilter};
-use crate::types::kbs::{KBItem, KBQueryFilter, KnowledgeBase, KBID};
+use crate::types::kbs::{KBQueryFilter, KnowledgeBase, SearchResult, KBID};
 use async_trait::async_trait;
 use std::fmt::{Debug, Error as FmtError, Formatter};
 
@@ -11,9 +11,9 @@ pub trait Storer {
     /// get a Knowledge base with the given key.
     async fn get_kb_by_key(&self, key: String) -> Result<KnowledgeBase, Error>;
     /// get a list of knowledge base entries where their keys contain the given keywords.
-    async fn search_by_key(&self, filter: KBQueryFilter) -> Result<Vec<KBItem>, Error>;
+    async fn search_by_key(&self, filter: KBQueryFilter) -> Result<SearchResult, Error>;
     /// get a list of knowledge base entries where their keys contain the given keywords.
-    async fn search(&self, filter: KBQueryFilter) -> Result<Vec<KBItem>, Error>;
+    async fn search(&self, filter: KBQueryFilter) -> Result<SearchResult, Error>;
     /// save given knowledge base in the repository.
     async fn save_kb(&self, kb: KnowledgeBase) -> Result<KBID, Error>;
     /// save given category in the repository.

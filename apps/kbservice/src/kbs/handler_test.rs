@@ -3,7 +3,9 @@ use crate::kbs::handler;
 use crate::kbs::service::Service;
 use crate::kbs::storage::Storer;
 use crate::types::categories::{Category, CategoryFilter, SaveCategorySuccess};
-use crate::types::kbs::{KBItem, KBQueryFilter, NewKnowledgeBase, SaveKBSuccess, KBID};
+use crate::types::kbs::{
+    KBItem, KBQueryFilter, NewKnowledgeBase, SaveKBSuccess, SearchResult, KBID,
+};
 use crate::{errors::error, types::kbs::KnowledgeBase};
 use async_trait::async_trait;
 use std::collections::HashMap;
@@ -89,50 +91,60 @@ fn test_search_by_key() {
     params.insert(String::from("limit"), String::from("2"));
     params.insert(String::from("key"), String::from("red"));
 
-    let want = vec![
-        KBItem {
-            id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
-            key: String::from("red"),
-            kind: String::from("concepts"),
-            tags: vec![
-                String::from("concept"),
-                String::from("color"),
-                String::from("paint"),
-            ],
-        },
-        KBItem {
-            id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
-            key: String::from("redemption"),
-            kind: String::from("concepts"),
-            tags: vec![
-                String::from("concept"),
-                String::from("saving"),
-                String::from("absolution"),
-            ],
-        },
-    ];
-    let stored_kbs = vec![
-        KBItem {
-            id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
-            key: String::from("red"),
-            kind: String::from("concepts"),
-            tags: vec![
-                String::from("concept"),
-                String::from("color"),
-                String::from("paint"),
-            ],
-        },
-        KBItem {
-            id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
-            key: String::from("redemption"),
-            kind: String::from("concepts"),
-            tags: vec![
-                String::from("concept"),
-                String::from("saving"),
-                String::from("absolution"),
-            ],
-        },
-    ];
+    let want = SearchResult {
+        items: vec![
+            KBItem {
+                id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
+                key: String::from("red"),
+                kind: String::from("concepts"),
+                tags: vec![
+                    String::from("concept"),
+                    String::from("color"),
+                    String::from("paint"),
+                ],
+            },
+            KBItem {
+                id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
+                key: String::from("redemption"),
+                kind: String::from("concepts"),
+                tags: vec![
+                    String::from("concept"),
+                    String::from("saving"),
+                    String::from("absolution"),
+                ],
+            },
+        ],
+        limit: 2,
+        offset: 0,
+        total: 10,
+    };
+    let stored_kbs = SearchResult {
+        items: vec![
+            KBItem {
+                id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
+                key: String::from("red"),
+                kind: String::from("concepts"),
+                tags: vec![
+                    String::from("concept"),
+                    String::from("color"),
+                    String::from("paint"),
+                ],
+            },
+            KBItem {
+                id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
+                key: String::from("redemption"),
+                kind: String::from("concepts"),
+                tags: vec![
+                    String::from("concept"),
+                    String::from("saving"),
+                    String::from("absolution"),
+                ],
+            },
+        ],
+        limit: 2,
+        offset: 0,
+        total: 10,
+    };
     let store = KBStore::new_with_search(stored_kbs, false);
     let service = Service::new(store);
     let runtime = Runtime::new().expect("unable to create runtime to test get kb with key");
@@ -144,7 +156,7 @@ fn test_search_by_key() {
         .block_on(hyper::body::to_bytes(response_body))
         .unwrap();
 
-    let got: Vec<KBItem> = serde_json::from_slice(&body_bytes).unwrap();
+    let got: SearchResult = serde_json::from_slice(&body_bytes).unwrap();
 
     assert_eq!(want, got)
 }
@@ -158,7 +170,7 @@ fn test_search_by_key_but_error() {
     params.insert(String::from("key"), String::from("red"));
 
     let want = Error::SearchError;
-    let store = KBStore::new_with_search(Vec::new(), true);
+    let store = KBStore::new_with_search(SearchResult::default(), true);
     let service = Service::new(store);
     let runtime = Runtime::new()
         .expect("unable to create runtime to test search by key but there is an error");
@@ -186,50 +198,60 @@ fn test_search() {
     params.insert(String::from("limit"), String::from("2"));
     params.insert(String::from("keyword"), String::from("red"));
 
-    let want = vec![
-        KBItem {
-            id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
-            key: String::from("red"),
-            kind: String::from("concepts"),
-            tags: vec![
-                String::from("concept"),
-                String::from("color"),
-                String::from("paint"),
-            ],
-        },
-        KBItem {
-            id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
-            key: String::from("redemption"),
-            kind: String::from("concepts"),
-            tags: vec![
-                String::from("concept"),
-                String::from("saving"),
-                String::from("absolution"),
-            ],
-        },
-    ];
-    let stored_kbs = vec![
-        KBItem {
-            id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
-            key: String::from("red"),
-            kind: String::from("concepts"),
-            tags: vec![
-                String::from("concept"),
-                String::from("color"),
-                String::from("paint"),
-            ],
-        },
-        KBItem {
-            id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
-            key: String::from("redemption"),
-            kind: String::from("concepts"),
-            tags: vec![
-                String::from("concept"),
-                String::from("saving"),
-                String::from("absolution"),
-            ],
-        },
-    ];
+    let want = SearchResult {
+        items: vec![
+            KBItem {
+                id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
+                key: String::from("red"),
+                kind: String::from("concepts"),
+                tags: vec![
+                    String::from("concept"),
+                    String::from("color"),
+                    String::from("paint"),
+                ],
+            },
+            KBItem {
+                id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
+                key: String::from("redemption"),
+                kind: String::from("concepts"),
+                tags: vec![
+                    String::from("concept"),
+                    String::from("saving"),
+                    String::from("absolution"),
+                ],
+            },
+        ],
+        limit: 2,
+        offset: 0,
+        total: 10,
+    };
+    let stored_kbs = SearchResult {
+        items: vec![
+            KBItem {
+                id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
+                key: String::from("red"),
+                kind: String::from("concepts"),
+                tags: vec![
+                    String::from("concept"),
+                    String::from("color"),
+                    String::from("paint"),
+                ],
+            },
+            KBItem {
+                id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
+                key: String::from("redemption"),
+                kind: String::from("concepts"),
+                tags: vec![
+                    String::from("concept"),
+                    String::from("saving"),
+                    String::from("absolution"),
+                ],
+            },
+        ],
+        limit: 2,
+        offset: 0,
+        total: 10,
+    };
     let store = KBStore::new_with_search(stored_kbs, false);
     let service = Service::new(store);
     let runtime = Runtime::new().expect("unable to create runtime to test get kb with key");
@@ -241,7 +263,7 @@ fn test_search() {
         .block_on(hyper::body::to_bytes(response_body))
         .unwrap();
 
-    let got: Vec<KBItem> = serde_json::from_slice(&body_bytes).unwrap();
+    let got: SearchResult = serde_json::from_slice(&body_bytes).unwrap();
 
     assert_eq!(want, got)
 }
@@ -263,7 +285,7 @@ fn test_add_kb() {
     let mut want = SaveKBSuccess {
         id: String::from(""),
     };
-    
+
     let non_existing_kb = Some(KnowledgeBase::default());
     let store = KBStore::new_with_add_kb(non_existing_kb, false);
     let service = Service::new(store);
@@ -351,7 +373,7 @@ fn test_add_kb_with_error() {
         ],
     };
     let want = Error::CreateKBError;
-    
+
     let non_existing_kb = Some(KnowledgeBase::default());
     let store = KBStore::new_with_add_kb(non_existing_kb, true);
     let service = Service::new(store);
@@ -374,7 +396,7 @@ fn test_add_kb_with_error() {
 #[derive(Debug, Clone, Default)]
 struct KBStore {
     get_kb_value: Option<KnowledgeBase>,
-    search_value: Vec<KBItem>,
+    search_value: SearchResult,
     search_error: Option<bool>,
     get_kb_error: Option<bool>,
     save_kb_error: Option<bool>,
@@ -389,9 +411,9 @@ impl KBStore {
             ..Default::default()
         }
     }
-    fn new_with_search(kb: Vec<KBItem>, is_error: bool) -> Self {
+    fn new_with_search(kbs: SearchResult, is_error: bool) -> Self {
         KBStore {
-            search_value: kb,
+            search_value: kbs,
             search_error: Some(is_error),
             ..Default::default()
         }
@@ -428,14 +450,14 @@ impl Storer for KBStore {
         }
     }
 
-    async fn search_by_key(&self, _: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
+    async fn search_by_key(&self, _: KBQueryFilter) -> Result<SearchResult, Error> {
         match &self.search_error.unwrap() {
             false => Ok(self.search_value.clone()),
             true => Err(Error::SearchError),
         }
     }
 
-    async fn search(&self, _: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
+    async fn search(&self, _: KBQueryFilter) -> Result<SearchResult, Error> {
         match &self.search_error.unwrap() {
             false => Ok(self.search_value.clone()),
             true => Err(Error::SearchError),

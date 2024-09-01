@@ -8,7 +8,7 @@ import (
 
 type KBServiceClient interface {
 	Create(ctx context.Context, newKB NewKB) (string, error)
-	Search(ctx context.Context, filter KBQueryFilter) ([]KBItem, error)
+	Search(ctx context.Context, filter KBQueryFilter) (*SearchResult, error)
 	Get(ctx context.Context, id string) (*KB, error)
 }
 
@@ -57,7 +57,7 @@ func (s *Service) GetByID(ctx context.Context, id string) (*KB, error) {
 	return kb, nil
 }
 
-func (s *Service) Search(ctx context.Context, filter KBQueryFilter) ([]KBItem, error) {
+func (s *Service) Search(ctx context.Context, filter KBQueryFilter) (*SearchResult, error) {
 	if IsStringEmpty(filter.Key) && IsStringEmpty(filter.Keyword) {
 		return nil, nil
 	}

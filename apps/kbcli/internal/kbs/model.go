@@ -24,6 +24,15 @@ type NewKB struct {
 	Tags  []string `json:"tags"`
 }
 
+type SearchResult struct {
+	Items []KBItem `json:"items"`
+	Total int64    `json:"total"`
+	// determines the number of rows.
+	Limit uint16 `json:"limit"`
+	// skips the offset rows before beginning to return the rows.
+	Offset uint16 `json:"offset"`
+}
+
 type KBItem struct {
 	ID   string   `json:"id"`
 	Key  string   `json:"key"`
@@ -32,12 +41,12 @@ type KBItem struct {
 }
 
 type KBQueryFilter struct {
-	Keyword string
-	Key     string
+	Keyword string `json:"keyword"`
+	Key     string `json:"key"`
 	// determines the number of rows.
-	Limit uint16
+	Limit uint16 `json:"limit"`
 	// skips the offset rows before beginning to return the rows.
-	Offset uint16
+	Offset uint16 `json:"offset"`
 }
 
 var (

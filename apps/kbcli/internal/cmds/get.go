@@ -25,6 +25,9 @@ const (
 
 // field labels
 const (
+	totalLabel        = "Total:"
+	limitLabel        = "Limit:"
+	offsetLabel       = "Offset:"
 	getKBIDLabel      = "id (hit <enter> if want to keep it empty): "
 	getKBKeyLabel     = "key (hit <enter> if want to keep it empty): "
 	getKBKeywordLabel = "keyword (hit <enter> if want to keep it empty): "
@@ -120,15 +123,20 @@ func fillFilterFields() {
 	fillFilterFields()
 }
 
-func printKBReport(kbs []kbs.KBItem) {
+func printKBReport(kbs *kbs.SearchResult) {
 	length := len(keyCol)
-	for _, v := range kbs {
+	for _, v := range kbs.Items {
 		if len(v.Key) > length {
 			length = len(v.Key)
 		}
 	}
+	fmt.Println()
+	fmt.Println(totalLabel, kbs.Total)
+	fmt.Println(limitLabel, kbs.Total)
+	fmt.Println(offsetLabel, kbs.Total)
+	fmt.Println()
 	fmt.Println(fmt.Sprintf("%-36s", "ID"), fmt.Sprintf("%s%*s", "KEY", length-len(keyCol), ""), "KIND")
-	for _, kb := range kbs {
+	for _, kb := range kbs.Items {
 		fmt.Println(kb.ID, fmt.Sprintf("%s%*s", kb.Key, length-len(kb.Key), ""), kb.Kind)
 	}
 }

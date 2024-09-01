@@ -1,7 +1,7 @@
 use crate::errors::error::Error;
 use crate::kbs::storage::Storer;
 use crate::types::categories::Category;
-use crate::types::kbs::{KBItem, KBQueryFilter, KnowledgeBase, NewKnowledgeBase, KBID};
+use crate::types::kbs::{KBQueryFilter, KnowledgeBase, NewKnowledgeBase, SearchResult, KBID};
 use log::error;
 use tracing::debug;
 
@@ -45,12 +45,12 @@ impl<T: Storer> Service<T> {
         match self.get_kb_with_key(new_kb.clone().key).await {
             Ok(kb) => {
                 if kb.id != KBID("".to_string()) {
-                    return Err(Error::DuplicateKBError)
+                    return Err(Error::DuplicateKBError);
                 }
-            },
+            }
             Err(e) => {
                 error!("reading if kb already exists: {:?}", e);
-                return Err(Error::CreateKBError)
+                return Err(Error::CreateKBError);
             }
         }
 
@@ -79,8 +79,8 @@ impl<T: Storer> Service<T> {
         }
     }
 
-    pub async fn search(&self, query_params: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
-        let mut result: Vec<KBItem> = vec![];
+    pub async fn search(&self, query_params: KBQueryFilter) -> Result<SearchResult, Error> {
+        let mut result: SearchResult = SearchResult::default();
 
         if query_params.key.is_empty() && query_params.keyword.is_empty() {
             return Ok(result);
@@ -100,7 +100,7 @@ impl<T: Storer> Service<T> {
         Ok(result)
     }
 
-    async fn search_by_key(&self, query_params: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
+    async fn search_by_key(&self, query_params: KBQueryFilter) -> Result<SearchResult, Error> {
         debug!("start searching by key: {:?}", query_params);
 
         match self.store.search_by_key(query_params).await {
@@ -113,7 +113,7 @@ impl<T: Storer> Service<T> {
         }
     }
 
-    async fn search_by_keyword(&self, query_params: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
+    async fn search_by_keyword(&self, query_params: KBQueryFilter) -> Result<SearchResult, Error> {
         debug!("start search: {:?}", query_params);
 
         match self.store.search(query_params).await {

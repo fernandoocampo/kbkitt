@@ -5,7 +5,7 @@ mod pgstorage_test {
 
     use crate::adapters::pgstorage::pgdb::DBData;
     use crate::types::categories::{Category, CategoryFilter};
-    use crate::types::kbs::{KBItem, KBQueryFilter, KnowledgeBase, KBID};
+    use crate::types::kbs::{KBItem, KBQueryFilter, KnowledgeBase, SearchResult, KBID};
     use crate::{adapters::pgstorage::pgdb, kbs::storage::Storer};
 
     use tokio::runtime::Runtime;
@@ -132,26 +132,31 @@ mod pgstorage_test {
         INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('22cfc4fb-f9b6-4f6e-9158-9982347ad2a7', 'patrick', 'a saint', 'names', 'words', 'over words');
         SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY LIKE '%rick%' LIMIT 10 OFFSET 0;
         */
-        let want: Vec<KBItem> = vec![
-            KBItem {
-                id: KBID(String::from("6411a28b-640a-43d9-b901-1c4b15d91568")),
-                key: String::from("frederick"),
-                kind: String::from("names"),
-                tags: vec![String::from("name"), String::from("names")],
-            },
-            KBItem {
-                id: KBID(String::from("22cfc4fb-f9b6-4f6e-9158-9982347ad2a7")),
-                key: String::from("patrick"),
-                kind: String::from("words"),
-                tags: vec![String::from("over"), String::from("words")],
-            },
-            KBItem {
-                id: KBID(String::from("5a2579f7-83b9-4891-8dbc-e0024b5f3505")),
-                key: String::from("rick"),
-                kind: String::from("names"),
-                tags: vec![String::from("name"), String::from("names")],
-            },
-        ];
+        let want: SearchResult = SearchResult {
+            items: vec![
+                KBItem {
+                    id: KBID(String::from("6411a28b-640a-43d9-b901-1c4b15d91568")),
+                    key: String::from("frederick"),
+                    kind: String::from("names"),
+                    tags: vec![String::from("name"), String::from("names")],
+                },
+                KBItem {
+                    id: KBID(String::from("22cfc4fb-f9b6-4f6e-9158-9982347ad2a7")),
+                    key: String::from("patrick"),
+                    kind: String::from("words"),
+                    tags: vec![String::from("over"), String::from("words")],
+                },
+                KBItem {
+                    id: KBID(String::from("5a2579f7-83b9-4891-8dbc-e0024b5f3505")),
+                    key: String::from("rick"),
+                    kind: String::from("names"),
+                    tags: vec![String::from("name"), String::from("names")],
+                },
+            ],
+            limit: 10,
+            offset: 0,
+            total: 3,
+        };
         let runtime = Runtime::new().expect("Unable to create a runtime");
         let store = runtime.block_on(new_db_storage());
 
@@ -189,20 +194,25 @@ mod pgstorage_test {
         INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('22cfc4fb-f9b6-4f6e-9158-9982347ad2a7', 'patrick', 'a saint', 'names', 'words', 'over words');
         SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE TAGS @@ to_tsquery('names') ORDER BY KB_KEY LIMIT 10 OFFSET 0;
         */
-        let want: Vec<KBItem> = vec![
-            KBItem {
-                id: KBID(String::from("6411a28b-640a-43d9-b901-1c4b15d91568")),
-                key: String::from("frederick"),
-                kind: String::from("names"),
-                tags: vec![String::from("name"), String::from("names")],
-            },
-            KBItem {
-                id: KBID(String::from("5a2579f7-83b9-4891-8dbc-e0024b5f3505")),
-                key: String::from("rick"),
-                kind: String::from("names"),
-                tags: vec![String::from("name"), String::from("names")],
-            },
-        ];
+        let want = SearchResult {
+            items: vec![
+                KBItem {
+                    id: KBID(String::from("6411a28b-640a-43d9-b901-1c4b15d91568")),
+                    key: String::from("frederick"),
+                    kind: String::from("names"),
+                    tags: vec![String::from("name"), String::from("names")],
+                },
+                KBItem {
+                    id: KBID(String::from("5a2579f7-83b9-4891-8dbc-e0024b5f3505")),
+                    key: String::from("rick"),
+                    kind: String::from("names"),
+                    tags: vec![String::from("name"), String::from("names")],
+                },
+            ],
+            limit: 10,
+            offset: 0,
+            total: 3,
+        };
         let runtime = Runtime::new().expect("Unable to create a runtime");
         let store = runtime.block_on(new_db_storage());
 

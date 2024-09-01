@@ -85,7 +85,7 @@ func (c *Client) Create(ctx context.Context, newKB kbs.NewKB) (string, error) {
 	return newKBResponse.ID, nil
 }
 
-func (c *Client) Search(ctx context.Context, filter kbs.KBQueryFilter) ([]kbs.KBItem, error) {
+func (c *Client) Search(ctx context.Context, filter kbs.KBQueryFilter) (*kbs.SearchResult, error) {
 	req, err := http.NewRequest(http.MethodGet, c.getKBURL(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("unable to build get kb request: %w", err)
@@ -115,13 +115,13 @@ func (c *Client) Search(ctx context.Context, filter kbs.KBQueryFilter) ([]kbs.KB
 		return nil, fmt.Errorf("server failed to get kb by key: %s", string(respBody))
 	}
 
-	var kbResponse []kbs.KBItem
+	var kbResponse kbs.SearchResult
 	err = json.Unmarshal(respBody, &kbResponse)
 	if err != nil {
 		return nil, fmt.Errorf("unable to unmarshall kb response: %w", err)
 	}
 
-	return kbResponse, nil
+	return &kbResponse, nil
 }
 
 func (c *Client) Get(ctx context.Context, id string) (*kbs.KB, error) {

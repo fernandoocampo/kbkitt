@@ -1,7 +1,7 @@
 use crate::errors::error::Error;
 use crate::kbs::storage::Storer as kb_storage;
 use crate::types::categories::{Category, CategoryFilter};
-use crate::types::kbs::{KBItem, KBQueryFilter, KnowledgeBase, KBID};
+use crate::types::kbs::{KBItem, KBQueryFilter, KnowledgeBase, SearchResult, KBID};
 
 use async_trait::async_trait;
 use log::error;
@@ -118,7 +118,26 @@ impl kb_storage for Store {
     }
 
     /// get a list of knowledge base entries where their keys contain the given keywords.
-    async fn search_by_key(&self, filter: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
+    async fn search_by_key(&self, filter: KBQueryFilter) -> Result<SearchResult, Error> {
+        // let's count first
+        // let mut count: i64 = 0;
+        let count: i64 =
+            match sqlx::query_scalar("SELECT COUNT(*) as TOTAL FROM kbs WHERE KB_KEY LIKE $1")
+                .bind(format!("%{}%", filter.key))
+                .fetch_one(&self.connection)
+                .await
+            {
+                Ok(total) => {
+                    debug!("total kbs found: {:?}", total);
+                    total
+                }
+                Err(e) => {
+                    error!("searching kb by key {:?}: {:?}", filter.keyword, e);
+                    tracing::event!(tracing::Level::ERROR, "{:?}", e);
+                    return Err(Error::DatabaseQueryError);
+                }
+            };
+        // Now let's query the data
         match sqlx::query(
             "SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY LIKE $1 ORDER BY KB_KEY LIMIT $2 OFFSET $3",
         )
@@ -140,7 +159,13 @@ impl kb_storage for Store {
         {
             Ok(kbs) => {
                 debug!("found some kbs: {:?}", kbs);
-                Ok(kbs)
+
+                Ok(SearchResult {
+                    items: kbs,
+                    offset: filter.offset,
+                    total: count,
+                    limit: filter.limit.unwrap_or(0),
+                })
             }
             Err(e) => {
                 error!("searching kb by key {:?}: {:?}", filter.keyword, e);
@@ -151,7 +176,25 @@ impl kb_storage for Store {
     }
 
     /// get a list of knowledge base entries where their keys contain the given keywords.
-    async fn search(&self, filter: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
+    async fn search(&self, filter: KBQueryFilter) -> Result<SearchResult, Error> {
+        // let's count first
+        let count: i64 =
+            match sqlx::query_scalar("SELECT COUNT(*) FROM kbs WHERE TAGS @@ to_tsquery($1)")
+                .bind(format!("'{}'", filter.keyword))
+                .fetch_one(&self.connection)
+                .await
+            {
+                Ok(total) => {
+                    debug!("total kbs found: {:?}", total);
+                    total
+                }
+                Err(e) => {
+                    error!("searching kb by key {:?}: {:?}", filter.keyword, e);
+                    tracing::event!(tracing::Level::ERROR, "{:?}", e);
+                    return Err(Error::DatabaseQueryError);
+                }
+            };
+        // Now let's query the data
         match sqlx::query("SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE TAGS @@ to_tsquery($1) ORDER BY KB_KEY LIMIT $2 OFFSET $3")
             .bind(format!("'{}'", filter.keyword))
             .bind(i32::from(filter.limit.unwrap_or(5)))
@@ -170,7 +213,13 @@ impl kb_storage for Store {
             .await {
             Ok(kbs) => {
                 debug!("found some kbs: {:?}", kbs);
-                Ok(kbs)
+
+                Ok(SearchResult {
+                    items: kbs,
+                    offset: filter.offset,
+                    total: count,
+                    limit: filter.limit.unwrap_or(0),
+                })
             }
             Err(e) => {
                 error!("searching kbs with keywords: {:?}", e);

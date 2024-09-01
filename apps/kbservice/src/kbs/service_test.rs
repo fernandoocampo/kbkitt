@@ -2,7 +2,9 @@ use crate::errors::error::Error;
 use crate::kbs::service::Service;
 use crate::kbs::storage::Storer;
 use crate::types::categories::{Category, CategoryFilter};
-use crate::types::kbs::{KBItem, KBQueryFilter, KnowledgeBase, NewKnowledgeBase, KBID};
+use crate::types::kbs::{
+    KBItem, KBQueryFilter, KnowledgeBase, NewKnowledgeBase, SearchResult, KBID,
+};
 use tokio::runtime::Runtime;
 
 use async_trait::async_trait;
@@ -116,7 +118,7 @@ fn test_search_by_key() {
         limit: Some(0),
         offset: 2,
     };
-    let want = vec![
+    let wanted_items = vec![
         KBItem {
             id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
             key: String::from("red"),
@@ -138,6 +140,12 @@ fn test_search_by_key() {
             ],
         },
     ];
+    let want = SearchResult {
+        items: wanted_items,
+        limit: 0,
+        offset: 2,
+        total: 10,
+    };
     let stored_kbs = vec![
         KBItem {
             id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
@@ -160,7 +168,13 @@ fn test_search_by_key() {
             ],
         },
     ];
-    let store = KBStore::new_with_search(stored_kbs, false);
+    let result_kbs = SearchResult {
+        items: stored_kbs,
+        limit: 0,
+        offset: 2,
+        total: 10,
+    };
+    let store = KBStore::new_with_search(result_kbs, false);
     let service = Service::new(store);
     let runtime = Runtime::new().expect("unable to create runtime to test get kb with key");
     // When
@@ -182,7 +196,7 @@ fn test_search_by_key_but_error() {
         limit: Some(2),
         offset: 0,
     };
-    let store = KBStore::new_with_search(Vec::new(), true);
+    let store = KBStore::new_with_search(SearchResult::default(), true);
     let service = Service::new(store);
     let runtime = Runtime::new()
         .expect("unable to create runtime to test search by key but there is an error");
@@ -205,50 +219,60 @@ fn test_search() {
         limit: Some(0),
         offset: 2,
     };
-    let want = vec![
-        KBItem {
-            id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
-            key: String::from("red"),
-            kind: String::from("concepts"),
-            tags: vec![
-                String::from("concept"),
-                String::from("color"),
-                String::from("paint"),
-            ],
-        },
-        KBItem {
-            id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
-            key: String::from("redemption"),
-            kind: String::from("concepts"),
-            tags: vec![
-                String::from("concept"),
-                String::from("saving"),
-                String::from("absolution"),
-            ],
-        },
-    ];
-    let stored_kbs = vec![
-        KBItem {
-            id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
-            key: String::from("red"),
-            kind: String::from("concepts"),
-            tags: vec![
-                String::from("concept"),
-                String::from("color"),
-                String::from("paint"),
-            ],
-        },
-        KBItem {
-            id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
-            key: String::from("redemption"),
-            kind: String::from("concepts"),
-            tags: vec![
-                String::from("concept"),
-                String::from("saving"),
-                String::from("absolution"),
-            ],
-        },
-    ];
+    let want = SearchResult {
+        items: vec![
+            KBItem {
+                id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
+                key: String::from("red"),
+                kind: String::from("concepts"),
+                tags: vec![
+                    String::from("concept"),
+                    String::from("color"),
+                    String::from("paint"),
+                ],
+            },
+            KBItem {
+                id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
+                key: String::from("redemption"),
+                kind: String::from("concepts"),
+                tags: vec![
+                    String::from("concept"),
+                    String::from("saving"),
+                    String::from("absolution"),
+                ],
+            },
+        ],
+        limit: 0,
+        offset: 2,
+        total: 10,
+    };
+    let stored_kbs = SearchResult {
+        items: vec![
+            KBItem {
+                id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
+                key: String::from("red"),
+                kind: String::from("concepts"),
+                tags: vec![
+                    String::from("concept"),
+                    String::from("color"),
+                    String::from("paint"),
+                ],
+            },
+            KBItem {
+                id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
+                key: String::from("redemption"),
+                kind: String::from("concepts"),
+                tags: vec![
+                    String::from("concept"),
+                    String::from("saving"),
+                    String::from("absolution"),
+                ],
+            },
+        ],
+        limit: 0,
+        offset: 2,
+        total: 10,
+    };
     let store = KBStore::new_with_search(stored_kbs, false);
     let service = Service::new(store);
     let runtime = Runtime::new().expect("unable to create runtime to test get kb with key");
@@ -271,7 +295,7 @@ fn test_search_but_error() {
         limit: Some(2),
         offset: 0,
     };
-    let store = KBStore::new_with_search(Vec::new(), true);
+    let store = KBStore::new_with_search(SearchResult::default(), true);
     let service = Service::new(store);
     let runtime = Runtime::new()
         .expect("unable to create runtime to test search by key but there is an error");
@@ -423,7 +447,7 @@ fn test_add_kb_with_error() {
 #[derive(Debug, Clone)]
 struct KBStore {
     get_kb_value: Option<KnowledgeBase>,
-    search_value: Vec<KBItem>,
+    search_value: SearchResult,
     search_error: Option<bool>,
     get_kb_error: Option<bool>,
     save_kb_error: Option<bool>,
@@ -452,10 +476,10 @@ impl KBStore {
 
         dummy_store
     }
-    fn new_with_search(kb: Vec<KBItem>, is_error: bool) -> Self {
+    fn new_with_search(kbs: SearchResult, is_error: bool) -> Self {
         let mut dummy_store = KBStore::default();
 
-        dummy_store.search_value = kb;
+        dummy_store.search_value = kbs;
         dummy_store.search_error = Some(is_error);
 
         dummy_store
@@ -493,14 +517,14 @@ impl Storer for KBStore {
         }
     }
 
-    async fn search_by_key(&self, _: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
+    async fn search_by_key(&self, _: KBQueryFilter) -> Result<SearchResult, Error> {
         match &self.search_error.unwrap() {
             false => Ok(self.search_value.clone()),
             true => Err(Error::SearchError),
         }
     }
 
-    async fn search(&self, _: KBQueryFilter) -> Result<Vec<KBItem>, Error> {
+    async fn search(&self, _: KBQueryFilter) -> Result<SearchResult, Error> {
         match &self.search_error.unwrap() {
             false => Ok(self.search_value.clone()),
             true => Err(Error::SearchError),

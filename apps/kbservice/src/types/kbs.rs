@@ -32,6 +32,14 @@ pub struct NewKnowledgeBase {
     pub tags: Vec<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Eq, Hash, PartialEq, PartialOrd, Ord, Default)]
+pub struct SearchResult {
+    pub items: Vec<KBItem>,
+    pub total: i64,
+    pub limit: u16,
+    pub offset: u16,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Eq, Hash, PartialEq, PartialOrd, Ord)]
 pub struct KBItem {
     pub id: KBID,

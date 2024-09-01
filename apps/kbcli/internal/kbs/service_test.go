@@ -81,7 +81,7 @@ func (k *kbServiceDummy) Create(ctx context.Context, newKB kbs.NewKB) (string, e
 	return k.createKBID, nil
 }
 
-func (k *kbServiceDummy) Search(ctx context.Context, filter kbs.KBQueryFilter) ([]kbs.KBItem, error) {
+func (k *kbServiceDummy) Search(ctx context.Context, filter kbs.KBQueryFilter) (*kbs.SearchResult, error) {
 	return nil, nil
 }
 

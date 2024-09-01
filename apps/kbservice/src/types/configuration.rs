@@ -64,24 +64,22 @@ fn load_env_var(key: &str) -> String {
         Err(_) => {
             println!("{} env var was not set using default", key);
             "".to_string()
-        },
+        }
     }
 }
 
 fn load_env_var_int(key: &str, default: u16) -> u16 {
     match env::var(key) {
-        Ok(val) => {
-            match val.parse::<u16>() {
-                Ok(num) => num,
-                Err(_) => {
-                    println!("{} env var is not a valid number using default", key);
-                    default
-                },
+        Ok(val) => match val.parse::<u16>() {
+            Ok(num) => num,
+            Err(_) => {
+                println!("{} env var is not a valid number using default", key);
+                default
             }
-        }
+        },
         Err(_) => {
             println!("{} env var was not set using default", key);
             default
-        },
+        }
     }
 }

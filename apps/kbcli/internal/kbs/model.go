@@ -136,6 +136,10 @@ func (i *ImportResult) Ok() bool {
 	return len(i.FailedKeys) == 0 && len(i.NewIDs) > 0
 }
 
+func (i *ImportResult) anyError() bool {
+	return len(i.FailedKeys) > 0
+}
+
 func IsStringEmpty(value string) bool {
 	return len(strings.TrimSpace(value)) == 0
 }

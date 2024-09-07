@@ -21,12 +21,13 @@ type importKBParams struct {
 
 // field labels
 const (
-	fileLabel            = "file path: "
-	importedLabel        = "Imported KBs"
-	unImportedLabel      = "Uimported KBs"
-	unImportedErrorLabel = "ERROR"
-	totalImportedLabel   = "Total:"
-	totalUnimportedLabel = "Total:"
+	fileLabel                = "file path: "
+	importedLabel            = "Imported KBs"
+	unImportedLabel          = "Uimported KBs"
+	unImportedErrorLabel     = "ERROR"
+	unImportedErrorSeparator = "-----"
+	totalImportedLabel       = "Total:"
+	totalUnimportedLabel     = "Total:"
 )
 
 var importKBData importKBParams
@@ -121,11 +122,11 @@ func printImportedReport(kbs *kbs.ImportResult) {
 		return
 	}
 
-	if importKBData.showAddedKBs {
+	if importKBData.showAddedKBs && len(kbs.NewIDs) > 0 {
 		printImportedKBs(kbs)
 	}
 
-	if importKBData.showFailedKBs {
+	if importKBData.showFailedKBs && len(kbs.FailedKeys) > 0 {
 		printUnimportedKBs(kbs)
 	}
 }
@@ -144,8 +145,9 @@ func printUnimportedKBs(kbs *kbs.ImportResult) {
 	fmt.Println(totalUnimportedLabel, len(kbs.FailedKeys))
 	fmt.Println()
 	fmt.Println(fmt.Sprintf("%s%*s", keyCol, length-len(keyCol), ""), unImportedErrorLabel)
+	fmt.Println(fmt.Sprintf("%s%*s", keyColSeparator, length-len(keyCol), ""), unImportedErrorSeparator)
 	for key, errorMessage := range kbs.FailedKeys {
-		fmt.Println(key, errorMessage)
+		fmt.Println(fmt.Sprintf("%s%*s", key, length-len(key), ""), errorMessage)
 	}
 }
 
@@ -156,6 +158,7 @@ func printImportedKBs(kbs *kbs.ImportResult) {
 	fmt.Println(totalImportedLabel, len(kbs.NewIDs))
 	fmt.Println()
 	fmt.Println(fmt.Sprintf("%-36s", idCol), keyCol)
+	fmt.Println(fmt.Sprintf("%-36s", idColSeparator), keyColSeparator)
 	for key, id := range kbs.NewIDs {
 		fmt.Println(id, key)
 	}

@@ -4,6 +4,7 @@ GET_ARGS?=
 ROOT_ARGS?=
 COMMIT_HASH?=$(shell git describe --dirty --tags --always)
 BUILD_DATE?=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+IMPORT_FILE?=/tmp/sample.yaml
 VERSION?=0.1.0
 LDFLAGS?="-X github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds.Version=${VERSION} -X github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds.CommitHash=${COMMIT_HASH} -X github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds.BuildDate=${BUILD_DATE} -s -w"
 
@@ -38,4 +39,8 @@ run-get: ## Run get app.
 .PHONY: run-add-with-args
 run-add-with-args: ## Run add app with predefined arguments.
 	$(GO_TOOL) run -ldflags ${LDFLAGS} cmd/kbcli/main.go add -k btc -v crypto -n currencies -c crypto -t btc,crypto,currencies,blockchain
+
+.PHONY: run-import-with-args
+run-import-with-args: ## Run import app with predefined arguments.
+	$(GO_TOOL) go1.23.0 run cmd/kbcli/main.go import -f /Users/Fernando_Ocampo/.kbkitt/sample.yaml --show-added-kbs --show-failed-kbs
                                                 

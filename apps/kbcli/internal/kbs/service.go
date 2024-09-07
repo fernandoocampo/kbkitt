@@ -8,7 +8,6 @@ import (
 
 type KBServiceClient interface {
 	Create(ctx context.Context, newKB NewKB) (string, error)
-	Import(ctx context.Context, newKBs []NewKB) (*ImportResult, error)
 	Search(ctx context.Context, filter KBQueryFilter) (*SearchResult, error)
 	Get(ctx context.Context, id string) (*KB, error)
 }
@@ -51,12 +50,22 @@ func (s *Service) Import(ctx context.Context, newKBs []NewKB) (*ImportResult, er
 		return nil, fmt.Errorf("one kb is not valid: %w", err)
 	}
 
-	result, err := s.kbClient.Import(ctx, newKBs)
-	if err != nil {
-		return nil, fmt.Errorf("failed to add kb: %w", err)
+	result := ImportResult{
+		NewIDs:     make(map[string]string),
+		FailedKeys: make(map[string]string),
 	}
 
-	return result, nil
+	for _, newKB := range newKBs {
+		id, err := s.kbClient.Create(ctx, newKB)
+		if err != nil {
+			result.FailedKeys[newKB.Key] = err.Error()
+			continue
+		}
+
+		result.NewIDs[newKB.Key] = id
+	}
+
+	return &result, nil
 }
 
 func (s *Service) GetByID(ctx context.Context, id string) (*KB, error) {

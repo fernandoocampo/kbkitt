@@ -85,20 +85,6 @@ func (c *Client) Create(ctx context.Context, newKB kbs.NewKB) (string, error) {
 	return newKBResponse.ID, nil
 }
 
-func (c *Client) Import(ctx context.Context, newKBs []kbs.NewKB) (*kbs.ImportResult, error) {
-	dummyResult := kbs.ImportResult{
-		NewIDs: map[string]string{
-			"BTC": "b5f2ae95-abbd-4e74-984e-9f7ea43aba7d",
-			"ETH": "63a9e5e7-a1cd-4fa6-8249-ed7fc22e8bb0",
-		},
-		FailedKeys: map[string]string{
-			"SOL": "unable to save SOL due to ...",
-			"XRP": "unable to save XRP due to ...",
-		},
-	}
-	return &dummyResult, nil
-}
-
 func (c *Client) Search(ctx context.Context, filter kbs.KBQueryFilter) (*kbs.SearchResult, error) {
 	req, err := http.NewRequest(http.MethodGet, c.getKBURL(), nil)
 	if err != nil {

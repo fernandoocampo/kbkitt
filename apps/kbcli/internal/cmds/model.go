@@ -20,10 +20,13 @@ const (
 
 // common labels
 const (
-	titleSeparator = "-------------"
-	idCol          = "ID"
-	keyCol         = "KEY"
-	kindCol        = "KIND"
+	titleSeparator   = "-------------"
+	idCol            = "ID"
+	idColSeparator   = "--"
+	keyCol           = "KEY"
+	keyColSeparator  = "---"
+	kindCol          = "KIND"
+	kindColSeparator = "----"
 )
 
 func getConfiguration() (*settings.Configuration, error) {

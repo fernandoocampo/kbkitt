@@ -1,5 +1,5 @@
 .PHONY: run
-run: ## run the application using cargo.
+run: ## run the application using cargo. remember to add KB_DB_PWD
 	KB_WEB_SERVER_PORT=3030 \
 	KB_DB_NAME=kbdb \
 	KB_DB_USER=kbdb \

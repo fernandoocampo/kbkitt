@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/adapters/filesystems"
 	yaml "gopkg.in/yaml.v3"
 )
 
@@ -24,7 +25,6 @@ type Server struct {
 	URL string `yaml:"url"`
 }
 
-const fileMode os.FileMode = 0755
 const (
 	folderName = ".kbkitt"
 	fileName   = "config.yaml"
@@ -36,13 +36,13 @@ func LoadConfiguration() (*Configuration, error) {
 		return nil, fmt.Errorf("unable to load configuration: %w", err)
 	}
 
-	yamlFile, err := os.ReadFile(filePath)
-	if err != nil && os.IsNotExist(err) {
-		return nil, nil
-	}
-
+	yamlFile, err := filesystems.ReadFile(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("unable to load configuration: %w", err)
+	}
+
+	if yamlFile == nil {
+		return nil, nil
 	}
 
 	var configuration Configuration
@@ -70,7 +70,7 @@ func CheckAndCreateKBKittFolder() error {
 		return nil
 	}
 
-	err = makeKBKittFolder(kbkittDir)
+	err = filesystems.MakeFolder(kbkittDir)
 	if err != nil {
 		return fmt.Errorf("unable to create kbkitt folder (%q): %w", kbkittDir, err)
 	}
@@ -119,16 +119,6 @@ func getKBKittFolderPath() (string, error) {
 	}
 
 	return filepath.Join(homeDir, folderName), nil
-}
-
-func makeKBKittFolder(kbkittFolder string) error {
-	// https://chmod-calculator.com
-	err := os.Mkdir(kbkittFolder, fileMode)
-	if err != nil {
-		return fmt.Errorf("unable to make kbkitt directory (%q): %w", kbkittFolder, err)
-	}
-
-	return nil
 }
 
 func configurationFolderExist(kbkittFolder string) (bool, error) {

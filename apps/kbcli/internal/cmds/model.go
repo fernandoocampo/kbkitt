@@ -18,6 +18,14 @@ const (
 	yesShortValue = "y"
 )
 
+// common labels
+const (
+	titleSeparator = "-------------"
+	idCol          = "ID"
+	keyCol         = "KEY"
+	kindCol        = "KIND"
+)
+
 func getConfiguration() (*settings.Configuration, error) {
 	configuration, err := settings.LoadConfiguration()
 	if err != nil {

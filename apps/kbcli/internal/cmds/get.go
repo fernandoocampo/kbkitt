@@ -16,13 +16,6 @@ type getKBParams struct {
 	keyword string
 }
 
-// report values
-const (
-	idCol   = "ID"
-	keyCol  = "KEY"
-	kindCol = "KIND"
-)
-
 // field labels
 const (
 	totalLabel        = "Total:"

@@ -88,3 +88,7 @@ func (k *kbServiceDummy) Search(ctx context.Context, filter kbs.KBQueryFilter) (
 func (k *kbServiceDummy) Get(ctx context.Context, id string) (*kbs.KB, error) {
 	return nil, nil
 }
+
+func (k *kbServiceDummy) Import(ctx context.Context, newKBs []kbs.NewKB) (*kbs.ImportResult, error) {
+	return nil, nil
+}

@@ -65,7 +65,7 @@ func makeRunAddKBCommand() func(cmd *cobra.Command, args []string) {
 			os.Exit(1)
 		}
 
-		fillMissingFields()
+		fillMissingAddFields()
 
 		ctx := context.Background()
 		newKBToSave := addKBData.toNewKB()
@@ -101,7 +101,7 @@ func confirmKBData(newKB *kbs.NewKB) bool {
 	return false
 }
 
-func fillMissingFields() {
+func fillMissingAddFields() {
 	if kbs.IsStringEmpty(addKBData.key) {
 		addKBData.key = requestStringValue(keyLabel)
 	}

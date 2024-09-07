@@ -17,11 +17,11 @@ type KB struct {
 }
 
 type NewKB struct {
-	Key   string   `json:"key"`
-	Value string   `json:"value"`
-	Notes string   `json:"notes"`
-	Kind  string   `json:"kind"`
-	Tags  []string `json:"tags"`
+	Key   string   `json:"key" yaml:"Key"`
+	Value string   `json:"value" yaml:"Value"`
+	Notes string   `json:"notes" yaml:"Notes"`
+	Kind  string   `json:"kind" yaml:"Kind"`
+	Tags  []string `json:"tags" yaml:"Tags"`
 }
 
 type SearchResult struct {
@@ -31,6 +31,13 @@ type SearchResult struct {
 	Limit uint16 `json:"limit"`
 	// skips the offset rows before beginning to return the rows.
 	Offset uint16 `json:"offset"`
+}
+
+type ImportResult struct {
+	// new kb keys and ids generated
+	NewIDs map[string]string `json:"ids"`
+	// failed kb keys with its respective error
+	FailedKeys map[string]string `json:"failed_keys"`
 }
 
 type KBItem struct {
@@ -123,6 +130,10 @@ Notes: %s
 Kind: %s
 Tags: %+v
 `, n.Key, n.Value, n.Notes, n.Kind, n.Tags)
+}
+
+func (i *ImportResult) Ok() bool {
+	return len(i.FailedKeys) == 0 && len(i.NewIDs) > 0
 }
 
 func IsStringEmpty(value string) bool {

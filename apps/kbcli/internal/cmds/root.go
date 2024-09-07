@@ -26,6 +26,7 @@ func Execute() {
 	rootCommand := makeRootCommand()
 	rootCommand.AddCommand(makeVersionCommand())
 	rootCommand.AddCommand(makeAddCommand())
+	rootCommand.AddCommand(makeImportCommand())
 	rootCommand.AddCommand(makeGetCommand())
 	rootCommand.AddCommand(makeConfigureCommand())
 

@@ -127,7 +127,7 @@ Person d3bc8246-53da-4275-b833-5feb4489741d deleted
 
 ## Migration
 
-Project is using `sqlx-cli`, so let's install it first.
+Project is using [sqlx-cli](https://docs.rs/crate/sqlx-cli/latest), so let's install it first.
 
 ```sh
 cargo install sqlx-cli

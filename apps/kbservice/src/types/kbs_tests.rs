@@ -11,6 +11,7 @@ mod kbs_tests {
             value: String::from("of the colour of fresh blood"),
             kind: String::from("concepts"),
             notes: String::from("to know about color red"),
+            reference: Some(String::from("Some Author")),
             tags: vec![
                 "concept".to_string(),
                 "color".to_string(),
@@ -24,6 +25,7 @@ mod kbs_tests {
             value: "of the colour of fresh blood".to_string(),
             kind: "concepts".to_string(),
             notes: String::from("to know about color red"),
+            reference: Some(String::from("Some Author")),
             tags: vec![
                 "concept".to_string(),
                 "color".to_string(),

@@ -23,6 +23,7 @@ fn test_get_kb_with_id() {
         value: "of the colour of fresh blood".to_string(),
         kind: "concepts".to_string(),
         notes: String::from("to know about color red"),
+        reference: Some(String::from("Some Author")),
         tags: vec![
             "concept".to_string(),
             "color".to_string(),
@@ -35,6 +36,7 @@ fn test_get_kb_with_id() {
         value: "of the colour of fresh blood".to_string(),
         kind: "concepts".to_string(),
         notes: String::from("to know about color red"),
+        reference: Some(String::from("Some Author")),
         tags: vec![
             "concept".to_string(),
             "color".to_string(),
@@ -276,6 +278,7 @@ fn test_add_kb() {
         value: String::from("of the colour of fresh blood"),
         kind: String::from("concepts"),
         notes: String::from("to know about color red"),
+        reference: Some(String::from("Some Author")),
         tags: vec![
             String::from("concept"),
             String::from("color"),
@@ -366,6 +369,7 @@ fn test_add_kb_with_error() {
         value: String::from("of the colour of fresh blood"),
         kind: String::from("concepts"),
         notes: String::from("to know about color red"),
+        reference: Some(String::from("Some Author")),
         tags: vec![
             String::from("concept"),
             String::from("color"),

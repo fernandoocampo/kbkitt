@@ -54,6 +54,7 @@ mod pgstorage_test {
             kind: String::from("concepts"),
             notes: String::from("one color"),
             value: String::from("remember this color"),
+            reference: None,
             tags: vec![String::from("color"), String::from("concepts")],
         };
         let runtime = Runtime::new().expect("Unable to create a runtime");
@@ -83,7 +84,7 @@ mod pgstorage_test {
 
         let key = String::from("red");
         /*
-        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS)
+        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, REFERENCE, TAGS)
         VALUES ('681cca89-890b-4667-8ca0-e328546e268c', 'red', 'remember this color', 'one color', 'concepts', 'color concepts')
         RETURNING KB_ID
         */
@@ -93,6 +94,7 @@ mod pgstorage_test {
             kind: String::from("concepts"),
             notes: String::from("one color"),
             value: String::from("remember this color"),
+            reference: None,
             tags: vec![String::from("color"), String::from("concepts")],
         };
         let runtime = Runtime::new().expect("Unable to create a runtime");

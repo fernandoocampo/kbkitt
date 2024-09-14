@@ -7,12 +7,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
 )
 
 type Setup struct {
-	URL string
+	URL            string
+	RequestTimeout time.Duration
 }
 
 type Client struct {
@@ -39,6 +41,11 @@ const (
 	offsetParam        = "offset"
 )
 
+// default values
+const (
+	requestTimeoutDefault = 5 * time.Second
+)
+
 func NewClient(settings Setup) *Client {
 	newClient := Client{
 		client: newHTTPClient(settings),
@@ -49,7 +56,9 @@ func NewClient(settings Setup) *Client {
 }
 
 func newHTTPClient(settings Setup) *http.Client {
-	newHTTPClient := http.Client{}
+	newHTTPClient := http.Client{
+		Timeout: settings.getTimeout(),
+	}
 
 	return &newHTTPClient
 }
@@ -60,9 +69,16 @@ func (c *Client) Create(ctx context.Context, newKB kbs.NewKB) (string, error) {
 		return "", fmt.Errorf("unable to marsal kb data: %w")
 	}
 
-	resp, err := c.client.Post(c.getKBURL(), appJsonContentType, bytes.NewBuffer(postBody))
+	request, err := http.NewRequest(http.MethodPost, c.getKBURL(), bytes.NewBuffer(postBody))
 	if err != nil {
-		return "", fmt.Errorf("unable to create new kb: %w", err)
+		return "", fmt.Errorf("unable to create new kb request: %w", err)
+	}
+
+	request.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.client.Do(request)
+	if err != nil {
+		return "", kbs.NewServerErrorWithWrapper("unable to create new kb", err)
 	}
 
 	defer resp.Body.Close()
@@ -72,8 +88,12 @@ func (c *Client) Create(ctx context.Context, newKB kbs.NewKB) (string, error) {
 		return "", fmt.Errorf("unable to read response after trying to create a new kb: %w", err)
 	}
 
-	if isNotSuccess(resp.StatusCode) {
-		return "", fmt.Errorf("server failed to create new kb: %s", string(respBody))
+	if isServerError(resp.StatusCode) {
+		return "", kbs.NewServerError(fmt.Sprintf("server failed to create new kb: %s", string(respBody)))
+	}
+
+	if isClientError(resp.StatusCode) {
+		return "", kbs.NewClientError(fmt.Sprintf("invalid request: %s", string(respBody)))
 	}
 
 	var newKBResponse NewKBResponse
@@ -156,6 +176,22 @@ func (c *Client) getKBURL() string {
 
 func (c *Client) getGetKBByIDURL(id string) string {
 	return fmt.Sprintf(getKBByIDURL, c.host, id)
+}
+
+func (s *Setup) getTimeout() time.Duration {
+	if s.RequestTimeout <= 0 {
+		return requestTimeoutDefault
+	}
+
+	return s.RequestTimeout
+}
+
+func isClientError(statusCode int) bool {
+	return statusCode >= 400 && statusCode < 500
+}
+
+func isServerError(statusCode int) bool {
+	return statusCode >= 500 && statusCode < 600
 }
 
 func isNotSuccess(statusCode int) bool {

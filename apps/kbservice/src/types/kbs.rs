@@ -20,6 +20,7 @@ pub struct KnowledgeBase {
     pub value: String,
     pub notes: String,
     pub kind: String,
+    pub reference: Option<String>,
     pub tags: Vec<String>,
 }
 
@@ -29,6 +30,7 @@ pub struct NewKnowledgeBase {
     pub value: String,
     pub notes: String,
     pub kind: String,
+    pub reference: Option<String>,
     pub tags: Vec<String>,
 }
 
@@ -73,6 +75,7 @@ impl Default for KnowledgeBase {
             value: Default::default(),
             notes: Default::default(),
             kind: Default::default(),
+            reference: None,
             tags: Default::default(),
         }
     }
@@ -88,6 +91,7 @@ impl KnowledgeBase {
             value: Default::default(),
             notes: Default::default(),
             kind: Default::default(),
+            reference: None,
             tags: Default::default(),
         }
     }
@@ -102,6 +106,7 @@ impl NewKnowledgeBase {
             value: self.value.clone(),
             notes: self.notes.clone(),
             kind: self.kind.clone(),
+            reference: self.reference.clone(),
             tags: self.tags.clone(),
         }
     }

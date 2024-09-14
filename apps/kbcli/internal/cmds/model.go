@@ -35,7 +35,7 @@ func getConfiguration() (*settings.Configuration, error) {
 		return nil, fmt.Errorf("unable to load kbkitt settings: %w", err)
 	}
 
-	if configuration == nil || configuration.Server == nil || configuration.Server.URL == "" {
+	if configuration.Invalid() {
 		return nil, errors.New("kbkitt settings are not good, please verify")
 	}
 
@@ -58,7 +58,8 @@ func newService() (*kbs.Service, error) {
 
 func getKBKittService(conf *settings.Configuration) (*kbs.Service, error) {
 	serviceSetup := kbs.ServiceSetup{
-		KBClient: newKBKittClient(conf),
+		KBClient:        newKBKittClient(conf),
+		FileForSyncPath: conf.FilepathForSyncPath,
 	}
 
 	newService := kbs.NewService(serviceSetup)

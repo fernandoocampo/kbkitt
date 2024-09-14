@@ -38,7 +38,10 @@ run-get: ## Run get app.
 
 .PHONY: run-add-with-args
 run-add-with-args: ## Run add app with predefined arguments.
-	$(GO_TOOL) run -ldflags ${LDFLAGS} cmd/kbcli/main.go add -k btc -v crypto -n currencies -c crypto -t btc,crypto,currencies,blockchain
+	$(GO_TOOL) run -ldflags ${LDFLAGS} cmd/kbcli/main.go add \
+	-k btc -v crypto -n currencies -c crypto \
+	-t btc,crypto,currencies,blockchain \
+	-r dementor
 
 .PHONY: run-import-with-args
 run-import-with-args: ## Run import app with predefined arguments.

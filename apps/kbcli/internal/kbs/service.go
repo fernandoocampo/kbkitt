@@ -2,8 +2,11 @@ package kbs
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/adapters/filesystems"
 )
 
 type KBServiceClient interface {
@@ -13,17 +16,20 @@ type KBServiceClient interface {
 }
 
 type ServiceSetup struct {
-	Name     string
-	KBClient KBServiceClient
+	Name            string
+	FileForSyncPath string
+	KBClient        KBServiceClient
 }
 
 type Service struct {
-	kbClient KBServiceClient
+	kbClient        KBServiceClient
+	fileForSyncPath string
 }
 
 func NewService(settings ServiceSetup) *Service {
 	newService := Service{
-		kbClient: settings.KBClient,
+		kbClient:        settings.KBClient,
+		fileForSyncPath: settings.FileForSyncPath,
 	}
 
 	return &newService
@@ -32,10 +38,14 @@ func NewService(settings ServiceSetup) *Service {
 func (s *Service) Add(ctx context.Context, newKB NewKB) (*KB, error) {
 	err := newKB.validate()
 	if err != nil {
-		return nil, fmt.Errorf("the given values are not valid: %w", err)
+		return nil, NewDataError(fmt.Sprintf("the given values are not valid: %s", err))
 	}
 
 	id, err := s.kbClient.Create(ctx, newKB)
+	if err != nil && errors.As(err, &ClientError{}) {
+		return nil, NewDataError(fmt.Sprintf("unable to add kb due to given data: %s", err))
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to add kb: %w", err)
 	}
@@ -66,6 +76,20 @@ func (s *Service) Import(ctx context.Context, newKBs []NewKB) (*ImportResult, er
 	}
 
 	return &result, nil
+}
+
+func (s *Service) SaveForSync(ctx context.Context, newKB NewKB) error {
+	newKBYAML, err := newKB.toYAML()
+	if err != nil {
+		return fmt.Errorf("unable to save new kb for later sync: %w", err)
+	}
+
+	err = filesystems.SaveOrAppendFile(s.fileForSyncPath, newKBYAML)
+	if err != nil {
+		return fmt.Errorf("unable to save new kb for later sync: %w", err)
+	}
+
+	return nil
 }
 
 func (s *Service) GetByID(ctx context.Context, id string) (*KB, error) {

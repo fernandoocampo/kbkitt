@@ -2,7 +2,6 @@ package settings
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 
@@ -17,8 +16,9 @@ server:
 */
 
 type Configuration struct {
-	Version string  `yaml:"version"`
-	Server  *Server `yaml:"server"`
+	Version             string  `yaml:"version"`
+	FilepathForSyncPath string  `yaml:"fileForSyncPath"`
+	Server              *Server `yaml:"server"`
 }
 
 type Server struct {
@@ -29,6 +29,13 @@ const (
 	folderName = ".kbkitt"
 	fileName   = "config.yaml"
 )
+
+func (c *Configuration) Invalid() bool {
+	return c == nil ||
+		c.Server == nil ||
+		c.Server.URL == "" ||
+		c.FilepathForSyncPath == ""
+}
 
 func LoadConfiguration() (*Configuration, error) {
 	filePath, err := getKBKittConfigurationPath()
@@ -89,13 +96,7 @@ func Save(newConf *Configuration) error {
 		return fmt.Errorf("unable to save configuration: %w", err)
 	}
 
-	f, err := os.Create(path)
-	if err != nil {
-		return fmt.Errorf("unable to save configuration: %w", err)
-	}
-	defer f.Close()
-
-	_, err = io.WriteString(f, string(yamlFile))
+	err = filesystems.SaveFile(path, yamlFile)
 	if err != nil {
 		return fmt.Errorf("unable to save configuration: %w", err)
 	}

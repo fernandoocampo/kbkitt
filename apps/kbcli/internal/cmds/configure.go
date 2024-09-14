@@ -9,12 +9,14 @@ import (
 )
 
 const (
-	startConfigurationMessage = "do you want to setup kbkitt? [y/n]: "
+	startConfigurationMessage = "> do you want to setup kbkitt? [y/n]: "
 	hostLabel                 = "kbkitt host (http(s)://): "
+	filePathForSyncLabel      = "file path to save kbs for synchronization: "
 )
 
 const (
-	apiVersion = "0.1.0"
+	apiVersion      = "0.1.0"
+	filePathForSync = "0.1.0"
 )
 
 func makeConfigureCommand() *cobra.Command {
@@ -79,6 +81,7 @@ func newKBKitt() *settings.Configuration {
 	newConfiguration.Server = &settings.Server{}
 
 	newConfiguration.Server.URL = requestStringValue(hostLabel)
+	newConfiguration.FilepathForSyncPath = requestStringValue(filePathForSyncLabel)
 
 	return &newConfiguration
 }

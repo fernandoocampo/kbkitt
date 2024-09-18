@@ -58,7 +58,7 @@ impl Store {
 impl kb_storage for Store {
     /// get a Knowledge base with the given id.
     async fn get_kb_by_id(&self, id: KBID) -> Result<KnowledgeBase, Error> {
-        match sqlx::query("SELECT KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, REFERENCE, TAGS::TEXT AS TAGS FROM kbs WHERE KB_ID = $1")
+        match sqlx::query("SELECT KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, REFERENCE, TAG_VALUES AS TAGS FROM kbs WHERE KB_ID = $1")
             .bind(id.to_string())
             .map(|row: PgRow| KnowledgeBase {
                 id: KBID(row.get("kb_id")),
@@ -86,7 +86,7 @@ impl kb_storage for Store {
     }
     /// get a Knowledge base with the given key.
     async fn get_kb_by_key(&self, key: String) -> Result<KnowledgeBase, Error> {
-        match sqlx::query("SELECT KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, REFERENCE, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY = $1")
+        match sqlx::query("SELECT KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, REFERENCE, TAG_VALUES AS TAGS FROM kbs WHERE KB_KEY = $1")
             .bind(key.clone())
             .map(|row: PgRow| KnowledgeBase {
                 id: KBID(row.get("kb_id")),
@@ -141,7 +141,7 @@ impl kb_storage for Store {
             };
         // Now let's query the data
         match sqlx::query(
-            "SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY LIKE $1 ORDER BY KB_KEY LIMIT $2 OFFSET $3",
+            "SELECT KB_ID, KB_KEY, KIND, TAG_VALUES AS TAGS FROM kbs WHERE KB_KEY LIKE $1 ORDER BY KB_KEY LIMIT $2 OFFSET $3",
         )
         .bind(format!("%{}%", filter.key))
         .bind(i32::from(filter.limit.unwrap_or(5)))
@@ -197,7 +197,7 @@ impl kb_storage for Store {
                 }
             };
         // Now let's query the data
-        match sqlx::query("SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE TAGS @@ to_tsquery($1) ORDER BY KB_KEY LIMIT $2 OFFSET $3")
+        match sqlx::query("SELECT KB_ID, KB_KEY, KIND, TAG_VALUES AS TAGS FROM kbs WHERE TAGS @@ to_tsquery($1) ORDER BY KB_KEY LIMIT $2 OFFSET $3")
             .bind(format!("'{}'", filter.keyword))
             .bind(i32::from(filter.limit.unwrap_or(5)))
             .bind(i32::from(filter.offset))
@@ -235,13 +235,14 @@ impl kb_storage for Store {
     async fn save_kb(&self, kb: KnowledgeBase) -> Result<KBID, Error> {
         debug!("adding kb to postgresql db: {:?}", kb);
 
-        match sqlx::query("INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, REFERENCE, TAGS) VALUES ($1, $2, $3, $4, $5, $6, to_tsvector($7)) RETURNING KB_ID")
+        match sqlx::query("INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, REFERENCE, TAGS, TAG_VALUES) VALUES ($1, $2, $3, $4, $5, $6, to_tsvector($7), $8) RETURNING KB_ID")
             .bind(kb.id.to_string())
             .bind(kb.key)
             .bind(kb.value)
             .bind(kb.notes)
             .bind(kb.kind)
             .bind(kb.reference)
+            .bind(kb.tags.join(" "))
             .bind(kb.tags.join(" "))
             .map(|row: PgRow| KBID(row.get("kb_id")))
             .fetch_one(&self.connection)

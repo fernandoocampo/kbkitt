@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
 	"github.com/spf13/cobra"
@@ -63,6 +64,7 @@ func makeGetKBCommand() func(cmd *cobra.Command, args []string) {
 				fmt.Println()
 				os.Exit(1)
 			}
+			fmt.Println()
 			fmt.Println(kb)
 			fmt.Println()
 			return
@@ -117,10 +119,16 @@ func fillFilterFields() {
 }
 
 func printKBReport(kbs *kbs.SearchResult) {
-	length := len(keyCol)
-	for _, v := range kbs.Items {
-		if len(v.Key) > length {
-			length = len(v.Key)
+	keyLength := len(keyCol)
+	for key := range kbs.Keys() {
+		if len(key) > keyLength {
+			keyLength = len(key)
+		}
+	}
+	kindLength := len(keyCol)
+	for kind := range kbs.Kinds() {
+		if len(kind) > kindLength {
+			kindLength = len(kind)
 		}
 	}
 	fmt.Println()
@@ -128,8 +136,9 @@ func printKBReport(kbs *kbs.SearchResult) {
 	fmt.Println(limitLabel, kbs.Total)
 	fmt.Println(offsetLabel, kbs.Total)
 	fmt.Println()
-	fmt.Println(fmt.Sprintf("%-36s", "ID"), fmt.Sprintf("%s%*s", "KEY", length-len(keyCol), ""), "KIND")
+	fmt.Println(fmt.Sprintf("%-36s", idCol), fmt.Sprintf("%s%*s", keyCol, keyLength-len(keyCol), ""), fmt.Sprintf("%s%*s", kindCol, kindLength-len(kindCol), ""), tagCol)
+	fmt.Println(fmt.Sprintf("%-36s", idColSeparator), fmt.Sprintf("%s%*s", keyColSeparator, keyLength-len(keyCol), ""), fmt.Sprintf("%s%*s", kindColSeparator, kindLength-len(kindCol), ""), tagColSeparator)
 	for _, kb := range kbs.Items {
-		fmt.Println(kb.ID, fmt.Sprintf("%s%*s", kb.Key, length-len(kb.Key), ""), kb.Kind)
+		fmt.Println(kb.ID, fmt.Sprintf("%s%*s", kb.Key, keyLength-len(kb.Key), ""), fmt.Sprintf("%s%*s", kb.Kind, kindLength-len(kb.Kind), ""), strings.Join(kb.Tags, ","))
 	}
 }

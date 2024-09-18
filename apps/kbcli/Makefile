@@ -32,6 +32,10 @@ run-conf: ## Run configure app.
 run-add: ## Run add app.
 	$(GO_TOOL) run -ldflags ${LDFLAGS} cmd/kbcli/main.go add $(ADD_ARGS)
 
+.PHONY: run-import
+run-import: ## Run import app .
+	$(GO_TOOL) run cmd/kbcli/main.go import
+
 .PHONY: run-get
 run-get: ## Run get app.
 	$(GO_TOOL) run -ldflags ${LDFLAGS} cmd/kbcli/main.go get $(GET_ARGS)
@@ -45,5 +49,9 @@ run-add-with-args: ## Run add app with predefined arguments.
 
 .PHONY: run-import-with-args
 run-import-with-args: ## Run import app with predefined arguments.
-	$(GO_TOOL) go1.23.0 run cmd/kbcli/main.go import -f /Users/Fernando_Ocampo/.kbkitt/sample.yaml --show-added-kbs --show-failed-kbs
+	$(GO_TOOL) run cmd/kbcli/main.go import -f /Users/Fernando_Ocampo/.kbkitt/sample.yaml --show-added-kbs --show-failed-kbs
+
+.PHONY: run-sync-with-args
+run-sync-with-args: ## Run sync app with predefined arguments.
+	$(GO_TOOL) run cmd/kbcli/main.go sync --show-added-kbs --show-failed-kbs
                                                 

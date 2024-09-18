@@ -31,6 +31,22 @@ func ReadFile(filePath string) ([]byte, error) {
 	return file, nil
 }
 
+func FileEmpty(filePath string) (bool, error) {
+	stat, err := os.Stat(filePath)
+	if err != nil && os.IsNotExist(err) {
+		return true, nil
+	}
+	if err != nil {
+		return false, fmt.Errorf("unable to read file info: %w", err)
+	}
+
+	if stat.Size() == 0 {
+		return true, nil
+	}
+
+	return false, nil
+}
+
 func SaveFile(filePath string, content []byte) error {
 	f, err := os.Create(filePath)
 	if err != nil {
@@ -48,10 +64,6 @@ func SaveFile(filePath string, content []byte) error {
 
 func SaveOrAppendFile(filePath string, content []byte) error {
 	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, drwxr_xr_x)
-	if err != nil {
-		return fmt.Errorf("unable to open file [%q]: %w", filePath, err)
-	}
-
 	if err != nil && os.IsNotExist(err) {
 		file, err = os.Create(filePath)
 		if err != nil {
@@ -59,11 +71,28 @@ func SaveOrAppendFile(filePath string, content []byte) error {
 		}
 	}
 
+	if err != nil {
+		return fmt.Errorf("unable to open file [%q]: %w", filePath, err)
+	}
+
 	defer file.Close()
 
 	_, err = io.WriteString(file, string(content))
 	if err != nil {
 		return fmt.Errorf("unable to write into file: %w", err)
+	}
+
+	return nil
+}
+
+func TruncateFile(filePath string) error {
+	err := os.Truncate(filePath, 0)
+	if err != nil && os.IsNotExist(err) {
+		return nil
+	}
+
+	if err != nil {
+		return fmt.Errorf("unable to truncate file: %w", err)
 	}
 
 	return nil

@@ -27,6 +27,8 @@ const (
 	keyColSeparator  = "---"
 	kindCol          = "KIND"
 	kindColSeparator = "----"
+	tagCol           = "TAGS"
+	tagColSeparator  = "----"
 )
 
 func getConfiguration() (*settings.Configuration, error) {

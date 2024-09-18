@@ -29,6 +29,7 @@ func Execute() {
 	rootCommand.AddCommand(makeImportCommand())
 	rootCommand.AddCommand(makeGetCommand())
 	rootCommand.AddCommand(makeConfigureCommand())
+	rootCommand.AddCommand(makeSyncCommand())
 
 	if err := rootCommand.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)

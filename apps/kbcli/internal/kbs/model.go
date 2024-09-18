@@ -1,11 +1,14 @@
 package kbs
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"iter"
 	"slices"
 	"strings"
 
+	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/adapters/filesystems"
 	yaml "gopkg.in/yaml.v3"
 )
 
@@ -38,6 +41,13 @@ type SearchResult struct {
 }
 
 type ImportResult struct {
+	// new kb keys and ids generated
+	NewIDs map[string]string `json:"ids"`
+	// failed kb keys with its respective error
+	FailedKeys map[string]string `json:"failed_keys"`
+}
+
+type SyncResult struct {
 	// new kb keys and ids generated
 	NewIDs map[string]string `json:"ids"`
 	// failed kb keys with its respective error
@@ -84,6 +94,26 @@ var (
 	errEmptyKBKind  = errors.New("kb kind is empty")
 	errEmptyKBTags  = errors.New("kb tags is empty")
 )
+
+func (s *SearchResult) Keys() iter.Seq[string] {
+	return func(yield func(string) bool) {
+		for _, v := range s.Items {
+			if !yield(v.Key) {
+				return
+			}
+		}
+	}
+}
+
+func (s *SearchResult) Kinds() iter.Seq[string] {
+	return func(yield func(string) bool) {
+		for _, v := range s.Items {
+			if !yield(v.Kind) {
+				return
+			}
+		}
+	}
+}
 
 func NewKBQueryFilter(key, keyword string) KBQueryFilter {
 	return KBQueryFilter{
@@ -234,6 +264,36 @@ func (i *ImportResult) anyError() bool {
 	return len(i.FailedKeys) > 0
 }
 
+func (s *SyncResult) Ok() bool {
+	return len(s.FailedKeys) == 0 && len(s.NewIDs) > 0
+}
+
+func (s *SyncResult) anyError() bool {
+	return len(s.FailedKeys) > 0
+}
+
+func (s *SyncResult) Empty() bool {
+	return len(s.FailedKeys) == 0 && len(s.NewIDs) == 0
+}
+
 func IsStringEmpty(value string) bool {
 	return len(strings.TrimSpace(value)) == 0
+}
+
+func loadSyncFile(syncFile string) ([]NewKB, error) {
+	file, err := filesystems.ReadFile(syncFile)
+	if err != nil {
+		return nil, fmt.Errorf("unable to read file for synchronization (%q): %w", syncFile, err)
+	}
+
+	dec := yaml.NewDecoder(bytes.NewReader(file))
+
+	var kbItems []NewKB
+	var kbItem NewKB
+	for dec.Decode(&kbItem) == nil {
+		kbItems = append(kbItems, kbItem)
+		kbItem = NewKB{}
+	}
+
+	return kbItems, nil
 }

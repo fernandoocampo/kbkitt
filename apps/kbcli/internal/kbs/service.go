@@ -84,12 +84,62 @@ func (s *Service) SaveForSync(ctx context.Context, newKB NewKB) error {
 		return fmt.Errorf("unable to save new kb for later sync: %w", err)
 	}
 
-	err = filesystems.SaveOrAppendFile(s.fileForSyncPath, newKBYAML)
+	empty, err := filesystems.FileEmpty(s.fileForSyncPath)
+	if err != nil {
+		return fmt.Errorf("unable to check sync file: %w", err)
+	}
+
+	var content []byte
+
+	if !empty {
+		content = append(content, []byte("---\n")...)
+	}
+
+	content = append(content, newKBYAML...)
+
+	err = filesystems.SaveOrAppendFile(s.fileForSyncPath, content)
 	if err != nil {
 		return fmt.Errorf("unable to save new kb for later sync: %w", err)
 	}
 
 	return nil
+}
+
+func (s *Service) Sync(ctx context.Context) (*SyncResult, error) {
+	newKBs, err := loadSyncFile(s.fileForSyncPath)
+	if err != nil {
+		return nil, fmt.Errorf("unable to process synchronization: %w", err)
+	}
+
+	if len(newKBs) == 0 {
+		return nil, nil
+	}
+
+	err = validateKBs(newKBs)
+	if err != nil {
+		return nil, fmt.Errorf("one kb is not valid: %w", err)
+	}
+
+	go func() {
+		_ = filesystems.TruncateFile(s.fileForSyncPath)
+	}()
+
+	result := SyncResult{
+		NewIDs:     make(map[string]string),
+		FailedKeys: make(map[string]string),
+	}
+
+	for _, newKB := range newKBs {
+		id, err := s.kbClient.Create(ctx, newKB)
+		if err != nil {
+			result.FailedKeys[newKB.Key] = err.Error()
+			continue
+		}
+
+		result.NewIDs[newKB.Key] = id
+	}
+
+	return &result, nil
 }
 
 func (s *Service) GetByID(ctx context.Context, id string) (*KB, error) {

@@ -6,7 +6,7 @@ COMMIT_HASH?=$(shell git describe --dirty --tags --always)
 BUILD_DATE?=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 IMPORT_FILE?=/tmp/sample.yaml
 VERSION?=0.1.0
-LDFLAGS?="-X github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds.Version=${VERSION} -X github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds.CommitHash=${COMMIT_HASH} -X github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds.BuildDate=${BUILD_DATE} -s -w"
+LDFLAGS?="-X github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/versions.Version=${VERSION} -X github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/versions.CommitHash=${COMMIT_HASH} -X github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/versions.BuildDate=${BUILD_DATE} -s -w"
 
 .PHONY: test
 test: ## Run unit tests.

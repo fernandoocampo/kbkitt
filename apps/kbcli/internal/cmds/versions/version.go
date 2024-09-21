@@ -1,4 +1,4 @@
-package cmds
+package versions
 
 import (
 	"fmt"
@@ -13,9 +13,9 @@ var (
 )
 
 // versionFormat x.y.z (commit_hash commit_date)
-const versionFormat = "kbcli %s (%s %s)"
+const versionFormat = "kbcli %s (%s %s)\n"
 
-func makeVersionCommand() *cobra.Command {
+func MakeVersionCommand() *cobra.Command {
 	newCmd := cobra.Command{
 		Use:   "version",
 		Short: "print the version number of kb-kitt",

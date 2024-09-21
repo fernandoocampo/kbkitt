@@ -1,4 +1,4 @@
-package cmds
+package adds
 
 import (
 	"context"
@@ -6,24 +6,27 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
 	"github.com/spf13/cobra"
 )
 
+type errMsg error
+
 // AddKBParams contains parameters required by add command to add a new KB.
 type addKBParams struct {
-	key       string
-	value     string
-	notes     string
-	kind      string
-	reference string
-	tags      []string
+	key         string
+	value       string
+	notes       string
+	kind        string
+	reference   string
+	interactive bool
+	tags        []string
 }
 
 // add messages
 const (
 	byeMessage            = "Bye!"
-	areYouDoneLabel       = "> are you done? [y/n]: "
 	kbToSaveLabel         = "...KB to save..."
 	saveForLaterLabel     = "> do you want to save this KB to sync later? [y/n]: "
 	saveQuestionLabel     = "> do you want to save it? [y/n]: "
@@ -47,12 +50,12 @@ const (
 
 var addKBData addKBParams
 
-func makeAddCommand() *cobra.Command {
+func MakeAddCommand(service *kbs.Service) *cobra.Command {
 	newCmd := cobra.Command{
 		Use:   "add",
 		Short: "add a new knowledge base",
 		Long:  `add a new knowledge base such as: concepts, commands, prompts, etc.`,
-		Run:   makeRunAddKBCommand(),
+		Run:   makeRunAddKBCommand(service),
 	}
 
 	newCmd.PersistentFlags().StringVarP(&addKBData.key, "key", "k", "", "knowledge base key")
@@ -61,20 +64,18 @@ func makeAddCommand() *cobra.Command {
 	newCmd.PersistentFlags().StringVarP(&addKBData.kind, "class", "c", "", "kind of knowledge base")
 	newCmd.PersistentFlags().StringVarP(&addKBData.reference, "reference", "r", "", "author or refence of this kb")
 	newCmd.PersistentFlags().StringSliceVarP(&addKBData.tags, "tags", "t", []string{}, "comma separated tags for this kb")
+	newCmd.PersistentFlags().BoolVarP(&addKBData.interactive, "ux", "u", false, "add KB in interactive mode")
 
 	return &newCmd
 }
 
-func makeRunAddKBCommand() func(cmd *cobra.Command, args []string) {
+func makeRunAddKBCommand(service *kbs.Service) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
-		service, err := newService()
+		err := collectData()
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "unable to load service: %s", err)
-			fmt.Println()
+			fmt.Fprintln(os.Stderr, "collecting data", err)
 			os.Exit(1)
 		}
-
-		fillMissingAddFields()
 
 		ctx := context.Background()
 
@@ -122,6 +123,21 @@ func makeRunAddKBCommand() func(cmd *cobra.Command, args []string) {
 	}
 }
 
+func collectData() error {
+	if addKBData.interactive {
+		err := runInteractive()
+		if err != nil {
+			return fmt.Errorf("unable to collect parameters: %w", err)
+		}
+
+		return nil
+	}
+
+	fillMissingAddFields()
+
+	return nil
+}
+
 func printAddingKBError(newKBToSave kbs.NewKB, err error) {
 	fmt.Fprintln(os.Stderr, "unable to add new kb:", err)
 	fmt.Println()
@@ -142,7 +158,7 @@ func confirmKBData(newKB *kbs.NewKB) bool {
 	fmt.Println()
 	fmt.Println(newKB)
 	fmt.Println()
-	if areYouSure(saveQuestionLabel) {
+	if cmds.AreYouSure(saveQuestionLabel) {
 		fmt.Println()
 		return true
 	}
@@ -151,7 +167,7 @@ func confirmKBData(newKB *kbs.NewKB) bool {
 }
 
 func saveForLater() bool {
-	if areYouSure(saveForLaterLabel) {
+	if cmds.AreYouSure(saveForLaterLabel) {
 		fmt.Println()
 		return true
 	}
@@ -160,7 +176,7 @@ func saveForLater() bool {
 }
 
 func wantToRetry() bool {
-	if areYouSure(retryQuestionLabel) {
+	if cmds.AreYouSure(retryQuestionLabel) {
 		fmt.Println()
 		return true
 	}
@@ -170,25 +186,25 @@ func wantToRetry() bool {
 
 func fillMissingAddFields() {
 	if kbs.IsStringEmpty(addKBData.key) {
-		addKBData.key = requestStringValue(getLabel(keyLabel, addKBData.key))
+		addKBData.key = cmds.RequestStringValue(getLabel(keyLabel, addKBData.key))
 	}
 	if kbs.IsStringEmpty(addKBData.value) {
-		addKBData.value = requestStringValue(getLabel(valueLabel, addKBData.value))
+		addKBData.value = cmds.RequestStringValue(getLabel(valueLabel, addKBData.value))
 	}
 	if kbs.IsStringEmpty(addKBData.notes) {
-		addKBData.notes = requestStringValue(getLabel(notesLabel, addKBData.notes))
+		addKBData.notes = cmds.RequestStringValue(getLabel(notesLabel, addKBData.notes))
 	}
 	if kbs.IsStringEmpty(addKBData.kind) {
-		addKBData.kind = requestStringValue(getLabel(kindLabel, addKBData.kind))
+		addKBData.kind = cmds.RequestStringValue(getLabel(kindLabel, addKBData.kind))
 	}
 	if kbs.IsStringEmpty(addKBData.reference) {
-		addKBData.reference = requestStringValue(getLabel(referenceLabel, addKBData.reference))
+		addKBData.reference = cmds.RequestStringValue(getLabel(referenceLabel, addKBData.reference))
 	}
 	if len(addKBData.tags) == 0 {
 		fmt.Println()
 		fmt.Println(missingTags)
 		fmt.Println()
-		addKBData.tags = readCSVFromStdin(tagLabel)
+		addKBData.tags = cmds.ReadCSVFromStdin(tagLabel)
 	}
 }
 
@@ -202,12 +218,12 @@ func fillExistingFields() {
 		fmt.Println()
 		fmt.Println(missingTags)
 		fmt.Println()
-		addKBData.tags = readCSVFromStdin(tagLabel)
+		addKBData.tags = cmds.ReadCSVFromStdin(tagLabel)
 	}
 }
 
 func readStringValue(label, currentValue string) string {
-	value := requestStringValue(getLabel(label, currentValue))
+	value := cmds.RequestStringValue(getLabel(label, currentValue))
 	if kbs.IsStringEmpty(value) {
 		return currentValue
 	}

@@ -1,9 +1,10 @@
-package cmds
+package setups
 
 import (
 	"fmt"
 	"os"
 
+	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/settings"
 	"github.com/spf13/cobra"
 )
@@ -19,7 +20,7 @@ const (
 	filePathForSync = "0.1.0"
 )
 
-func makeConfigureCommand() *cobra.Command {
+func MakeConfigureCommand() *cobra.Command {
 	newCmd := cobra.Command{
 		Use:   "configure",
 		Short: "configure kb-kitt",
@@ -67,7 +68,7 @@ func startConfiguration() bool {
 	fmt.Print(startConfigurationMessage)
 	fmt.Scan(&yesOrNot)
 
-	if yes(yesOrNot) {
+	if cmds.Yes(yesOrNot) {
 		return true
 	}
 
@@ -80,8 +81,8 @@ func newKBKitt() *settings.Configuration {
 	newConfiguration.Version = apiVersion
 	newConfiguration.Server = &settings.Server{}
 
-	newConfiguration.Server.URL = requestStringValue(hostLabel)
-	newConfiguration.FilepathForSyncPath = requestStringValue(filePathForSyncLabel)
+	newConfiguration.Server.URL = cmds.RequestStringValue(hostLabel)
+	newConfiguration.FilepathForSyncPath = cmds.RequestStringValue(filePathForSyncLabel)
 
 	return &newConfiguration
 }

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"iter"
+	"regexp"
 	"slices"
 	"strings"
 
@@ -93,7 +94,10 @@ var (
 	errEmptyKBValue = errors.New("kb value is empty")
 	errEmptyKBKind  = errors.New("kb kind is empty")
 	errEmptyKBTags  = errors.New("kb tags is empty")
+	errKBTagValues  = errors.New("kb tag must contain only alphabetic characters")
 )
+
+var IsLetter = regexp.MustCompile(`^[a-zA-Z]+$`).MatchString
 
 func (s *SearchResult) Keys() iter.Seq[string] {
 	return func(yield func(string) bool) {
@@ -201,6 +205,12 @@ func (n NewKB) validate() error {
 
 	if len(n.Tags) == 0 {
 		err = errors.Join(err, errEmptyKBTags)
+	}
+
+	for _, tag := range n.Tags {
+		if !IsLetter(tag) {
+			err = errors.Join(fmt.Errorf("%q", tag), errKBTagValues)
+		}
 	}
 
 	return err

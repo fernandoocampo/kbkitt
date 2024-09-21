@@ -1,4 +1,4 @@
-package cmds
+package imports
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/adapters/filesystems"
+	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
 	"github.com/spf13/cobra"
 	yaml "gopkg.in/yaml.v3"
@@ -32,12 +33,12 @@ const (
 
 var importKBData importKBParams
 
-func makeImportCommand() *cobra.Command {
+func MakeImportCommand(service *kbs.Service) *cobra.Command {
 	newCmd := cobra.Command{
 		Use:   "import",
 		Short: "import knowledge bases",
 		Long:  `import knowledge bases from a file or other sources to your own kb repository`,
-		Run:   makeRunImportKBCommand(),
+		Run:   makeRunImportKBCommand(service),
 	}
 
 	newCmd.PersistentFlags().StringVarP(&importKBData.file, "file", "f", "", "knowledge base key")
@@ -47,11 +48,11 @@ func makeImportCommand() *cobra.Command {
 	return &newCmd
 }
 
-func makeRunImportKBCommand() func(cmd *cobra.Command, args []string) {
+func makeRunImportKBCommand(service *kbs.Service) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
 		fillMissingImportFields()
 
-		result, err := importFile()
+		result, err := importFile(service)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "failed to process import:", err)
 			os.Exit(1)
@@ -61,15 +62,10 @@ func makeRunImportKBCommand() func(cmd *cobra.Command, args []string) {
 	}
 }
 
-func importFile() (*kbs.ImportResult, error) {
+func importFile(service *kbs.Service) (*kbs.ImportResult, error) {
 	newKBs, err := loadImportFile()
 	if err != nil {
 		return nil, fmt.Errorf("unable to import file: %w", err)
-	}
-
-	service, err := newService()
-	if err != nil {
-		return nil, fmt.Errorf("unable to load service: %w", err)
 	}
 
 	ctx := context.Background()
@@ -101,7 +97,7 @@ func loadImportFile() ([]kbs.NewKB, error) {
 
 func fillMissingImportFields() {
 	if kbs.IsStringEmpty(importKBData.file) {
-		importKBData.file = requestStringValue(fileLabel)
+		importKBData.file = cmds.RequestStringValue(fileLabel)
 	}
 }
 
@@ -132,7 +128,7 @@ func printImportedReport(kbs *kbs.ImportResult) {
 }
 
 func printUnimportedKBs(kbs *kbs.ImportResult) {
-	length := len(keyCol)
+	length := len(cmds.KeyCol)
 	for key := range kbs.FailedKeys {
 		if len(key) > length {
 			length = len(key)
@@ -141,11 +137,11 @@ func printUnimportedKBs(kbs *kbs.ImportResult) {
 
 	fmt.Println()
 	fmt.Println(unImportedLabel)
-	fmt.Println(titleSeparator)
+	fmt.Println(cmds.TitleSeparator)
 	fmt.Println(totalUnimportedLabel, len(kbs.FailedKeys))
 	fmt.Println()
-	fmt.Println(fmt.Sprintf("%s%*s", keyCol, length-len(keyCol), ""), unImportedErrorLabel)
-	fmt.Println(fmt.Sprintf("%s%*s", keyColSeparator, length-len(keyCol), ""), unImportedErrorSeparator)
+	fmt.Println(fmt.Sprintf("%s%*s", cmds.KeyCol, length-len(cmds.KeyCol), ""), unImportedErrorLabel)
+	fmt.Println(fmt.Sprintf("%s%*s", cmds.KeyColSeparator, length-len(cmds.KeyCol), ""), unImportedErrorSeparator)
 	for key, errorMessage := range kbs.FailedKeys {
 		fmt.Println(fmt.Sprintf("%s%*s", key, length-len(key), ""), errorMessage)
 	}
@@ -154,11 +150,11 @@ func printUnimportedKBs(kbs *kbs.ImportResult) {
 func printImportedKBs(kbs *kbs.ImportResult) {
 	fmt.Println()
 	fmt.Println(importedLabel)
-	fmt.Println(titleSeparator)
+	fmt.Println(cmds.TitleSeparator)
 	fmt.Println(totalImportedLabel, len(kbs.NewIDs))
 	fmt.Println()
-	fmt.Println(fmt.Sprintf("%-36s", idCol), keyCol)
-	fmt.Println(fmt.Sprintf("%-36s", idColSeparator), keyColSeparator)
+	fmt.Println(fmt.Sprintf("%-36s", cmds.IDCol), cmds.KeyCol)
+	fmt.Println(fmt.Sprintf("%-36s", cmds.IDColSeparator), cmds.KeyColSeparator)
 	for key, id := range kbs.NewIDs {
 		fmt.Println(id, key)
 	}

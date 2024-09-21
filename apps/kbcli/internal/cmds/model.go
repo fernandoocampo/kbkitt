@@ -20,15 +20,16 @@ const (
 
 // common labels
 const (
-	titleSeparator   = "-------------"
-	idCol            = "ID"
-	idColSeparator   = "--"
-	keyCol           = "KEY"
-	keyColSeparator  = "---"
-	kindCol          = "KIND"
-	kindColSeparator = "----"
-	tagCol           = "TAGS"
-	tagColSeparator  = "----"
+	AreYouDoneLabel  = "> are you done? [y/n]: "
+	TitleSeparator   = "-------------"
+	IDCol            = "ID"
+	IDColSeparator   = "--"
+	KeyCol           = "KEY"
+	KeyColSeparator  = "---"
+	KindCol          = "KIND"
+	KindColSeparator = "----"
+	TagCol           = "TAGS"
+	TagColSeparator  = "----"
 )
 
 func getConfiguration() (*settings.Configuration, error) {
@@ -44,7 +45,7 @@ func getConfiguration() (*settings.Configuration, error) {
 	return configuration, nil
 }
 
-func newService() (*kbs.Service, error) {
+func NewService() (*kbs.Service, error) {
 	configuration, err := getConfiguration()
 	if err != nil {
 		return nil, fmt.Errorf("unable to load configuration: %w", err)
@@ -77,15 +78,15 @@ func newKBKittClient(conf *settings.Configuration) *kbkitt.Client {
 	return kbkitt.NewClient(kbkittSetup)
 }
 
-func yes(answer string) bool {
+func Yes(answer string) bool {
 	return strings.EqualFold(answer, yesValue) || strings.EqualFold(answer, yesShortValue)
 }
 
-func no(answer string) bool {
-	return !yes(answer)
+func No(answer string) bool {
+	return !Yes(answer)
 }
 
-func requestStringValue(label string) string {
+func RequestStringValue(label string) string {
 	var output string
 	fmt.Print(label)
 
@@ -97,7 +98,7 @@ func requestStringValue(label string) string {
 	return output
 }
 
-func readCSVFromStdin(label string) []string {
+func ReadCSVFromStdin(label string) []string {
 	var result []string
 	for {
 		var value string
@@ -106,7 +107,7 @@ func readCSVFromStdin(label string) []string {
 
 		result = append(result, value)
 
-		if areYouSure(areYouDoneLabel) {
+		if AreYouSure(AreYouDoneLabel) {
 			fmt.Println()
 			break
 		}
@@ -114,10 +115,10 @@ func readCSVFromStdin(label string) []string {
 	return result
 }
 
-func areYouSure(label string) bool {
+func AreYouSure(label string) bool {
 	var done string
 	fmt.Print(label)
 	fmt.Scan(&done)
 
-	return yes(done)
+	return Yes(done)
 }

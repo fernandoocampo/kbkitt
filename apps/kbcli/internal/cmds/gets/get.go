@@ -1,4 +1,4 @@
-package cmds
+package gets
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
 	"github.com/spf13/cobra"
 )
@@ -29,12 +30,12 @@ const (
 
 var getKBData getKBParams
 
-func makeGetCommand() *cobra.Command {
+func MakeGetCommand(service *kbs.Service) *cobra.Command {
 	newCmd := cobra.Command{
 		Use:   "get",
 		Short: "get knowledge base content",
 		Long:  `get a kb with id or key or other filter criteria based on tags`,
-		Run:   makeGetKBCommand(),
+		Run:   makeGetKBCommand(service),
 	}
 
 	newCmd.PersistentFlags().StringVarP(&getKBData.id, "id", "i", "", "knowledge base id")
@@ -44,18 +45,11 @@ func makeGetCommand() *cobra.Command {
 	return &newCmd
 }
 
-func makeGetKBCommand() func(cmd *cobra.Command, args []string) {
+func makeGetKBCommand(service *kbs.Service) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
 		fillFilterFields()
 
 		ctx := context.Background()
-
-		service, err := newService()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "unable to load service: %s", err)
-			fmt.Println()
-			os.Exit(1)
-		}
 
 		if !kbs.IsStringEmpty(getKBData.id) {
 			kb, err := service.GetByID(ctx, getKBData.id)
@@ -92,7 +86,7 @@ func fillFilterFields() {
 	}
 
 	if kbs.IsStringEmpty(getKBData.id) {
-		getKBData.id = requestStringValue(getKBIDLabel)
+		getKBData.id = cmds.RequestStringValue(getKBIDLabel)
 	}
 
 	if !kbs.IsStringEmpty(getKBData.id) {
@@ -100,7 +94,7 @@ func fillFilterFields() {
 	}
 
 	if kbs.IsStringEmpty(getKBData.key) {
-		getKBData.key = requestStringValue(getKBKeyLabel)
+		getKBData.key = cmds.RequestStringValue(getKBKeyLabel)
 	}
 
 	if !kbs.IsStringEmpty(getKBData.key) {
@@ -108,7 +102,7 @@ func fillFilterFields() {
 	}
 
 	if kbs.IsStringEmpty(getKBData.keyword) {
-		getKBData.keyword = requestStringValue(getKBKeywordLabel)
+		getKBData.keyword = cmds.RequestStringValue(getKBKeywordLabel)
 	}
 
 	if !kbs.IsStringEmpty(getKBData.keyword) {
@@ -119,13 +113,13 @@ func fillFilterFields() {
 }
 
 func printKBReport(kbs *kbs.SearchResult) {
-	keyLength := len(keyCol)
+	keyLength := len(cmds.KeyCol)
 	for key := range kbs.Keys() {
 		if len(key) > keyLength {
 			keyLength = len(key)
 		}
 	}
-	kindLength := len(keyCol)
+	kindLength := len(cmds.KeyCol)
 	for kind := range kbs.Kinds() {
 		if len(kind) > kindLength {
 			kindLength = len(kind)
@@ -136,8 +130,8 @@ func printKBReport(kbs *kbs.SearchResult) {
 	fmt.Println(limitLabel, kbs.Total)
 	fmt.Println(offsetLabel, kbs.Total)
 	fmt.Println()
-	fmt.Println(fmt.Sprintf("%-36s", idCol), fmt.Sprintf("%s%*s", keyCol, keyLength-len(keyCol), ""), fmt.Sprintf("%s%*s", kindCol, kindLength-len(kindCol), ""), tagCol)
-	fmt.Println(fmt.Sprintf("%-36s", idColSeparator), fmt.Sprintf("%s%*s", keyColSeparator, keyLength-len(keyCol), ""), fmt.Sprintf("%s%*s", kindColSeparator, kindLength-len(kindCol), ""), tagColSeparator)
+	fmt.Println(fmt.Sprintf("%-36s", cmds.IDCol), fmt.Sprintf("%s%*s", cmds.KeyCol, keyLength-len(cmds.KeyCol), ""), fmt.Sprintf("%s%*s", cmds.KindCol, kindLength-len(cmds.KindCol), ""), cmds.TagCol)
+	fmt.Println(fmt.Sprintf("%-36s", cmds.IDColSeparator), fmt.Sprintf("%s%*s", cmds.KeyColSeparator, keyLength-len(cmds.KeyCol), ""), fmt.Sprintf("%s%*s", cmds.KindColSeparator, kindLength-len(cmds.KindCol), ""), cmds.TagColSeparator)
 	for _, kb := range kbs.Items {
 		fmt.Println(kb.ID, fmt.Sprintf("%s%*s", kb.Key, keyLength-len(kb.Key), ""), fmt.Sprintf("%s%*s", kb.Kind, kindLength-len(kb.Kind), ""), strings.Join(kb.Tags, ","))
 	}

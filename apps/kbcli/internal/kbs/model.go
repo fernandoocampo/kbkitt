@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"iter"
+	"math"
 	"regexp"
 	"slices"
 	"strings"
@@ -34,7 +35,7 @@ type NewKB struct {
 
 type SearchResult struct {
 	Items []KBItem `json:"items"`
-	Total int64    `json:"total"`
+	Total int      `json:"total"`
 	// determines the number of rows.
 	Limit uint16 `json:"limit"`
 	// skips the offset rows before beginning to return the rows.
@@ -66,9 +67,9 @@ type KBQueryFilter struct {
 	Keyword string `json:"keyword"`
 	Key     string `json:"key"`
 	// determines the number of rows.
-	Limit uint16 `json:"limit"`
+	Limit uint32 `json:"limit"`
 	// skips the offset rows before beginning to return the rows.
-	Offset uint16 `json:"offset"`
+	Offset uint32 `json:"offset"`
 }
 
 // DataError defines an error to indicate that provided data was not valid.
@@ -97,7 +98,7 @@ var (
 	errKBTagValues  = errors.New("kb tag must contain only alphabetic characters")
 )
 
-var IsLetter = regexp.MustCompile(`^[a-zA-Z]+$`).MatchString
+var IsLetter = regexp.MustCompile(`^[a-zA-Z0-9-]+$`).MatchString
 
 func (s *SearchResult) Keys() iter.Seq[string] {
 	return func(yield func(string) bool) {
@@ -113,6 +114,16 @@ func (s *SearchResult) Kinds() iter.Seq[string] {
 	return func(yield func(string) bool) {
 		for _, v := range s.Items {
 			if !yield(v.Kind) {
+				return
+			}
+		}
+	}
+}
+
+func (s *SearchResult) Tags() iter.Seq[string] {
+	return func(yield func(string) bool) {
+		for _, v := range s.Items {
+			if !yield(strings.Join(v.Tags, " ")) {
 				return
 			}
 		}
@@ -306,4 +317,45 @@ func loadSyncFile(syncFile string) ([]NewKB, error) {
 	}
 
 	return kbItems, nil
+}
+
+func (s *SearchResult) GetLongerKey() int {
+	keyLength := len("key")
+	for key := range s.Keys() {
+		if len(key) > keyLength {
+			keyLength = len(key)
+		}
+	}
+
+	return keyLength
+}
+
+func (s *SearchResult) GetLongerKind() int {
+	kindLength := len("kind")
+	for kind := range s.Kinds() {
+		if len(kind) > kindLength {
+			kindLength = len(kind)
+		}
+	}
+
+	return kindLength
+}
+
+func (s *SearchResult) GetLongerTags() int {
+	tagLength := len("tag")
+	for tags := range s.Tags() {
+		if len(tags) > tagLength {
+			tagLength = len(tags)
+		}
+	}
+
+	return tagLength
+}
+
+func (s *SearchResult) TotalPages() int {
+	return int(math.Ceil(float64(s.Total) / float64(s.Limit)))
+}
+
+func (k KBItem) ToArray() []string {
+	return []string{k.ID, k.Key, k.Kind, strings.Join(k.Tags, " ")}
 }

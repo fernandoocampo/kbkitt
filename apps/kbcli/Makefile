@@ -40,6 +40,10 @@ run-import: ## Run import app .
 run-get: ## Run get app.
 	$(GO_TOOL) run -ldflags ${LDFLAGS} cmd/kbcli/main.go get $(GET_ARGS)
 
+.PHONY: run-get-ux
+run-get-ux: ## Run get app with ux.
+	$(GO_TOOL) run -ldflags ${LDFLAGS} cmd/kbcli/main.go get -u
+
 .PHONY: run-add-with-args
 run-add-with-args: ## Run add app with predefined arguments.
 	$(GO_TOOL) run -ldflags ${LDFLAGS} cmd/kbcli/main.go add \

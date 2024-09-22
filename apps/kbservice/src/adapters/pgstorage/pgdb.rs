@@ -76,7 +76,10 @@ impl kb_storage for Store {
             .fetch_one(&self.connection)
             .await
         {
-            Ok(kb) => Ok(kb),
+            Ok(kb) => {
+                debug!("found kb: {:?}", kb);
+                Ok(kb)
+            }
             Err(sqlx::Error::RowNotFound) => Ok(KnowledgeBase::default()),
             Err(e) => {
                 tracing::event!(tracing::Level::ERROR, "querying kb by id {:?} : {:?}", id, e);

@@ -13,9 +13,12 @@ import (
 
 // getKBParams contains parameters required by get command
 type getKBParams struct {
-	id      string
-	key     string
-	keyword string
+	id          string
+	key         string
+	keyword     string
+	limit       uint32
+	offset      uint32
+	interactive bool
 }
 
 // field labels
@@ -41,6 +44,9 @@ func MakeGetCommand(service *kbs.Service) *cobra.Command {
 	newCmd.PersistentFlags().StringVarP(&getKBData.id, "id", "i", "", "knowledge base id")
 	newCmd.PersistentFlags().StringVarP(&getKBData.key, "key", "k", "", "knowledge base key")
 	newCmd.PersistentFlags().StringVarP(&getKBData.keyword, "keyword", "w", "", "knowledge base keyword to search based on tags")
+	newCmd.PersistentFlags().Uint32VarP(&getKBData.limit, "limit", "l", 5, "number of rows you want to retrieve")
+	newCmd.PersistentFlags().Uint32VarP(&getKBData.offset, "offset", "o", 0, "number of rows to skip before starting to return result rows")
+	newCmd.PersistentFlags().BoolVarP(&getKBData.interactive, "ux", "u", false, "show result in interactive mode")
 
 	return &newCmd
 }
@@ -64,17 +70,46 @@ func makeGetKBCommand(service *kbs.Service) func(cmd *cobra.Command, args []stri
 			return
 		}
 
-		if !kbs.IsStringEmpty(getKBData.key) || !kbs.IsStringEmpty(getKBData.keyword) {
-			kbs, err := service.Search(ctx, kbs.NewKBQueryFilter(getKBData.key, getKBData.keyword))
-			if err != nil {
-				fmt.Fprintln(os.Stderr, "unable to get kb with given key:", err)
-				fmt.Println()
-				os.Exit(1)
-			}
-			printKBReport(kbs)
-			fmt.Println()
+		if kbs.IsStringEmpty(getKBData.key) && kbs.IsStringEmpty(getKBData.keyword) {
+			os.Exit(0)
 		}
+
+		err := search(ctx, service)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "searching:", err)
+			fmt.Println()
+			os.Exit(1)
+		}
+		fmt.Println()
 	}
+}
+
+func search(ctx context.Context, service *kbs.Service) error {
+	if getKBData.interactive {
+		err := runInteractive(ctx, service)
+		if err != nil {
+			return fmt.Errorf("unable to run interactive search: %w", err)
+		}
+		return nil
+	}
+
+	err := searchBasic(ctx, service)
+	if err != nil {
+		return fmt.Errorf("unable to run basic search: %w", err)
+	}
+
+	return nil
+}
+
+func searchBasic(ctx context.Context, service *kbs.Service) error {
+	result, err := service.Search(ctx, getKBData.toKBQueryFilter())
+	if err != nil {
+		return fmt.Errorf("unable to search: %w", err)
+	}
+
+	printSimpleKBReport(result)
+
+	return nil
 }
 
 func fillFilterFields() {
@@ -112,27 +147,26 @@ func fillFilterFields() {
 	fillFilterFields()
 }
 
-func printKBReport(kbs *kbs.SearchResult) {
-	keyLength := len(cmds.KeyCol)
-	for key := range kbs.Keys() {
-		if len(key) > keyLength {
-			keyLength = len(key)
-		}
-	}
-	kindLength := len(cmds.KeyCol)
-	for kind := range kbs.Kinds() {
-		if len(kind) > kindLength {
-			kindLength = len(kind)
-		}
-	}
+func printSimpleKBReport(result *kbs.SearchResult) {
+	keyLength := result.GetLongerKey()
+	kindLength := result.GetLongerKind()
 	fmt.Println()
-	fmt.Println(totalLabel, kbs.Total)
-	fmt.Println(limitLabel, kbs.Total)
-	fmt.Println(offsetLabel, kbs.Total)
+	fmt.Println(totalLabel, result.Total)
+	fmt.Println(limitLabel, result.Limit)
+	fmt.Println(offsetLabel, result.Offset)
 	fmt.Println()
 	fmt.Println(fmt.Sprintf("%-36s", cmds.IDCol), fmt.Sprintf("%s%*s", cmds.KeyCol, keyLength-len(cmds.KeyCol), ""), fmt.Sprintf("%s%*s", cmds.KindCol, kindLength-len(cmds.KindCol), ""), cmds.TagCol)
 	fmt.Println(fmt.Sprintf("%-36s", cmds.IDColSeparator), fmt.Sprintf("%s%*s", cmds.KeyColSeparator, keyLength-len(cmds.KeyCol), ""), fmt.Sprintf("%s%*s", cmds.KindColSeparator, kindLength-len(cmds.KindCol), ""), cmds.TagColSeparator)
-	for _, kb := range kbs.Items {
+	for _, kb := range result.Items {
 		fmt.Println(kb.ID, fmt.Sprintf("%s%*s", kb.Key, keyLength-len(kb.Key), ""), fmt.Sprintf("%s%*s", kb.Kind, kindLength-len(kb.Kind), ""), strings.Join(kb.Tags, ","))
+	}
+}
+
+func (g *getKBParams) toKBQueryFilter() kbs.KBQueryFilter {
+	return kbs.KBQueryFilter{
+		Keyword: getKBData.keyword,
+		Key:     getKBData.key,
+		Limit:   getKBData.limit,
+		Offset:  getKBData.offset,
 	}
 }

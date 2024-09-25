@@ -10,6 +10,7 @@ import (
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/imports"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/setups"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/syncs"
+	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/updates"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/versions"
 	"github.com/spf13/cobra"
 )
@@ -42,6 +43,7 @@ func Execute() error {
 	rootCommand.AddCommand(gets.MakeGetCommand(service))
 	rootCommand.AddCommand(setups.MakeConfigureCommand())
 	rootCommand.AddCommand(syncs.MakeSyncCommand(service))
+	rootCommand.AddCommand(updates.MakeUpdateCommand(service))
 
 	if err := rootCommand.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)

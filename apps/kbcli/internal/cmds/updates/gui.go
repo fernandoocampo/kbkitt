@@ -1,4 +1,4 @@
-package adds
+package updates
 
 import (
 	"fmt"
@@ -61,39 +61,39 @@ func initialModel() model {
 	inputs[key].CharLimit = 64
 	inputs[key].Width = 70
 	inputs[key].Prompt = ""
-	inputs[key].SetValue(addKBData.key)
+	inputs[key].SetValue(updateKBData.kb.Key)
 
 	inputs[kind] = textinput.New()
 	inputs[kind].Placeholder = "category"
 	inputs[kind].CharLimit = 64
 	inputs[kind].Width = 70
 	inputs[kind].Prompt = ""
-	inputs[kind].SetValue(addKBData.kind)
+	inputs[kind].SetValue(updateKBData.kb.Kind)
 
 	inputs[value] = textinput.New()
 	inputs[value].Placeholder = "values"
 	inputs[value].Width = 100
 	inputs[value].Prompt = ""
-	inputs[value].SetValue(addKBData.value)
+	inputs[value].SetValue(updateKBData.kb.Value)
 
 	inputs[notes] = textinput.New()
 	inputs[notes].Placeholder = ""
 	inputs[notes].Width = 100
 	inputs[notes].Prompt = ""
-	inputs[notes].SetValue(addKBData.notes)
+	inputs[notes].SetValue(updateKBData.kb.Notes)
 
 	inputs[reference] = textinput.New()
 	inputs[reference].Placeholder = ""
 	inputs[reference].CharLimit = 64
 	inputs[reference].Width = 70
 	inputs[reference].Prompt = ""
-	inputs[reference].SetValue(addKBData.reference)
+	inputs[reference].SetValue(updateKBData.kb.Reference)
 
 	inputs[tags] = textinput.New()
 	inputs[tags].Placeholder = "keyword1 keyword2 keyword3 keywordN"
 	inputs[tags].CharLimit = 100
 	inputs[tags].Prompt = ""
-	inputs[tags].SetValue(addKBData.reference)
+	inputs[tags].SetValue(strings.Join(updateKBData.kb.Tags, " "))
 
 	return model{
 		inputs:  inputs,
@@ -145,7 +145,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	return fmt.Sprintf(
-		` Adding a new KB:
+		` Updating KB [%s] - %s:
 
  %s
  %s
@@ -167,6 +167,7 @@ func (m model) View() string {
 
  %s
 `,
+		updateKBData.kb.ID, updateKBData.kb.Key,
 		inputStyle.Width(30).Render("Key"),
 		m.inputs[key].View(),
 		inputStyle.Width(8).Render("Category"),
@@ -198,12 +199,12 @@ func (m *model) prevInput() {
 }
 
 func (m *model) toAddKBParams() {
-	addKBData.key = m.inputs[key].Value()
-	addKBData.kind = m.inputs[kind].Value()
-	addKBData.value = m.inputs[value].Value()
-	addKBData.notes = m.inputs[notes].Value()
-	addKBData.reference = m.inputs[reference].Value()
-	addKBData.tags = m.convertTagsToArray()
+	updateKBData.kb.Key = m.inputs[key].Value()
+	updateKBData.kb.Kind = m.inputs[kind].Value()
+	updateKBData.kb.Value = m.inputs[value].Value()
+	updateKBData.kb.Notes = m.inputs[notes].Value()
+	updateKBData.kb.Reference = m.inputs[reference].Value()
+	updateKBData.kb.Tags = m.convertTagsToArray()
 }
 
 func (m *model) convertTagsToArray() []string {

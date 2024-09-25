@@ -11,6 +11,7 @@ import (
 
 type KBServiceClient interface {
 	Create(ctx context.Context, newKB NewKB) (string, error)
+	Update(ctx context.Context, kb *KB) error
 	Search(ctx context.Context, filter KBQueryFilter) (*SearchResult, error)
 	Get(ctx context.Context, id string) (*KB, error)
 }
@@ -52,6 +53,23 @@ func (s *Service) Add(ctx context.Context, newKB NewKB) (*KB, error) {
 
 	kb := newKB.toKB(id)
 	return &kb, nil
+}
+
+func (s *Service) Update(ctx context.Context, kb KB) error {
+	err := kb.validate()
+	if err != nil {
+		return NewDataError(fmt.Sprintf("the given values are not valid: %s", err))
+	}
+
+	err = s.kbClient.Update(ctx, &kb)
+	if err != nil && errors.As(err, &ClientError{}) {
+		return NewDataError(fmt.Sprintf("unable to update kb due to given data: %s", err))
+	}
+
+	if err != nil {
+		return fmt.Errorf("failed to update kb: %w", err)
+	}
+	return nil
 }
 
 func (s *Service) Import(ctx context.Context, newKBs []NewKB) (*ImportResult, error) {

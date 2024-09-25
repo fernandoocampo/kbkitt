@@ -90,6 +90,16 @@ type ClientError struct {
 	message string
 }
 
+const (
+	IDLabel        = "ID"
+	KeyLabel       = "Key"
+	ValueLabel     = "Value"
+	NotesLabel     = "Notes"
+	KindLabel      = "Kind"
+	ReferenceLabel = "Reference"
+	TagsLabel      = "Tags"
+)
+
 var (
 	errEmptyKBKey   = errors.New("kb key is empty")
 	errEmptyKBValue = errors.New("kb value is empty")
@@ -227,6 +237,34 @@ func (n NewKB) validate() error {
 	return err
 }
 
+func (k KB) validate() error {
+	var err error
+
+	if k.Key == "" {
+		err = errors.Join(err, errEmptyKBKey)
+	}
+
+	if k.Value == "" {
+		err = errors.Join(err, errEmptyKBValue)
+	}
+
+	if k.Kind == "" {
+		err = errors.Join(err, errEmptyKBKind)
+	}
+
+	if len(k.Tags) == 0 {
+		err = errors.Join(err, errEmptyKBTags)
+	}
+
+	for _, tag := range k.Tags {
+		if !IsLetter(tag) {
+			err = errors.Join(fmt.Errorf("%q", tag), errKBTagValues)
+		}
+	}
+
+	return err
+}
+
 func (n NewKB) toYAML() ([]byte, error) {
 	kbData, err := yaml.Marshal(n)
 	if err != nil {
@@ -257,14 +295,21 @@ func (n NewKB) toKB(id string) KB {
 }
 
 func (k KB) String() string {
-	return fmt.Sprintf(`ID: %s
-Key: %s
-Value: %s
-Notes: %s
-Kind: %s
-Reference: %s
-Tags: %+v
-`, k.ID, k.Key, k.Value, k.Notes, k.Kind, k.Reference, k.Tags)
+	return fmt.Sprintf(`%s: %s
+%s: %s
+%s: %s
+%s: %s
+%s: %s
+%s: %s
+%s: %+v
+`,
+		IDLabel, k.ID,
+		KeyLabel, k.Key,
+		ValueLabel, k.Value,
+		NotesLabel, k.Notes,
+		KindLabel, k.Kind,
+		ReferenceLabel, k.Reference,
+		TagsLabel, k.Tags)
 }
 
 func (n NewKB) String() string {

@@ -170,6 +170,48 @@ func (c *Client) Get(ctx context.Context, id string) (*kbs.KB, error) {
 	return &kbResponse, nil
 }
 
+func (c *Client) Update(ctx context.Context, kb *kbs.KB) error {
+	postBody, err := json.Marshal(kb)
+	if err != nil {
+		return fmt.Errorf("unable to marsal kb data: %w")
+	}
+
+	request, err := http.NewRequest(http.MethodPatch, c.getKBURL(), bytes.NewBuffer(postBody))
+	if err != nil {
+		return fmt.Errorf("unable to create update kb request: %w", err)
+	}
+
+	request.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.client.Do(request)
+	if err != nil {
+		return kbs.NewServerErrorWithWrapper("unable to update new kb", err)
+	}
+
+	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("unable to read response after trying to update kb: %w", err)
+	}
+
+	if isServerError(resp.StatusCode) {
+		return kbs.NewServerError(fmt.Sprintf("server failed to update kb: %s", string(respBody)))
+	}
+
+	if isClientError(resp.StatusCode) {
+		return kbs.NewClientError(fmt.Sprintf("invalid request: %s", string(respBody)))
+	}
+
+	var newKBResponse NewKBResponse
+	err = json.Unmarshal(respBody, &newKBResponse)
+	if err != nil {
+		return fmt.Errorf("unable to unmarshall update kb response: %w", err)
+	}
+
+	return nil
+}
+
 func (c *Client) getKBURL() string {
 	return fmt.Sprintf(kbURL, c.host)
 }

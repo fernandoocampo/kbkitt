@@ -44,6 +44,10 @@ run-get: ## Run get app.
 run-get-ux: ## Run get app with ux.
 	$(GO_TOOL) run -ldflags ${LDFLAGS} cmd/kbcli/main.go get -u
 
+.PHONY: run-update
+run-update: ## Run update kb app.
+	$(GO_TOOL) run -ldflags ${LDFLAGS} cmd/kbcli/main.go update
+
 .PHONY: run-add-with-args
 run-add-with-args: ## Run add app with predefined arguments.
 	$(GO_TOOL) run -ldflags ${LDFLAGS} cmd/kbcli/main.go add \

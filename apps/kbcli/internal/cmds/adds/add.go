@@ -11,8 +11,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type errMsg error
-
 // AddKBParams contains parameters required by add command to add a new KB.
 type addKBParams struct {
 	key         string

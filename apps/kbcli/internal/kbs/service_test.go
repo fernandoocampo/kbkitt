@@ -88,3 +88,7 @@ func (k *kbServiceDummy) Search(ctx context.Context, filter kbs.KBQueryFilter) (
 func (k *kbServiceDummy) Get(ctx context.Context, id string) (*kbs.KB, error) {
 	return nil, nil
 }
+
+func (k *kbServiceDummy) Update(ctx context.Context, kb *kbs.KB) error {
+	return nil
+}

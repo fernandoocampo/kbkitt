@@ -30,6 +30,7 @@ const (
 	KindColSeparator = "----"
 	TagCol           = "TAGS"
 	TagColSeparator  = "----"
+	GetKBIDLabel     = "id: "
 )
 
 func getConfiguration() (*settings.Configuration, error) {
@@ -121,4 +122,29 @@ func AreYouSure(label string) bool {
 	fmt.Scan(&done)
 
 	return Yes(done)
+}
+
+func PrintKB(k *kbs.KB) string {
+	return fmt.Sprintf(`%s:
+%s
+%s:
+%s
+%s:
+%s
+%s:
+%s
+%s:
+%s
+%s:
+%s
+%s:
+%+v
+`,
+		kbs.IDLabel, k.ID,
+		kbs.KeyLabel, k.Key,
+		kbs.ValueLabel, k.Value,
+		kbs.NotesLabel, k.Notes,
+		kbs.KindLabel, k.Kind,
+		kbs.ReferenceLabel, k.Reference,
+		kbs.TagsLabel, k.Tags)
 }

@@ -300,13 +300,20 @@ func (m *model) content() string {
 }
 
 func renderKBItem(k *kbs.KB) string {
-	return fmt.Sprintf(`%s: %s
-%s: %s
-%s: %s
-%s: %s
-%s: %s
-%s: %s
-%s: %+v
+	return fmt.Sprintf(`%s
+%s
+%s
+%s
+%s
+%s
+%s
+%s
+%s
+%s
+%s
+%s
+%s
+%+v
 `,
 		inputStyle.Width(30).Render("ID"), k.ID,
 		inputStyle.Width(30).Render("Key"), k.Key,

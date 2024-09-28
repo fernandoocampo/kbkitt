@@ -5,9 +5,11 @@ import (
 	"os"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
 )
 
@@ -15,7 +17,7 @@ type errMsg error
 
 // ui model
 type model struct {
-	inputs  []textinput.Model
+	inputs  []cmds.InputComponent
 	focused int
 	err     error
 }
@@ -54,46 +56,57 @@ func runInteractive() error {
 }
 
 func initialModel() model {
-	var inputs []textinput.Model = make([]textinput.Model, 6)
-	inputs[key] = textinput.New()
-	inputs[key].Placeholder = "key"
-	inputs[key].Focus()
-	inputs[key].CharLimit = 64
-	inputs[key].Width = 70
-	inputs[key].Prompt = ""
-	inputs[key].SetValue(updateKBData.kb.Key)
+	var inputs []cmds.InputComponent = make([]cmds.InputComponent, 6)
+	keyInput := textinput.New()
+	keyInput.Placeholder = "key"
+	keyInput.Focus()
+	keyInput.CharLimit = 64
+	keyInput.Width = 70
+	keyInput.Prompt = ""
+	keyInput.SetValue(updateKBData.kb.Key)
+	inputs[key].TextInput = &keyInput
 
-	inputs[kind] = textinput.New()
-	inputs[kind].Placeholder = "category"
-	inputs[kind].CharLimit = 64
-	inputs[kind].Width = 70
-	inputs[kind].Prompt = ""
-	inputs[kind].SetValue(updateKBData.kb.Kind)
+	kindInput := textinput.New()
+	kindInput.Placeholder = "category"
+	kindInput.CharLimit = 64
+	kindInput.Width = 70
+	kindInput.Prompt = ""
+	kindInput.SetValue(updateKBData.kb.Kind)
+	inputs[kind].TextInput = &kindInput
 
-	inputs[value] = textinput.New()
-	inputs[value].Placeholder = "values"
-	inputs[value].Width = 100
-	inputs[value].Prompt = ""
-	inputs[value].SetValue(updateKBData.kb.Value)
+	valueInput := textarea.New()
+	valueInput.Prompt = ""
+	valueInput.CharLimit = 700
+	valueInput.ShowLineNumbers = false
+	valueInput.SetHeight(4)
+	valueInput.SetWidth(80)
+	valueInput.SetValue(updateKBData.kb.Value)
+	inputs[value].TextArea = &valueInput
 
-	inputs[notes] = textinput.New()
-	inputs[notes].Placeholder = ""
-	inputs[notes].Width = 100
-	inputs[notes].Prompt = ""
-	inputs[notes].SetValue(updateKBData.kb.Notes)
+	notesInput := textarea.New()
+	notesInput.Placeholder = ""
+	notesInput.Prompt = ""
+	notesInput.CharLimit = 700
+	notesInput.ShowLineNumbers = false
+	notesInput.SetHeight(4)
+	notesInput.SetWidth(80)
+	notesInput.SetValue(updateKBData.kb.Notes)
+	inputs[notes].TextArea = &notesInput
 
-	inputs[reference] = textinput.New()
-	inputs[reference].Placeholder = ""
-	inputs[reference].CharLimit = 64
-	inputs[reference].Width = 70
-	inputs[reference].Prompt = ""
-	inputs[reference].SetValue(updateKBData.kb.Reference)
+	refInput := textinput.New()
+	refInput.Placeholder = ""
+	refInput.CharLimit = 64
+	refInput.Width = 70
+	refInput.Prompt = ""
+	refInput.SetValue(updateKBData.kb.Reference)
+	inputs[reference].TextInput = &refInput
 
-	inputs[tags] = textinput.New()
-	inputs[tags].Placeholder = "keyword1 keyword2 keyword3 keywordN"
-	inputs[tags].CharLimit = 100
-	inputs[tags].Prompt = ""
-	inputs[tags].SetValue(strings.Join(updateKBData.kb.Tags, " "))
+	tagsInput := textinput.New()
+	tagsInput.Placeholder = "keyword1 keyword2 keyword3 keywordN"
+	tagsInput.CharLimit = 100
+	tagsInput.Prompt = ""
+	tagsInput.SetValue(strings.Join(updateKBData.kb.Tags, " "))
+	inputs[tags].TextInput = &tagsInput
 
 	return model{
 		inputs:  inputs,
@@ -112,18 +125,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
-		case tea.KeyEnter:
-			if m.focused == len(m.inputs)-1 {
-				m.toAddKBParams()
-				return m, tea.Quit
-			}
-			m.nextInput()
 		case tea.KeyCtrlC, tea.KeyEsc:
 			os.Exit(0)
 			return m, tea.Quit
 		case tea.KeyShiftTab, tea.KeyCtrlP:
 			m.prevInput()
+		case tea.KeyCtrlS:
+			m.toAddKBParams()
+			return m, tea.Quit
 		case tea.KeyTab, tea.KeyCtrlN:
+			if m.focused == len(m.inputs)-1 {
+				m.toAddKBParams()
+				return m, tea.Quit
+			}
 			m.nextInput()
 		}
 		for i := range m.inputs {
@@ -138,8 +152,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	for i := range m.inputs {
-		m.inputs[i], cmds[i] = m.inputs[i].Update(msg)
+		if m.inputs[i].TextInput != nil {
+			textInputModel, textInputCmd := m.inputs[i].TextInput.Update(msg)
+			m.inputs[i].TextInput, cmds[i] = &textInputModel, textInputCmd
+			continue
+		}
+		textInputModel, textInputCmd := m.inputs[i].TextArea.Update(msg)
+		m.inputs[i].TextArea, cmds[i] = &textInputModel, textInputCmd
 	}
+
 	return m, tea.Batch(cmds...)
 }
 
@@ -147,25 +168,28 @@ func (m model) View() string {
 	return fmt.Sprintf(
 		` Updating KB [%s] - %s:
 
- %s
- %s
+%s
+%s
 
- %s
- %s
+%s
+%s
 
- %s
- %s
+%s
+%s
 
- %s
- %s
+%s
+%s
 
- %s
- %s
+%s
+%s
 
- %s
- %s
+%s
+%s
 
- %s
+%s
+
+• tab fields • shift+tab fields • ctrl+s save • ctrl+c: quit
+
 `,
 		updateKBData.kb.ID, updateKBData.kb.Key,
 		inputStyle.Width(30).Render("Key"),
@@ -181,7 +205,7 @@ func (m model) View() string {
 		inputStyle.Width(9).Render("Tags"),
 		m.inputs[tags].View(),
 		continueStyle.Render("Continue ->"),
-	) + "\n"
+	)
 }
 
 // nextInput focuses the next input field

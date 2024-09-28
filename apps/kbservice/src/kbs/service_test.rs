@@ -451,6 +451,34 @@ fn test_add_kb_with_error() {
     }
 }
 
+#[test]
+fn test_update_kb() {
+    // Given
+    let updated_kb = KnowledgeBase {
+        id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
+        key: String::from("btc"),
+        kind: String::from("crypto"),
+        value: String::from("new currency state"),
+        notes: String::from("it is here to stay"),
+        reference: Some(String::from("Satoshi Nakamoto")),
+        tags: vec![
+            String::from("crypto"),
+            String::from("btc"),
+            String::from("satoshi"),
+        ],
+    };
+
+    let non_existing_kb = Some(KnowledgeBase::default());
+
+    let store = KBStore::new_with_update_kb(false, non_existing_kb, true);
+    let service = Service::new(store);
+    let runtime = Runtime::new().expect("unable to create runtime to test add kb");
+    // When
+    let response = runtime.block_on(service.update_kb(updated_kb));
+    // Then
+    assert_eq!(false, response.is_err())
+}
+
 #[derive(Debug, Clone)]
 struct KBStore {
     get_kb_value: Option<KnowledgeBase>,
@@ -458,7 +486,9 @@ struct KBStore {
     search_error: Option<bool>,
     get_kb_error: Option<bool>,
     save_kb_error: Option<bool>,
+    update_kb_error: Option<bool>,
     save_category_error: Option<bool>,
+    update_kb_result: bool,
 }
 
 impl Default for KBStore {
@@ -470,6 +500,8 @@ impl Default for KBStore {
             save_category_error: Default::default(),
             get_kb_value: Default::default(),
             search_value: Default::default(),
+            update_kb_error: Default::default(),
+            update_kb_result: Default::default(),
         }
     }
 }
@@ -499,6 +531,15 @@ impl KBStore {
         dummy_store.save_kb_error = Some(is_error);
 
         dummy_store
+    }
+    fn new_with_update_kb(is_error: bool, kb: Option<KnowledgeBase>, result: bool) -> Self {
+        KBStore {
+            get_kb_value: kb,
+            get_kb_error: Some(false),
+            update_kb_error: Some(is_error),
+            update_kb_result: result,
+            ..Default::default()
+        }
     }
     fn new_with_add_category(is_error: bool) -> Self {
         let mut dummy_store = KBStore::default();
@@ -542,6 +583,13 @@ impl Storer for KBStore {
         match &self.save_kb_error.unwrap() {
             false => Ok(new_kb.id.clone()),
             true => Err(Error::CreateKBError),
+        }
+    }
+
+    async fn update_kb(&self, _: KnowledgeBase) -> Result<bool, Error> {
+        match &self.update_kb_error.unwrap() {
+            false => Ok(self.update_kb_result),
+            true => Err(Error::UpdateKBError),
         }
     }
 

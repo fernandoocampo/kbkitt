@@ -203,12 +203,6 @@ func (c *Client) Update(ctx context.Context, kb *kbs.KB) error {
 		return kbs.NewClientError(fmt.Sprintf("invalid request: %s", string(respBody)))
 	}
 
-	var newKBResponse NewKBResponse
-	err = json.Unmarshal(respBody, &newKBResponse)
-	if err != nil {
-		return fmt.Errorf("unable to unmarshall update kb response: %w", err)
-	}
-
 	return nil
 }
 

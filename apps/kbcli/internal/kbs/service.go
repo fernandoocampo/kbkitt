@@ -69,6 +69,7 @@ func (s *Service) Update(ctx context.Context, kb KB) error {
 	if err != nil {
 		return fmt.Errorf("failed to update kb: %w", err)
 	}
+
 	return nil
 }
 

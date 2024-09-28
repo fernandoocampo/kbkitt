@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::errors::error::Error;
 use crate::kbs::service::Service;
 use crate::types::categories::{Category, SaveCategorySuccess};
-use crate::types::kbs::{NewKnowledgeBase, SaveKBSuccess, KBID};
+use crate::types::kbs::{KnowledgeBase, NewKnowledgeBase, SaveKBSuccess, KBID};
 
 use tracing::{debug, error};
 use warp::{http::StatusCode, Rejection, Reply};
@@ -64,6 +64,23 @@ pub async fn add_kb(
         }
         Err(e) => {
             error!("adding kb {:?}", new_kb);
+            Err(warp::reject::custom(e))
+        }
+    }
+}
+
+pub async fn update_kb(
+    kb: KnowledgeBase,
+    service: Service<impl storage::Storer>,
+) -> Result<impl Reply, Rejection> {
+    match service.update_kb(kb.clone()).await {
+        Ok(_) => {
+            debug!("kb was updated");
+
+            Ok(warp::reply())
+        }
+        Err(e) => {
+            error!("updating kb {:?}: {:?}", kb, e);
             Err(warp::reject::custom(e))
         }
     }

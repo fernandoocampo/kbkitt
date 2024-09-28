@@ -7,10 +7,25 @@ import (
 	"os"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/textarea"
+	"github.com/charmbracelet/bubbles/textinput"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/adapters/kbkitt"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/settings"
 )
+
+type InputType interface {
+	Blur()
+	Focus() tea.Cmd
+	View() string
+	Value() string
+}
+
+type InputComponent struct {
+	TextInput *textinput.Model
+	TextArea  *textarea.Model
+}
 
 // values
 const (
@@ -147,4 +162,37 @@ func PrintKB(k *kbs.KB) string {
 		kbs.KindLabel, k.Kind,
 		kbs.ReferenceLabel, k.Reference,
 		kbs.TagsLabel, k.Tags)
+}
+
+func (i *InputComponent) Blur() {
+	if i.TextArea != nil {
+		i.TextArea.Blur()
+		return
+	}
+
+	i.TextInput.Blur()
+}
+
+func (i *InputComponent) Focus() tea.Cmd {
+	if i.TextArea != nil {
+		return i.TextArea.Focus()
+	}
+
+	return i.TextInput.Focus()
+}
+
+func (i *InputComponent) View() string {
+	if i.TextArea != nil {
+		return i.TextArea.View()
+	}
+
+	return i.TextInput.View()
+}
+
+func (i *InputComponent) Value() string {
+	if i.TextArea != nil {
+		return i.TextArea.Value()
+	}
+
+	return i.TextInput.Value()
 }

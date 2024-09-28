@@ -67,6 +67,38 @@ impl<T: Storer> Service<T> {
         }
     }
 
+    pub async fn update_kb(&self, kb: KnowledgeBase) -> Result<(), Error> {
+        debug!("checking if kb already exists: {:?}", kb.key);
+
+        match self.get_kb_with_key(kb.clone().key).await {
+            Ok(existing_kb) => {
+                if existing_kb.id != KBID("".to_string()) && existing_kb.id != kb.id {
+                    return Err(Error::DuplicateKBError);
+                }
+            }
+            Err(e) => {
+                error!("reading if kb already exists: {:?}", e);
+                return Err(Error::UpdateKBError);
+            }
+        }
+
+        debug!("start updating kb: {:?}", kb);
+
+        match self.store.update_kb(kb).await {
+            Ok(result) => {
+                if !result {
+                    return Err(Error::KBWasNotUpdatedError);
+                }
+
+                Ok(())
+            }
+            Err(e) => {
+                error!("updating kb: {:?}", e);
+                Err(Error::UpdateKBError)
+            }
+        }
+    }
+
     pub async fn add_category(&self, new_category: Category) -> Result<bool, Error> {
         debug!("start adding category: {:?}", new_category);
 

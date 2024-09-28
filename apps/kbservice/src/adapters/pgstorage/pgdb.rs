@@ -262,6 +262,34 @@ impl kb_storage for Store {
             }
         }
     }
+    /// update given kb data and update it in database.
+    async fn update_kb(&self, kb: KnowledgeBase) -> Result<bool, Error> {
+        debug!("updating a kb in postgresql db: {:?}", kb);
+
+        match sqlx::query("UPDATE kbs SET KB_KEY=$1, KB_VALUE=$2, NOTES=$3, KIND=$4, REFERENCE=$5, TAGS=to_tsvector($6), TAG_VALUES=$7 WHERE KB_ID=$8 RETURNING KB_ID")
+            .bind(kb.key)
+            .bind(kb.value)
+            .bind(kb.notes)
+            .bind(kb.kind)
+            .bind(kb.reference)
+            .bind(kb.tags.join(" "))
+            .bind(kb.tags.join(" "))
+            .bind(kb.id.to_string())
+            .map(|row: PgRow| KBID(row.get("kb_id")))
+            .fetch_one(&self.connection)
+            .await
+        {
+            Ok(updated_kb) => {
+                debug!("kb was udpate in postgres database: {:?}", updated_kb);
+                Ok(true)
+            }
+            Err(e) => {
+                error!("updating kb: {:?}", e);
+                tracing::event!(tracing::Level::ERROR, "{:?}", e);
+                Err(Error::DatabaseQueryError)
+            }
+        }
+    }
     /// save given category in the repository.
     async fn save_category(&self, category: Category) -> Result<String, Error> {
         debug!("adding new category to postgresql db: {:?}", category);

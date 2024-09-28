@@ -53,6 +53,14 @@ pub fn make_create_routes(
         .and(service_filter.clone())
         .and_then(kbs::handler::add_kb);
 
+    log::info!("📖\tCreating update kb endpoint: PATCH /kbs");
+    let update_kb = warp::patch()
+        .and(warp::path("kbs"))
+        .and(warp::path::end())
+        .and(warp::body::json())
+        .and(service_filter.clone())
+        .and_then(kbs::handler::update_kb);
+
     log::info!("📗\tCreating add category endpoint: POST /categories");
     let add_category = warp::post()
         .and(warp::path("categories"))
@@ -64,6 +72,7 @@ pub fn make_create_routes(
     search_kbs
         .or(get_kb_by_id)
         .or(add_kb)
+        .or(update_kb)
         .or(add_category)
         .with(cors)
         .with(warp::trace::request())

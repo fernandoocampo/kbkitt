@@ -264,6 +264,46 @@ mod pgstorage_test {
     }
 
     #[test]
+    fn test_update_kb() {
+        // Given
+        if !is_integration_test() {
+            info!("==== skipping test");
+            assert_eq!(true, true);
+            return;
+        }
+        info!("==== running integration test");
+
+        info!("creating a new kb first");
+        let mut newkb = KnowledgeBase::new(String::from("new_kb_key"));
+        newkb.value = String::from("a new kb item");
+        newkb.notes = String::from("this is a test");
+        newkb.kind = String::from("tests");
+        newkb.tags = vec![String::from("test"), String::from("save")];
+
+        let want = true;
+
+        let runtime = Runtime::new().expect("Unable to create a runtime");
+        let store = runtime.block_on(new_db_storage());
+
+        let save_result = runtime.block_on(store.save_kb(newkb.clone()));
+        if save_result.is_err() {
+            panic!("unexpected result saving new kb to be updated later");
+        }
+
+        let mut updated_kb = newkb.clone();
+        updated_kb.value = String::from("a new kb updated");
+        // When
+        let result = runtime.block_on(store.update_kb(updated_kb));
+        // Then
+        match result {
+            Ok(got) => assert_eq!(want, got),
+            Err(err) => panic!("unexpected error: {:?}", err),
+        }
+
+        runtime.block_on(store.close());
+    }
+
+    #[test]
     fn test_save_category() {
         // Given
         if !is_integration_test() {

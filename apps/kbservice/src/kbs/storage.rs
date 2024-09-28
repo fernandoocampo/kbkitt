@@ -16,6 +16,8 @@ pub trait Storer {
     async fn search(&self, filter: KBQueryFilter) -> Result<SearchResult, Error>;
     /// save given knowledge base in the repository.
     async fn save_kb(&self, kb: KnowledgeBase) -> Result<KBID, Error>;
+    /// update given knowledge base.
+    async fn update_kb(&self, kb: KnowledgeBase) -> Result<bool, Error>;
     /// save given category in the repository.
     async fn save_category(&self, category: Category) -> Result<String, Error>;
     /// get a list of categories based on the given filter

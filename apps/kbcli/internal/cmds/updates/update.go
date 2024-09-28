@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
@@ -61,7 +62,11 @@ func makeRunUpdateCommand() func(cmd *cobra.Command, args []string) {
 
 		ctx := context.Background()
 
-		showKBToUpdate(ctx)
+		err := showKBToUpdate(ctx)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "updating kb: %w", err)
+			os.Exit(1)
+		}
 	}
 }
 
@@ -98,10 +103,14 @@ func showKBToUpdate(ctx context.Context) error {
 		return nil
 	}
 
+	fmt.Println("updating...")
 	err = updateKBData.service.Update(ctx, getKBToUpdate())
 	if err != nil {
 		return fmt.Errorf("unable to update kb: %w", err)
 	}
+
+	fmt.Println("")
+	fmt.Println("kb was updated successfully")
 
 	return nil
 }

@@ -1,13 +1,14 @@
+use crate::errors::error;
 use crate::errors::error::Error;
 use crate::kbs::handler;
 use crate::kbs::service::Service;
 use crate::kbs::storage::Storer;
 use crate::types::categories::{Category, CategoryFilter, SaveCategorySuccess};
 use crate::types::kbs::{
-    KBItem, KBQueryFilter, NewKnowledgeBase, SaveKBSuccess, SearchResult, KBID,
+    KBItem, KBQueryFilter, KnowledgeBase, NewKnowledgeBase, SaveKBSuccess, SearchResult, KBID,
 };
-use crate::{errors::error, types::kbs::KnowledgeBase};
 use async_trait::async_trait;
+use hyper::StatusCode;
 use std::collections::HashMap;
 use tokio::runtime::Runtime;
 use warp::Reply;
@@ -308,6 +309,37 @@ fn test_add_kb() {
 }
 
 #[test]
+fn test_update_kb() {
+    // Given
+    let updated_kb = KnowledgeBase {
+        id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
+        key: String::from("btc"),
+        kind: String::from("crypto"),
+        value: String::from("new currency state"),
+        notes: String::from("it is here to stay"),
+        reference: Some(String::from("Satoshi Nakamoto")),
+        tags: vec![
+            String::from("crypto"),
+            String::from("btc"),
+            String::from("satoshi"),
+        ],
+    };
+
+    let want = StatusCode::OK;
+    let non_existing_kb = Some(KnowledgeBase::default());
+
+    let store = KBStore::new_with_update_kb(false, non_existing_kb, true);
+    let service = Service::new(store);
+    let runtime = Runtime::new().expect("unable to create runtime to test add kb");
+    // When
+    let response = runtime.block_on(handler::update_kb(updated_kb, service));
+    // Then
+    let response = response.unwrap().into_response();
+
+    assert_eq!(want, response.status())
+}
+
+#[test]
 fn test_add_category() {
     // Given
     let new_category = Category {
@@ -405,6 +437,8 @@ struct KBStore {
     get_kb_error: Option<bool>,
     save_kb_error: Option<bool>,
     save_category_error: Option<bool>,
+    update_kb_error: Option<bool>,
+    update_kb_result: bool,
 }
 
 impl KBStore {
@@ -427,6 +461,15 @@ impl KBStore {
             get_kb_value: kb,
             get_kb_error: Some(false),
             save_kb_error: Some(is_error),
+            ..Default::default()
+        }
+    }
+    fn new_with_update_kb(is_error: bool, kb: Option<KnowledgeBase>, result: bool) -> Self {
+        KBStore {
+            get_kb_value: kb,
+            get_kb_error: Some(false),
+            update_kb_error: Some(is_error),
+            update_kb_result: result,
             ..Default::default()
         }
     }
@@ -472,6 +515,13 @@ impl Storer for KBStore {
         match &self.save_kb_error.unwrap() {
             false => Ok(new_kb.id.clone()),
             true => Err(Error::CreateKBError),
+        }
+    }
+
+    async fn update_kb(&self, _: KnowledgeBase) -> Result<bool, Error> {
+        match &self.update_kb_error.unwrap() {
+            false => Ok(self.update_kb_result),
+            true => Err(Error::UpdateKBError),
         }
     }
 

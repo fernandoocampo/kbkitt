@@ -50,6 +50,12 @@ func runInteractive(ctx context.Context, service *kbs.Service) error {
 		return fmt.Errorf("unable to run interactive: %w", err)
 	}
 
+	if model.empty() {
+		fmt.Println()
+		fmt.Println("zero occurrences with that filter")
+		return nil
+	}
+
 	itemViewPort, err := newItemViewport()
 	if err != nil {
 		return fmt.Errorf("unable to run interactive: %w", err)
@@ -243,7 +249,6 @@ func (m *model) drawTable() string {
 		BorderForeground(lipgloss.Color("240"))
 	var b strings.Builder
 	b.WriteString("\n  Knowledge Base Found \n\n")
-	b.WriteString("\n\n")
 	b.WriteString(baseStyle.Render(m.table.View()))
 	b.WriteString("\n\n")
 	b.WriteString("  " + m.paginator.View())
@@ -271,6 +276,10 @@ func (m *model) loadKBItem(kbID string) error {
 	m.selectedItem = kb
 
 	return nil
+}
+
+func (m *model) empty() bool {
+	return len(m.result.Items) == 0
 }
 
 func (m *model) formatItems() []string {

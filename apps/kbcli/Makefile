@@ -32,9 +32,17 @@ run-conf: ## Run configure app.
 run-add: ## Run add app.
 	$(GO_TOOL) run -ldflags ${LDFLAGS} cmd/kbcli/main.go add $(ADD_ARGS)
 
+.PHONY: run-add-ux
+run-add-ux: ## Run add app in an interactive mode.
+	$(GO_TOOL) run -ldflags ${LDFLAGS} cmd/kbcli/main.go add -u
+
 .PHONY: run-import
 run-import: ## Run import app .
 	$(GO_TOOL) run cmd/kbcli/main.go import
+
+.PHONY: run-import-sample
+run-import-sample: ## Run import app to load sample kbs.
+	$(GO_TOOL) run cmd/kbcli/main.go import -f ../../docs/samples/import-sample.yaml
 
 .PHONY: run-get
 run-get: ## Run get app.

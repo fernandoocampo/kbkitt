@@ -1,0 +1,462 @@
+Key: stateful firewall
+Value: allows the return traffic automatically
+Notes: in aws cloud used by security groups
+Kind: concept
+Reference: aws
+Tags:
+    - security
+    - aws
+    - firewall
+    - stateful
+    - traffic
+---
+Key: stateless firewall
+Value: checks for an allow rule for both connections in/out
+Notes: ACLs in AWS you need inbound and outbound rules even for same connection
+Kind: concept
+Reference: aws
+Tags:
+    - security
+    - aws
+    - firewall
+    - stateless
+    - acls
+    - traffic
+---
+Key: p2p network
+Value: there's no central master or server node coordinating them
+Notes: ethereum network is a p2p network
+Kind: concept
+Reference: ethereum
+Tags:
+    - blockchain
+    - ethereum
+    - peer-to-peer
+    - network
+---
+Key: coupling
+Value: when we say that coupling is bad, what we usually imply is that we have to change those two components simultaneously. For example, you want to change one of them, but then you’re forced to apply a corresponding change to the second component.
+Notes: coupling as part of system design
+Kind: concept
+Reference: Vladik Khononov at techleadjournal
+Tags:
+    - coupling
+    - design
+    - vladik
+---
+Key: cynefin framework
+Value: is a conceptual framework used to aid decision-making. Cynefin offers five decision-making contexts or "domains". obvious, complicated, complex, chaotic, and confusion.
+Notes: that help managers to identify how they perceive situations and make sense of their own and other people's behaviour.
+Kind: concept
+Reference: Dave Snowden
+Tags:
+    - cynefin
+    - framework
+    - decision
+---
+Key: cynefin obvious
+Value: If I know exactly what the effect of that change is going to be, then that code base is not complex. It’s probably simple.
+Notes: That’s why this domain, in Cynefin terms, is called clear. It’s something that is simple, clear. If I am making a change, I know what’s going to happen.
+Kind: concept
+Reference: vladik khononov
+Tags:
+    - cynefin
+    - framework
+    - clear
+    - obvious
+    - decision
+---
+Key: lead time
+Value: the difference between when an item is defined and done
+Notes: metrics
+Kind: concept
+Reference: vaughn vernon
+Tags:
+    - lifecycle
+    - metrics
+    - lead
+    - time
+---
+Key: cycle time
+Value: the difference between when an item is in progress and done
+Notes: metrics
+Kind: concept
+Reference: vaughn vernon
+Tags:
+    - lifecycle
+    - metrics
+    - time
+    - work
+---
+Key: program testing
+Value: Program testing can be a very effective way to show the presence of bugs, but it is hopelessly inadequate for showing their absence
+Notes: programming test thoughs
+Kind: quote
+Reference: Edsger W. Dijkstra
+Tags:
+    - dijkstra
+    - testing
+    - quote
+    - bugs
+---
+Key: correctness
+Value: it is the extent to which our code does what we intend it to do
+Notes: correctness in our programs
+Kind: concept
+Reference: rust book
+Tags:
+    - correctness
+    - programming
+    - development
+---
+Key: netshoot command
+Value: kubectl run tmp-shell-fo --rm -i --tty --image nicolaka/netshoot
+Notes: create a temporal pod to run network commands
+Kind: command
+Reference: network
+Tags:
+    - network
+    - netshoot
+    - nicolaka
+    - dig-short
+    - kubernetes
+---
+Key: terraform rm
+Value: terraform state rm "<path>"
+Notes: to remove specific resource from terraform state
+Kind: command
+Reference: terraform
+Tags:
+    - terraform
+    - remove
+    - state
+    - resource
+---
+Key: aristoteles-1
+Value: The purpose of knowledge is action, not knowledge
+Notes: ""
+Kind: quote
+Reference: aristotle
+Tags:
+    - quote
+    - knowledge
+    - aristotle
+    - artistoteles
+---
+Key: zero-overhead
+Value: What you dont use, you dont pay for. And further What you do use, you couldn’t hand code any better.
+Notes: In general, C++ implementations obey the zero-overhead principle
+Kind: concept
+Reference: Bjarne Stroustrup
+Tags:
+    - overhead
+    - principle
+    - quote
+    - implementation
+---
+Key: lsof
+Kind: command
+Tags: 
+    - linux
+    - command
+    - list
+    - open
+    - files
+Value: lsof -i :3000
+Notes: |+
+    command to list open files.
+    i: selects the listing of files any of whose Internet address matches the address specified in i
+Reference: 
+---
+Key: grep-with-lines
+Kind: command
+Tags: 
+    - linux
+    - command
+    - grep
+    - file
+    - pattern
+    - search
+    - lines
+Value: grep -A5 -B5 lender
+Notes: file pattern searcher. 5 lineas after the word and 5 line Before word
+Reference: 
+---
+Key: casco-quote
+Kind: quote
+Tags: 
+    - helmet
+    - casco
+    - quote
+    - sena
+    - pilot
+    - formula
+Value: El casco esconde sentimientos que no se pueden entender
+Notes: 
+Reference: Airton Sena
+---
+Key: alone-quote
+Kind: quote
+Tags: 
+    - alone
+    - quote
+    - travel
+    - ready
+Value: The man who goes alone can start today; but he who travels with another must wait till that other is ready
+Notes: 
+Reference: Henry David Thoreau
+---
+Key: best-of-breed systems
+Kind: quote
+Tags: 
+    - breed
+    - system
+    - machine
+    - learning
+    - quote
+Value: The problem with end-to-end systems is that, because they do everything, there are better systems available for each thing that they do
+Notes: How machine learning applies to your business
+Reference: 
+---
+Key: solow paradox
+Kind: quote
+Tags: 
+    - solow
+    - paradox
+    - quote
+    - productive
+    - computer
+    - machine
+    - learning
+Value: You can see the computer age everywhere but in the productivity statistics
+Notes: If computers were really helping us become more productive, why is it that much faster computers don’t lead to much greater productivity?
+Reference: Robert Solow
+---
+Key: ml-quote
+Kind: quote
+Tags: 
+    - machine
+    - learning
+    - decision
+    - opportunity
+    - automation
+    - quote
+Value: Any point in a process where a person needs to make a decision is an opportunity to use machine learning to automate the decision or to present a restricted choice of options for the person to consider.
+Notes: 
+Reference: How machine learning applies to your business
+---
+Key: target variable
+Kind: concept
+Tags: 
+    - machine
+    - learning
+    - decision
+    - target
+    - concept
+Value: person's decision about something in machine learning. Categorical and Continuous.
+Notes: In machine learning lingo, Person’s decision is called the target variable, and the types of things she considers when making the decision are called features.
+Reference: How machine learning applies to your business
+---
+Key: categorical target variable
+Kind: concept
+Tags: 
+    - machine
+    - learning
+    - variable
+    - categoricla
+    - target
+    - concept
+Value: include things like yes or no; and north, south, east, or west.
+Notes: 
+Reference: How machine learning applies to your business
+---
+Key: binary target variable
+Kind: concept
+Tags: 
+    - machine
+    - learning
+    - concept
+    - categorical
+    - binary
+    - target
+    - variable
+Value: categorical target variable with two only possible variables
+Notes: 
+Reference: How machine learning applies to your business
+---
+Key: multiclass target variable
+Kind: concept
+Tags: 
+    - machine
+    - learning
+    - concept
+    - categorical
+    - multiclass
+    - target
+    - variable
+Value: categorical target variable with more than two variables
+Notes: 
+Reference: How machine learning applies to your business
+---
+Key: Continuous target variable
+Kind: concept
+Tags: 
+    - machine
+    - learning
+    - continuous
+    - variable
+    - target
+    - concept
+Value: it is just numbers. if your machine learning application predicts number values based on features.
+Notes: 
+Reference: How machine learning applies to your business
+---
+Key: ML Features
+Kind: concept
+Tags: 
+    - machine
+    - learning
+    - features
+    - concept
+Value: the columns of the table. The features may be size, name, type, weight, and so on. This is what describes our data. Certain features are special, though, and we call them labels.
+Notes: 
+Reference: Grokking Machine Learning
+---
+Key: Supervised machine learning
+Kind: concept
+Tags: 
+    - machine
+    - learning
+    - supervised
+    - concept
+Value: type of machine learning. it is a type of predictive machine learning in which the data comes with labels, where the label is the target we are interested in predicting. Remember-Formulate-Predict.
+Notes: The model first remembers the dataset of dogs and cats, then formulates a model, or a rule for what is a dog and what is a cat, and when a new image comes in, the model makes a prediction about what the label of the image is, namely, is it a dog or a cat.
+Reference: Grokking Machine Learning
+---
+Key: Unsupervised machine learning
+Kind: concept
+Tags: 
+    - machine
+    - learning
+    - unsupervised
+    - concept
+Value: It differs from supervised learning in that the data has no labels. it is a dataset with only features, and no target to predict. It is where we point a machine learning application at a bunch of data and tell it to do its thing.
+Notes: 
+Reference: Grokking Machine Learning
+---
+Key: Regression Models
+Kind: concept
+Tags: 
+    - machine
+    - learning
+    - supervised
+    - concept
+Value: These are the types of models that predict a number, such as the weight of the animal
+Notes: 
+Reference: Grokking Machine Learning
+---
+Key: Classification Models
+Kind: concept
+Tags: 
+    - machine
+    - learning
+    - supervised
+    - concept
+Value: These are the types of models that predict a state, such as the type of animal (cat or dog).
+Notes: 
+Reference: Grokking Machine Learning
+---
+Key: ML Annotation
+Kind: concept
+Tags: 
+    - machine
+    - learning
+    - annotation
+    - concept
+Value: the process of labeling raw data so that it becomes training data for Machine Learning
+Notes: 
+Reference: Human in the loop
+---
+Key: borrowing
+Value: We call the action of creating a reference borrowing.
+Notes: As in real life, if a person owns something, you can borrow it from them. When you’re done, you have to give it back. You don’t own it.
+Kind: concept
+Reference: rust book
+Tags:
+    - rust
+    - borrowing
+    - reference
+    - programming
+    - idiomatic
+---
+Key: ownership
+Value: set of rules that govern how a Rust program manages memory
+Notes: 'Rust uses a third approach: memory is managed through a system of ownership with a set of rules that the compiler checks.'
+Kind: concept
+Reference: rust book
+Tags:
+    - rust
+    - ownership
+    - rules
+    - idiomatic
+---
+Key: ownership rules
+Value: 1. Each value in Rust has an owner. 2. There can only be one owner at a time. 3. When the owner goes out of scope, the value will be dropped.
+Notes: ""
+Kind: concept
+Reference: rust book
+Tags:
+    - rust
+    - ownership
+    - rules
+    - idiomatic
+---
+Key: stack memory
+Value: part of memory available to your code to use at runtime. All data stored on the stack must have a known, fixed size.
+Notes: The stack stores values in the order it gets them and removes the values in the opposite order (FIFO).
+Kind: concept
+Reference: rust book
+Tags:
+    - memory
+    - stack
+    - programming
+---
+Key: heap memory
+Value: 'The heap is less organized: when you put data on the heap, you request a certain amount of space. The memory allocator finds an empty spot in the heap that is big enough, marks it as being in use, and returns a pointer, which is the address of that location.'
+Notes: This process is called allocating on the heap and is sometimes abbreviated as just allocating (pushing values onto the stack is not considered allocating). Because the pointer to the heap is a known, fixed size, you can store the pointer on the stack, but when you want the actual data, you must follow the pointer.
+Kind: concept
+Reference: rust book
+Tags:
+    - heap
+    - memory
+    - rust
+    - programming
+---
+Key: concurrent programming
+Value: where different parts of a program execute independently
+Notes: ""
+Kind: concept
+Tags:
+    - concurrency
+    - programming
+    - parallel
+---
+Key: parallel programming
+Value: where different parts of a program execute at the same time
+Notes: ""
+Kind: concept
+Tags:
+    - parallel
+    - programming
+    - concurrency
+---
+Key: design patterns
+Value: poweful abstractions that every programmer can use  to produce high quality code.
+Notes: 'Humans are good at pattern recognition, and following well understood and easily recognized patterns helps us solve 2 tricky problems: reasoning about whether a design is good or bad amd help other people understand our code'
+Kind: concept
+Reference: idiomatic rust
+Tags:
+    - patterns
+    - design
+    - software
+    - principles

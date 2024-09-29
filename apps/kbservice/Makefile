@@ -31,6 +31,10 @@ run-postgres:
 start-services: ## start database
 	podman-compose -f docker-compose.yml up
 
+.PHONY: start-db-services
+start-db-services: ## start database
+	podman-compose -f docker-compose.yml up database
+
 .PHONY: stop-services
 stop-services: ## stop database
 	podman-compose --file docker-compose.yml down --volumes

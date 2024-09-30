@@ -47,6 +47,7 @@ const (
 )
 
 var addKBData addKBParams
+var exitGUI bool
 
 func MakeAddCommand(service *kbs.Service) *cobra.Command {
 	newCmd := cobra.Command{
@@ -73,6 +74,10 @@ func makeRunAddKBCommand(service *kbs.Service) func(cmd *cobra.Command, args []s
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "collecting data", err)
 			os.Exit(1)
+		}
+
+		if exitGUI {
+			os.Exit(0)
 		}
 
 		ctx := context.Background()

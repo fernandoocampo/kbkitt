@@ -1,3 +1,8 @@
+CONTAINERCMD?=docker
+COMMIT_HASH?=$(shell git describe --dirty --tags --always)
+BUILD_DATE?=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+VERSION?=0.1.0
+
 .PHONY: run
 run: ## run the application using cargo. remember to add KB_DB_PWD
 	KB_WEB_SERVER_PORT=3030 \
@@ -141,3 +146,12 @@ test-list-categories-with-keyword : ## test listing categories without keywords
 	INTEGRATION_TEST=1 cargo test --package kbservice --bin kbservice \
 	-- adapters::pgstorage::pgdb_test::pgstorage_test::test_list_categories_with_keyword \
 	--exact --show-output --nocapture
+
+.PHONY: run-build-image
+run-build-image: ## build container image
+	${CONTAINERCMD} build \
+	--build-arg appVersion=${VERSION} \
+	--build-arg buildDate=${BUILD_DATE} \
+	--build-arg commitHash=${COMMIT_HASH} \
+    -f Dockerfile \
+    -t kbservice:${VERSION} .

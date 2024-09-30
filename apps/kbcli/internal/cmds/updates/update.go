@@ -36,6 +36,7 @@ const (
 	showValueLabel = "(%s)"
 )
 
+var exitGUI bool
 var updateKBData *updateKB
 
 func MakeUpdateCommand(service *kbs.Service) *cobra.Command {
@@ -96,6 +97,10 @@ func showKBToUpdate(ctx context.Context) error {
 	err = runInteractive()
 	if err != nil {
 		return fmt.Errorf("unable to show form: %w", err)
+	}
+
+	if exitGUI {
+		return nil
 	}
 
 	if !confirmKBData() {

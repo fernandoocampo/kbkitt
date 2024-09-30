@@ -460,3 +460,110 @@ Tags:
     - design
     - software
     - principles
+---
+Key: JWK
+Value: The JSON Web Key Set (JWKS) is a set of keys which contains the public keys used to verify any JSON Web Token (JWT) issued by the authorization server and signed using the RS256 signing algorithm.
+Notes: ""
+Kind: concept
+Reference: jwt
+Tags:
+    - token
+    - keyset
+    - keys
+    - json
+---
+Key: oh-my-zsh-git-shortcuts
+Value: https://kapeli.com/cheat_sheets/Oh-My-Zsh_Git.docset/Contents/Resources/Documents/index
+Notes: Enjoy this cheat sheet at its fullest within Dash, the macOS documentation browser.
+Kind: bookmark
+Reference: zsh+git
+Tags:
+    - oh-my-zsh
+    - shortcuts
+    - bookmark
+    - cheat
+    - sheet
+    - git
+---
+Key: oauth2-proxy
+Value: https://github.com/oauth2-proxy/oauth2-proxy
+Notes: A reverse proxy and static file server that provides authentication using Providers (Google, Keycloak, GitHub and others) to validate accounts by email, domain or group.
+Kind: bookmark
+Reference: uas epic proxy
+Tags:
+    - proxy
+    - oauth2
+    - identity
+    - authentication
+    - sidecar
+---
+Key: testdata
+Value: https://dave.cheney.net/2016/05/10/test-fixtures-in-go
+Notes: the Go tool will ignore any directory in your $GOPATH that starts with a period, an underscore, or matches the word testdata.
+Kind: bookmark
+Reference: dave cheney
+Tags:
+    - golang
+    - testdata
+    - fixtures
+    - cheney
+    - tests
+---
+Key: podman-multi-arch-build
+Value: https://blog.while-true-do.io/podman-multi-arch-images/
+Notes: Have you built a container image on your workstation, just to find out that it doesn't work on your Raspberry Pi? Maybe your project considers publishing a software for arm64 and amd64, so your users can run it on different platforms? No worries, Podman got you covered! With multi-arch builds, you can build your image once and run them on multiple platforms.
+Kind: bookmark
+Reference: Daniel Schier
+Tags:
+    - podman
+    - build
+    - images
+    - multiarch
+    - docker
+---
+Key: obansajo-vision
+Value: I’ve found more durable is being clear on what problems you are solving, why the problem is important and how you’ll do it. Strategy.
+Notes: A lot of leadership teams spend time creating mission, vision and values statements which are ignored almost as soon as they’re created.
+Kind: quote
+Reference: dare obansajo
+Tags:
+    - vision
+    - mission
+    - values
+    - statements
+    - strategy
+---
+Key: Dare Obansajo
+Value: '@Carnage4Life'
+Notes: Opinions about product management, technology news and inclusivity in tech. Diversity is about demographics, inclusion is about creating a sense of belonging.
+Kind: influencer
+Reference: twitter
+Tags:
+    - dare
+    - obansajo
+    - influencer
+    - author
+    - twitter
+---
+Key: Grady Booch
+Value: '@Grady_Booch'
+Notes: scientist, storyteller, philosopher
+Kind: influencer
+Reference: Grady Booch
+Tags:
+    - grady
+    - booch
+    - twitter
+    - umls
+    - scientist
+---
+Key: Allen Holub
+Value: '@allenholub'
+Notes: I help ppl build software better
+Kind: influencer
+Reference: twitter
+Tags:
+    - allen
+    - holub
+    - agile
+    - software

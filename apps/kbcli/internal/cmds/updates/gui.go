@@ -2,7 +2,6 @@ package updates
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/textarea"
@@ -126,7 +125,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyCtrlC, tea.KeyEsc:
-			os.Exit(0)
+			exitGUI = true
 			return m, tea.Quit
 		case tea.KeyShiftTab, tea.KeyCtrlP:
 			m.prevInput()

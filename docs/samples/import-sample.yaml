@@ -567,3 +567,37 @@ Tags:
     - holub
     - agile
     - software
+---
+Key: vault-login-oidc
+Value: VAULT_ADDR=https://{VAULT_HOST}/ vault login -method=oidc
+Notes: login against vault
+Kind: command
+Reference: vault
+Tags:
+    - vault
+    - login
+    - oidc
+    - authentication
+---
+Key: terraform-destroy-target
+Value: terraform destroy --target "{MODULE_OR_RESOURCE_TO_DESTROY}"
+Notes: To destroy a specific EC2 instance (demo_vm_1), the --target argument can be supplied to the destroy command with the resource path to identify the correct. terraform destroy --target aws_instance.demo_vm_1
+Kind: command
+Reference: https://spacelift.io/blog/how-to-destroy-terraform-resources
+Tags:
+    - terraform
+    - destroy
+    - target
+    - command
+---
+Key: future-tools-ai
+Value: https://www.futuretools.io
+Notes: FutureTools Collects & Organizes All The Best AI Tools So YOU Too Can Become Superhuman!
+Kind: bookmark
+Reference: internet
+Tags:
+    - tools
+    - artificial
+    - intelligence
+    - ai
+    - future

@@ -601,3 +601,152 @@ Tags:
     - intelligence
     - ai
     - future
+---
+Key: operators handbook
+Value: https://www.operatorshandbook.com
+Notes: My goal with this newsletter is to provide you with actionable advice, frameworks and guides to grow your career and your business based on my experience as an operator over the last 10 years at companies like Uber, Meta and Rippling.
+Kind: bookmark
+Reference: internet
+Tags:
+    - handbook
+    - advice
+    - guidelines
+    - grow
+    - career
+    - operator
+---
+Key: sematic-release
+Value: https://semantic-release.gitbook.io/semantic-release
+Notes: 'Fully automated version management and package publishing. semantic-release automates the whole package release workflow including: determining the next version number, generating the release notes, and publishing the package. ~/Downloads/ADR 15 - Automate Semantic Release.pdf'
+Kind: bookmark
+Reference: conventional commits
+Tags:
+    - semantic
+    - release
+    - version
+    - notes
+---
+Key: conventional-commits
+Value: https://www.conventionalcommits.org/
+Notes: The Conventional Commits specification is a lightweight convention on top of commit messages. It provides an easy set of rules for creating an explicit commit history; which makes it easier to write automated tools on top of. This convention dovetails with SemVer, by describing the features, fixes, and breaking changes made in commit messages.
+Kind: bookmark
+Reference: conventional commits
+Tags:
+    - conventional
+    - commits
+    - semver
+    - changes
+    - messages
+---
+Key: levelupcoding
+Value: '@LevelUpCoding_'
+Notes: Level up your engineering & system design skills. Complex topics simplified.
+Kind: influencer
+Reference: https://x.com/LevelUpCoding_
+Tags:
+    - twitter
+    - levelup
+    - coding
+    - complex
+    - topics
+    - simplified
+---
+Key: phuong le
+Value: '@func25'
+Notes: dive into untold insights of golang and system design with blog.devtrovert.com
+Kind: influencer
+Reference: https://x.com/func25
+Tags:
+    - golang
+    - insights
+    - system
+    - design
+    - phuong
+---
+Key: devtrovert
+Value: https://blog.devtrovert.com
+Notes: Phuong Le blog about go and system design
+Kind: bookmark
+Reference: '@func25 at twitter'
+Tags:
+    - golang
+    - system
+    - design
+    - blogs
+    - phuong
+---
+Key: git-list-files-commit
+Value: git diff-tree --name-only {YOUR-COMMIT-HASH} -r
+Notes: |-
+    list all the files in a commit
+    -r argument is to recurse into sub-trees
+    --name-only argument shows only the file names that were affected
+Kind: command
+Reference: stackoverflow
+Tags:
+    - git
+    - commit
+    - list
+    - files
+---
+Key: jwt-claims
+Value: JSON web tokens (JWTs) claims are pieces of information asserted about a subject. For example, an ID token (which is always a JWT) can contain a claim called name that asserts that the name of the user authenticating is "John Doe". In a JWT, a claim appears as a name/value pair where the name is always a string and the value can be any JSON value
+Notes: https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-token-claims
+Kind: concept
+Reference: auth0
+Tags:
+    - jwt
+    - token
+    - json
+    - claims
+    - concept
+---
+Key: singleflight-go
+Value: https://victoriametrics.com/blog/go-singleflight/index.html
+Notes: The singleflight package in Go is built specifically to handle that situation when you’ve got multiple requests coming in at the same time asking for the same data, the default behavior is that each of those requests would go to the database individually to get the same information
+Kind: bookmark
+Reference: victoriametrics
+Tags:
+    - singleflight
+    - query
+    - golang
+    - pattern
+    - victoria
+    - performance
+---
+Key: jetstream
+Value: https://docs.nats.io/nats-concepts/jetstream
+Notes: NATS has a built-in persistence engine called JetStream which enables messages to be stored and replayed at a later time. Unlike NATS Core which requires you to have an active subscription to process messages as they happen, JetStream allows the NATS server to capture messages and replay them to consumers as needed. This functionality enables a different quality of service for your NATS messages, and enables fault-tolerant and high-availability configurations.
+Kind: bookmark
+Reference: Fabian
+Tags:
+    - jetstream
+    - events
+    - subscription
+    - availability
+    - consumers
+---
+Key: learn-mlops-2024
+Value: https://neptune.ai/blog/how-to-learn-mlops
+Notes: With the recent rapid advancements in machine learning and its widespread application in various industries, Machine Learning Operations (MLOps for short) has become a rapidly advancing field. The recent popularity of Large Language Models (LLMs) has only accelerated this development and increased the demand for MLOps specialists.
+Kind: bookmark
+Reference: Chauncey
+Tags:
+    - mlops
+    - learning
+    - neptune
+    - resources
+    - courses
+---
+Key: mlops-repository
+Value: https://github.com/raminmohammadi/MLOps
+Notes: This repository is dedicated to sharing reading contents, labs and exercises for the MLOps (Machine Learning Operations) course at Northeastern University.
+Kind: bookmark
+Reference: Chauncey
+Tags:
+    - mlops
+    - repository
+    - learning
+    - contents
+    - exercises
+    - university

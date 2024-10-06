@@ -8,7 +8,6 @@ import (
 )
 
 func main() {
-	// /Users/Fernando_Ocampo/Workspaces/gomodws/epicgames/uas-replacement-pocs/libauth/internal/apps/cmd.go
 	err := apps.Execute()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "unable to start app:", err)

@@ -63,6 +63,14 @@ run-add-with-args: ## Run add app with predefined arguments.
 	-t btc,crypto,currencies,blockchain \
 	-r dementor
 
+.PHONY: run-add-media
+run-add-media: ## Run add app to save kb with media.
+	$(GO_TOOL) run -ldflags ${LDFLAGS} cmd/kbcli/main.go add \
+	-k btc -n currencies -c media \
+	-t btc,crypto,currencies,blockchain \
+	-r dementor \
+	-v 'https://pbs.twimg.com/media/GZL9kSeXgAAXf3B?format=jpg&name=4096x4096'
+
 .PHONY: run-import-with-args
 run-import-with-args: ## Run import app with predefined arguments.
 	$(GO_TOOL) run cmd/kbcli/main.go import -f /Users/Fernando_Ocampo/.kbkitt/sample.yaml --show-added-kbs --show-failed-kbs

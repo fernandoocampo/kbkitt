@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"iter"
 	"math"
+	"net/url"
 	"regexp"
 	"slices"
 	"strings"
@@ -30,6 +31,7 @@ type NewKB struct {
 	Notes     string   `json:"notes" yaml:"Notes"`
 	Kind      string   `json:"kind" yaml:"Kind"`
 	Reference string   `json:"reference,omitempty" yaml:"Reference,omitempty"`
+	MediaType string   `json:"media_type,omitempty" yaml:"MediaType,omitempty"`
 	Tags      []string `json:"tags" yaml:"Tags"`
 }
 
@@ -72,6 +74,11 @@ type KBQueryFilter struct {
 	Offset uint32 `json:"offset"`
 }
 
+type MediaFileData struct {
+	IsMediaFile bool
+	Path        string
+}
+
 // DataError defines an error to indicate that provided data was not valid.
 type DataError struct {
 	message string
@@ -96,8 +103,24 @@ const (
 	ValueLabel     = "Value"
 	NotesLabel     = "Notes"
 	KindLabel      = "Kind"
+	CategoryLabel  = "Category"
 	ReferenceLabel = "Reference"
+	MediaTypeLabel = "Media Type"
 	TagsLabel      = "Tags"
+)
+
+const (
+	MediaKind   = "media"
+	mediaFolder = "media"
+)
+
+// media file type
+var (
+	MediaExtensions = []string{
+		"apng", "avif", "csv", "gif", "jpeg",
+		"mp4", "pdf", "png", "svg", "tar.gz",
+		"txt", "webp", "yaml", "zip",
+	}
 )
 
 var (
@@ -313,13 +336,23 @@ func (k KB) String() string {
 }
 
 func (n NewKB) String() string {
-	return fmt.Sprintf(`Key: %s
+	if n.MediaType == "" {
+		return fmt.Sprintf(`Key: %s
 Value: %s
 Notes: %s
 Kind: %s
 Reference: %s
 Tags: %+v
 `, n.Key, n.Value, n.Notes, n.Kind, n.Reference, n.Tags)
+	}
+	return fmt.Sprintf(`Key: %s
+Value: %s
+Notes: %s
+Kind: %s
+Reference: %s
+Media Type: %s
+Tags: %+v
+`, n.Key, n.Value, n.Notes, n.Kind, n.Reference, n.MediaType, n.Tags)
 }
 
 func (i *ImportResult) Ok() bool {
@@ -403,4 +436,17 @@ func (s *SearchResult) TotalPages() int {
 
 func (k KBItem) ToArray() []string {
 	return []string{k.ID, k.Key, k.Kind, strings.Join(k.Tags, " ")}
+}
+
+func isWebURL(anURL string) bool {
+	result, err := url.ParseRequestURI(anURL)
+	if err != nil {
+		return false
+	}
+
+	if result == nil {
+		return false
+	}
+
+	return true
 }

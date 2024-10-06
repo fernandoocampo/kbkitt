@@ -13,6 +13,7 @@ const (
 	startConfigurationMessage = "> do you want to setup kbkitt? [y/n]: "
 	hostLabel                 = "kbkitt host (http(s)://): "
 	filePathForSyncLabel      = "file path to save kbs for synchronization: "
+	dirForMediaLabel          = "dir path to save kb media files: "
 )
 
 const (
@@ -83,6 +84,7 @@ func newKBKitt() *settings.Configuration {
 
 	newConfiguration.Server.URL = cmds.RequestStringValue(hostLabel)
 	newConfiguration.FilepathForSyncPath = cmds.RequestStringValue(filePathForSyncLabel)
+	newConfiguration.DirForMediaPath = cmds.RequestStringValue(dirForMediaLabel)
 
 	return &newConfiguration
 }

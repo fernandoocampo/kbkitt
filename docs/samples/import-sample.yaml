@@ -750,3 +750,450 @@ Tags:
     - contents
     - exercises
     - university
+---
+Key: business-logic-module
+Value: The business logic module is explicit and bounded. It contains what you have coded from business requirements, and importantly, your application does not contain what has not been coded. Indeed, business logic can be extended at runtime through externalization of rules, different rule engines, domain-specific languages, allowing users to code, and so on.
+Notes: ""
+Kind: concept
+Reference: epam course
+Tags:
+    - business
+    - logic
+    - module
+    - tier
+    - design
+    - concept
+---
+Key: business-reasoning-module
+Value: allows business logic to be extended at runtime without explicit coding effort by leveraging the generative nature of Gen AI. This way, you can envision a conventional-looking application that doesn't have a chat interface anywhere. Instead, it contains a business reasoning module that considers user activities to devise solutions to a problem.
+Notes: ""
+Kind: concept
+Reference: epam training
+Tags:
+    - business
+    - reasoning
+    - genai
+    - generative
+    - intelligence
+    - design
+    - module
+---
+Key: ccu
+Value: Concurrent Users metric
+Notes: This can either be in reference to number of sessions per single server instance OR the number of users participating in an experience / event at the same time.
+Kind: concept
+Reference: load testing
+Tags:
+    - testing
+    - load
+    - concurrent
+    - users
+    - metrics
+---
+Key: structured-request
+Value: 'Outside the business reasoning software module, you encounter the world of code, API calls, and SDKs, which handles conventional structured content: message formats, schema definitions, and public contracts. Structured content from the outside is passed to the business reasoning module via API.'
+Notes: The Inner Workings of a Business Reasoning Module
+Kind: concept
+Reference: epam training
+Tags:
+    - genai
+    - generative
+    - intelligence
+    - artificial
+    - structured
+    - request
+---
+Key: no-llm-can-reason
+Value: |-
+    By the very nature of its architecture, no LLM can reason.
+
+    One might see dim reflections of inductive and deductive reasoning only in so far as the training data set contains such examples, but abductive reasoning - indeed any color of reasoning that requires the production of new abstractions - is unreachable..
+Notes: This is not to say that LLMs have no utility - they do - but it is to say that one should not give LLMs powers they do not and cannot possess. To think this is an AGI or even a path to AGI is folly.
+Kind: quote
+Reference: https://x.com/Grady_Booch/status/1790085016606880001
+Tags:
+    - grady
+    - booch
+    - llm
+    - reasoning
+    - large
+    - language
+    - model
+    - twitter
+---
+Key: jwt-go-cognito
+Value: https://www.angelospanag.me/blog/verifying-a-json-web-token-from-cognito-in-go-and-gin
+Notes: Verifying a JSON Web Token from Amazon Cognito in Go and Gin. One popular option for integrating Amazon Cognito authentication/authorization with a backend, requires the decoding and verifying of JSON Web Tokens (JWT) for server-side processing.
+Kind: bookmark
+Reference: internet
+Tags:
+    - cognito
+    - golang
+    - jwt
+    - token
+    - verify
+    - authentication
+    - authorization
+    - auth
+---
+Key: k8s-resource-limits
+Value: https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-resource-requests-and-limits
+Notes: When Kubernetes schedules a Pod, it’s important that the containers have enough resources to actually run. If you schedule a large application on a node with limited resources, it is possible for the node to run out of memory or CPU resources and for things to stop working!
+Kind: bookmark
+Reference: k8s resources
+Tags:
+    - kubernetes
+    - k8s
+    - resources
+    - limits
+    - memory
+    - cpu
+    - google
+---
+Key: k8s-cpu-limits
+Value: https://www.ardanlabs.com/blog/2024/02/kubernetes-cpu-limits-go.html
+Notes: I believe there are many Go services running in K8s under CPU limits that are not running as efficiently as they otherwise could be. In this post, I will explain what I learned and show what happens when CPU limits are being used and your Go service isn’t configured to run within the scope of that setting.
+Kind: bookmark
+Reference: Ardan Lab bill kennedy
+Tags:
+    - kubernetes
+    - k8s
+    - cpu
+    - limits
+    - ardan
+    - lab
+    - kennedy
+---
+Key: k8s-memory-limits
+Value: https://www.ardanlabs.com/blog/2024/02/kubernetes-memory-limits-go.html
+Notes: After writing the Kubernetes (K8s) CPU Limits post, I was wondering what happens when a K8s memory limit is set for the same service. I’ve been hearing at workshops and at Ardan how people are experiencing Out Of Memory (OOM) problems with their PODs when setting K8s memory limits. I’m often told that when an OOM occurs, K8s will terminate and restart the POD.
+Kind: bookmark
+Reference: ardan labs bill kennedy
+Tags:
+    - kubernetes
+    - k8s
+    - memory
+    - limits
+    - ardan
+    - labs
+    - kennedy
+---
+Key: api
+Value: |-
+    set of definitions and protocols for building and integrating application software.
+    APIs let your product or service communicate with other products and services without having to know how they’re implemented
+Notes: API are gateways between services and consumers. APIs are sometimes thought of as contracts
+Kind: concept
+Reference: api notes by russi
+Tags:
+    - api
+    - interface
+    - contracts
+    - integration
+    - application
+---
+Key: effective-api-habits
+Value: |-
+    Apply and API-first design approach
+    Choose a solid API runtime
+    Create a central service repository
+    Manage services through versions, policy and contracts
+    Promote and socialize your APIs.
+    Monitor and assess API usage.
+    Continually improve.
+Notes: 7 habits of highly effectives API
+Kind: concept
+Reference: apis by russi
+Tags:
+    - api
+    - effective
+    - habits
+    - concept
+---
+Key: api-layers
+Value: |-
+    * system apis
+    * experience apis
+    * process apis
+Notes: layered approach to APIs
+Kind: concept
+Reference: apis by russi
+Tags:
+    - layered
+    - approach
+    - apis
+    - syste
+    - experience
+    - process
+---
+Key: system-apis
+Value: "They are the APIs that expose the APIs of record.\nThey expose the data information of the assets in a very easily consumable manner. \nTypically these APIs actually are the ones that change more slowly. "
+Notes: layered approach to apis
+Kind: concept
+Reference: apis by russi
+Tags:
+    - system
+    - apis
+    - layered
+    - approach
+    - apis
+---
+Key: experience-apis
+Value: "* They are the ones that change at the fastest pace. That is because applications come to life at a much quicker rate than systems in the back-end. \n* They expose the data from the back-end data sources in exactly the right form for the application or devices in question that need to consume the data. "
+Notes: Layered approach to APIs
+Kind: concept
+Reference: apis by russi
+Tags:
+    - experience
+    - apis
+    - layered
+    - approach
+    - rest
+---
+Key: process-apis
+Value: |-
+    * They are In the middleware between Experience and System APIs.
+    * This is the orchestration and composition that need to take place with System APIs in order to provide that data in a new way using business logic through the Experience APIs.
+Notes: Layered approach to APIs
+Kind: concept
+Reference: apis by russi
+Tags:
+    - process
+    - apis
+    - layered
+    - approach
+    - rest
+---
+Key: openapi-bookmark
+Value: https://www.openapis.org
+Notes: The OpenAPI Specifications provides a formal standard for describing HTTP APIs.
+Kind: bookmark
+Reference: internet
+Tags:
+    - openapi
+    - specification
+    - understand
+    - documentation
+    - rest
+---
+Key: openapi
+Value: |-
+    * It is an API description format for REST APIs, this is the evolution of Swagger.
+    * Allows you to describe your entire API
+    * API specifications can be written in YAML or JSON
+    * The format is easy to learn and readable to both humans and machines.
+Notes: |-
+    Available endpoints (/users) and operations on each endpoint (GET /users, POST /users)
+    Operation parameters Input and output for each operation
+    Authentication methods
+    Contact information, license, terms of use and other information.
+Kind: concept
+Reference: apis by russi
+Tags:
+    - opeanapi
+    - apis
+    - contract
+    - rest
+    - specification
+---
+Key: api-documentation
+Value: https://swagger.io/blog/api-documentation/api-documentation-best-practices/?_ga=2.12203965.869733376.1654161586-1840811407.1654161586
+Notes: 'API Documentation: The Secret to a Great API Developer Experience'
+Kind: bookmark
+Reference: swagger
+Tags:
+    - apis
+    - documentation
+    - practices
+    - rest
+    - book
+---
+Key: api-versioning
+Value: |-
+    * headers
+    * URL path
+    * Query string
+Notes: There are different schools of thought to version your API, but most of them fall under these three categories
+Kind: concept
+Reference: apis by russi
+Tags:
+    - apis
+    - versioning
+    - headers
+    - urls
+    - queryparams
+    - design
+    - rest
+---
+Key: api-versioning-headers
+Value: |-
+    * Custom Header: Adding a custom X-API-VERSION (or any other header of choice) header key by client can be used by a service to route a request to the correct endpoint
+    * Using accept header to specify your version such as
+    => Accept: application/vnd.hashmapinc.v2+json
+Notes: 2 ways you can specify version in headers
+Kind: concept
+Reference: |-
+    * GData-version: 2 (google)
+    * application/vnd.github[.version]
+Tags:
+    - apis
+    - versioning
+    - headers
+    - design
+    - contracts
+    - rest
+---
+Key: api-versioning-url-path
+Value: Embed the version in the URL such as POST /v2/users. This alternative gives better discoverability of a resource by looking at the URL.
+Notes: |-
+    * /2010-04-01/
+    * /1/
+    * /v1/
+Kind: concept
+Reference: apis by russi
+Tags:
+    - api
+    - versioning
+    - urls
+    - paths
+    - design
+    - contracts
+    - rest
+---
+Key: api-versioning-query
+Value: Include a version query string parameter with the number of version to use.
+Notes: e.g. ?v=2
+Kind: concept
+Reference: apis by russi
+Tags:
+    - apis
+    - versioning
+    - query
+    - params
+    - rest
+    - design
+    - contracts
+---
+Key: oauth2
+Value: stands for “Open Authorization”, is a standard designed to allow a website or application to access resources hosted by other web apps on behalf of a user. It replaced OAuth 1.0 in 2012 and is now the de facto industry standard for online authorization. OAuth 2.0 provides consented access and restricts actions of what the client app can perform on resources on behalf of the user, without ever sharing the user's credentials.
+Notes: OAuth 2.0 is an authorization protocol and NOT an authentication protocol. As such, it is designed primarily as a means of granting access to a set of resources, for example, remote APIs or user data.
+Kind: concept
+Reference: https://auth0.com/intro-to-iam/what-is-oauth-2
+Tags:
+    - oauth2
+    - standard
+    - open
+    - authorization
+    - protocol
+---
+Key: jwks-properties
+Value: https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-key-set-properties
+Notes: Each property in the key is defined by the JWK specification RFC 7517 Section 4
+Kind: bookmark
+Reference: auth0
+Tags:
+    - jwks
+    - properties
+    - keyset
+    - json
+    - web
+    - key
+    - oauth2
+---
+Key: low-latency-network
+Value: Low latency describes a computer network that is optimized to process a very high volume of data messages with minimal delay (latency). These networks are designed to support operations that require near real-time access to rapidly changing data.
+Notes: Low latency is desirable in a wide range of use cases. In a general sense, lower latency is nearly always an improvement over slower packet transport. Low latency is desirable in online gaming as it contributes to a more realistic gaming environment. However, the term low latency is most often used to describe specific business use cases, in particular high-frequency trading in capital markets.
+Kind: concept
+Reference: networks
+Tags:
+    - networks
+    - latency
+    - optimized
+    - delay
+    - gaming
+    - trading
+    - payment
+---
+Key: book-bundles
+Value: https://www.humblebundle.com/books
+Notes: Looking for your next great read? Immerse yourself in adventurous comics, discover spectacular fantasy worlds, whip up your soon-to-be favorite recipe, run a new tabletop RPG system, and more with our curated book bundles. Whether you're a voracious reader or want to explore new genres, our exclusive bundles can help you find your next literary love. Plus, a portion of the bundle proceeds go to charity!
+Kind: bookmark
+Reference: jorge mario chaparro
+Tags:
+    - books
+    - ecommerce
+    - bundle
+    - software
+    - literature
+    - sales
+---
+Key: grpc
+Value: In gRPC, a client application can directly call a method on a server application on a different machine as if it were a local object, making it easier for you to create distributed applications and services. As in many RPC systems, gRPC is based around the idea of defining a service, specifying the methods that can be called remotely with their parameters and return types. On the server side, the server implements this interface and runs a gRPC server to handle client calls. On the client side, the client has a stub (referred to as just a client in some languages) that provides the same methods as the server.
+Notes: gRPC can use protocol buffers as both its Interface Definition Language (IDL) and as its underlying message interchange format
+Kind: concept
+Reference: https://grpc.io/docs/what-is-grpc/introduction/
+Tags:
+    - grpc
+    - remote
+    - procedure
+    - calls
+    - interface
+    - protocol
+---
+Key: protocol-buffers
+Value: Protocol Buffers are a language-neutral, platform-neutral extensible mechanism for serializing structured data.
+Notes: |-
+    It’s like JSON, except it’s smaller and faster, and it generates native language bindings. You define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to and from a variety of data streams and using a variety of languages.
+
+    Protocol buffers are a combination of the definition language (created in .proto files), the code that the proto compiler generates to interface with data, language-specific runtime libraries, the serialization format for data that is written to a file (or sent across a network connection), and the serialized data.
+Kind: concept
+Reference: https://protobuf.dev/overview/
+Tags:
+    - protocol
+    - buffers
+    - grpc
+    - serializing
+    - language
+    - modeling
+---
+Key: grpc.io
+Value: https://grpc.io
+Notes: A high performance, open source universal RPC framework
+Kind: bookmark
+Reference: grpc.io tutorial
+Tags:
+    - grpc
+    - site
+    - resources
+    - bookmark
+---
+Key: rest
+Value: REST can be defined as a stateless, layered and cacheable client-server architecture that operates with resources using a uniform command interface based on HTTP verbs. A resource is an entity (such as a document or file) that can be addressed with a unique resource locator (URL).
+Notes: |-
+    REST (REpresentational State Transfer) is arguably the most discussed API architecture style, and certainly one of the most used.
+
+    The strongest REST convention is to use a URL to express the resource you're working with, and a HTTP verb to express the action to take.
+
+    REST aims to follow HTTP semantics closely: a REST request is structured like an HTTP request
+Kind: concept
+Reference: https://algodaily.com/lessons/rest-rpc-and-distributed-api-desig
+Tags:
+    - rest
+    - protocol
+    - representational
+    - state
+    - architecture
+    - style
+---
+Key: can-gpu-run-llm
+Value: https://github.com/RahulSChand/gpu_poor
+Notes: Calculates how much GPU memory you need and how much token/s you can get for any LLM & GPU/CPU.
+Kind: bookmark
+Reference: https://rahulschand.github.io/gpu_poor/
+Tags:
+    - gpu
+    - llm
+    - artificial
+    - intelligence
+    - memory
+    - calculator

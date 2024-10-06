@@ -188,17 +188,17 @@ func (m model) View() string {
 • tab fields • shift+tab fields • ctrl+c: quit
 
 `,
-		inputStyle.Width(30).Render("Key"),
+		inputStyle.Width(30).Render(kbs.KeyLabel),
 		m.inputs[key].View(),
-		inputStyle.Width(8).Render("Category"),
+		inputStyle.Width(8).Render(kbs.CategoryLabel),
 		m.inputs[kind].View(),
-		inputStyle.Width(6).Render("Value"),
+		inputStyle.Width(6).Render(kbs.ValueLabel),
 		m.inputs[value].View(),
-		inputStyle.Width(6).Render("Notes"),
+		inputStyle.Width(6).Render(kbs.NotesLabel),
 		m.inputs[notes].View(),
-		inputStyle.Width(9).Render("Reference"),
+		inputStyle.Width(9).Render(kbs.ReferenceLabel),
 		m.inputs[reference].View(),
-		inputStyle.Width(9).Render("Tags"),
+		inputStyle.Width(9).Render(kbs.TagsLabel),
 		m.inputs[tags].View(),
 		continueStyle.Render("Continue ->"),
 	) + "\n"

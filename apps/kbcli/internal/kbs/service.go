@@ -4,9 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
+	"path/filepath"
 	"strings"
 
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/adapters/filesystems"
+	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/adapters/webs"
 )
 
 type KBServiceClient interface {
@@ -19,22 +22,29 @@ type KBServiceClient interface {
 type ServiceSetup struct {
 	Name            string
 	FileForSyncPath string
+	DirForMediaPath string
 	KBClient        KBServiceClient
 }
 
 type Service struct {
 	kbClient        KBServiceClient
 	fileForSyncPath string
+	dirForMediaPath string
 }
 
 func NewService(settings ServiceSetup) *Service {
 	newService := Service{
 		kbClient:        settings.KBClient,
 		fileForSyncPath: settings.FileForSyncPath,
+		dirForMediaPath: settings.DirForMediaPath,
 	}
 
 	return &newService
 }
+
+var (
+	ErrIsNotMediaFile = errors.New("it is not a media file")
+)
 
 func (s *Service) Add(ctx context.Context, newKB NewKB) (*KB, error) {
 	err := newKB.validate()
@@ -159,6 +169,72 @@ func (s *Service) Sync(ctx context.Context) (*SyncResult, error) {
 	}
 
 	return &result, nil
+}
+
+func (s *Service) SaveMedia(ctx context.Context, newKB NewKB) error {
+	isNotMediaFile, err := isNotMediaFile(newKB.Value)
+	if err != nil {
+		return fmt.Errorf("unable to save media: %w", err)
+	}
+
+	if isNotMediaFile {
+		return ErrIsNotMediaFile
+	}
+
+	if !isWebURL(newKB.Value) {
+		return nil
+	}
+
+	// check if media folder exists in kbkitt config directory
+	mediaFolderExist, err := filesystems.FolderExist(s.dirForMediaPath)
+	if err != nil {
+		return fmt.Errorf("unable to save media: %w", err)
+	}
+
+	if !mediaFolderExist {
+		err = filesystems.MakeFolder(s.dirForMediaPath)
+		if err != nil {
+			return fmt.Errorf("unable to save media: %w", err)
+		}
+	}
+
+	content, err := webs.GetWebMediaFile(newKB.Value)
+	if err != nil {
+		return fmt.Errorf("unable to save media: %w", err)
+	}
+
+	mediaType := newKB.MediaType
+	fmt.Println("content-type", http.DetectContentType(content))
+
+	mediaFileName := filepath.Join(s.dirForMediaPath, newKB.Key+"."+mediaType)
+
+	err = filesystems.SaveFile(mediaFileName, content)
+	if err != nil {
+		return fmt.Errorf("unable to save media: %w", err)
+	}
+
+	return nil
+}
+
+func isNotMediaFile(urlpath string) (bool, error) {
+	if isWebURL(urlpath) {
+		return false, nil
+	}
+
+	info, err := filesystems.FileNotExist(urlpath)
+	if err != nil {
+		return true, fmt.Errorf("unable to verify if the media exists: %w", err)
+	}
+
+	if info == nil { // not exist
+		return true, nil
+	}
+
+	if info.IsDir { // it is a dir so it is not media file
+		return true, nil
+	}
+
+	return false, nil
 }
 
 func (s *Service) GetByID(ctx context.Context, id string) (*KB, error) {

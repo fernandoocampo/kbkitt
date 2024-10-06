@@ -79,6 +79,7 @@ func getKBKittService(conf *settings.Configuration) (*kbs.Service, error) {
 	serviceSetup := kbs.ServiceSetup{
 		KBClient:        newKBKittClient(conf),
 		FileForSyncPath: conf.FilepathForSyncPath,
+		DirForMediaPath: conf.DirForMediaPath,
 	}
 
 	newService := kbs.NewService(serviceSetup)

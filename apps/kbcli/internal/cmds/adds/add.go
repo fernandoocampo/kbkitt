@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"slices"
+	"strings"
 
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
@@ -18,20 +20,24 @@ type addKBParams struct {
 	notes       string
 	kind        string
 	reference   string
+	mediaType   string
 	interactive bool
 	tags        []string
 }
 
 // add messages
 const (
-	byeMessage            = "Bye!"
-	kbToSaveLabel         = "...KB to save..."
-	saveForLaterLabel     = "> do you want to save this KB to sync later? [y/n]: "
-	saveQuestionLabel     = "> do you want to save it? [y/n]: "
-	retryQuestionLabel    = "> do you want to retry? [y/n]: "
-	kbAddedSuccessfully   = "kb added successfully"
-	kbSavedForSyncSuccess = "kb successfully saved for later sync"
-	missingTags           = "it seems tag values are missing, they will be useful to find this kb entry, Please indicate some of them..."
+	byeMessage             = "Bye!"
+	kbToSaveLabel          = "...KB to save..."
+	saveForLaterLabel      = "> do you want to save this KB to sync later? [y/n]: "
+	saveQuestionLabel      = "> do you want to save it? [y/n]: "
+	retryQuestionLabel     = "> do you want to retry? [y/n]: "
+	kbAddedSuccessfully    = "kb added successfully"
+	mediaSavedSuccessfully = "kb media added successfully"
+	kbSavedForSyncSuccess  = "kb successfully saved for later sync"
+	missingMediaType       = "it seems that the type of media cannot be determined..."
+	missingTags            = "it seems tag values are missing, they will be useful to find this kb entry, Please indicate some of them..."
+	saveMediaQuestionLabel = "> do you want to save this media kb locally on your computer? [y/n]: "
 )
 
 // field labels
@@ -42,6 +48,7 @@ const (
 	kindLabel      = "class%s: "
 	tagLabel       = "tag: "
 	referenceLabel = "reference%s: "
+	mediaTypeLabel = "media type%s: "
 	tagsLabel      = "tags (comma separated values): "
 	showValueLabel = "(%s)"
 )
@@ -122,6 +129,16 @@ func makeRunAddKBCommand(service *kbs.Service) func(cmd *cobra.Command, args []s
 			fmt.Println(newKB)
 			break
 		}
+		if saveMedia() {
+			fmt.Println()
+			err := service.SaveMedia(ctx, addKBData.toNewKB())
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "unable to save media locally:", err)
+				fmt.Println()
+				os.Exit(1)
+			}
+			fmt.Println(mediaSavedSuccessfully)
+		}
 		fmt.Println()
 	}
 }
@@ -132,6 +149,8 @@ func collectData() error {
 		if err != nil {
 			return fmt.Errorf("unable to collect parameters: %w", err)
 		}
+
+		checkMediaType()
 
 		return nil
 	}
@@ -178,6 +197,15 @@ func saveForLater() bool {
 	return false
 }
 
+func saveMedia() bool {
+	if !isMediaType() {
+		return false
+	}
+
+	fmt.Println()
+	return cmds.AreYouSure(saveMediaQuestionLabel)
+}
+
 func wantToRetry() bool {
 	if cmds.AreYouSure(retryQuestionLabel) {
 		fmt.Println()
@@ -203,12 +231,52 @@ func fillMissingAddFields() {
 	if kbs.IsStringEmpty(addKBData.reference) {
 		addKBData.reference = cmds.RequestStringValue(getLabel(referenceLabel, addKBData.reference))
 	}
+
+	checkMediaType()
+
 	if len(addKBData.tags) == 0 {
 		fmt.Println()
 		fmt.Println(missingTags)
 		fmt.Println()
 		addKBData.tags = cmds.ReadCSVFromStdin(tagLabel)
 	}
+}
+
+func checkMediaType() {
+	if isMediaTypeEmpty() {
+		addKBData.mediaType = requestMediaTypeValue()
+	}
+}
+
+func isMediaTypeEmpty() bool {
+	if !isMediaType() {
+		return false
+	}
+
+	if kbs.IsStringEmpty(addKBData.mediaType) {
+		return true
+	}
+
+	return false
+}
+
+func isMediaType() bool {
+	return strings.EqualFold(addKBData.kind, kbs.MediaKind)
+}
+
+func requestMediaTypeValue() string {
+	index := strings.LastIndex(addKBData.value, ".")
+	if index > 0 &&
+		len(addKBData.value[index:]) > 1 &&
+		slices.Contains(kbs.MediaExtensions, addKBData.value[index+1:]) {
+		return addKBData.value[index+1:]
+	}
+
+	fmt.Println()
+	fmt.Println(missingMediaType)
+	fmt.Println()
+
+	return cmds.RequestStringValue(getLabel(mediaTypeLabel, addKBData.mediaType))
 }
 
 func fillExistingFields() {
@@ -249,6 +317,7 @@ func (a addKBParams) toNewKB() kbs.NewKB {
 		Kind:      a.kind,
 		Notes:     a.notes,
 		Reference: a.reference,
+		MediaType: a.mediaType,
 		Tags:      make([]string, len(a.tags)),
 	}
 

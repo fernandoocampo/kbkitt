@@ -18,6 +18,7 @@ server:
 type Configuration struct {
 	Version             string  `yaml:"version"`
 	FilepathForSyncPath string  `yaml:"fileForSyncPath"`
+	DirForMediaPath     string  `yaml:"dirForMediaPath"`
 	Server              *Server `yaml:"server"`
 }
 
@@ -34,7 +35,8 @@ func (c *Configuration) Invalid() bool {
 	return c == nil ||
 		c.Server == nil ||
 		c.Server.URL == "" ||
-		c.FilepathForSyncPath == ""
+		c.FilepathForSyncPath == "" ||
+		c.DirForMediaPath == ""
 }
 
 func LoadConfiguration() (*Configuration, error) {

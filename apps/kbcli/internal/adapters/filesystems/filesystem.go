@@ -2,9 +2,14 @@ package filesystems
 
 import (
 	"fmt"
-	"io"
 	"os"
 )
+
+// MediaInfo contains information about a media file
+type MediaInfo struct {
+	IsDir bool
+	Exist bool
+}
 
 const drwxr_xr_x os.FileMode = 0755
 
@@ -31,6 +36,24 @@ func ReadFile(filePath string) ([]byte, error) {
 	return file, nil
 }
 
+func FileNotExist(filePath string) (*MediaInfo, error) {
+	var result MediaInfo
+	stat, err := os.Stat(filePath)
+	if err != nil && os.IsNotExist(err) {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("unable to read file info: %w", err)
+	}
+
+	if stat.IsDir() {
+		result.IsDir = true
+	}
+
+	return &result, nil
+}
+
 func FileEmpty(filePath string) (bool, error) {
 	stat, err := os.Stat(filePath)
 	if err != nil && os.IsNotExist(err) {
@@ -47,6 +70,24 @@ func FileEmpty(filePath string) (bool, error) {
 	return false, nil
 }
 
+func FolderExist(folderPath string) (bool, error) {
+	fileInfo, err := os.Stat(folderPath)
+
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+
+	if err != nil {
+		return false, fmt.Errorf("unable to check if folder exists: %w", err)
+	}
+
+	if !fileInfo.IsDir() {
+		return false, nil
+	}
+
+	return true, nil
+}
+
 func SaveFile(filePath string, content []byte) error {
 	f, err := os.Create(filePath)
 	if err != nil {
@@ -54,7 +95,8 @@ func SaveFile(filePath string, content []byte) error {
 	}
 	defer f.Close()
 
-	_, err = io.WriteString(f, string(content))
+	// _, err = io.WriteString(f, string(content))
+	_, err = f.Write(content)
 	if err != nil {
 		return fmt.Errorf("unable to save file: %w", err)
 	}
@@ -77,7 +119,8 @@ func SaveOrAppendFile(filePath string, content []byte) error {
 
 	defer file.Close()
 
-	_, err = io.WriteString(file, string(content))
+	// _, err = io.WriteString(file, string(content))
+	_, err = file.Write(content)
 	if err != nil {
 		return fmt.Errorf("unable to write into file: %w", err)
 	}

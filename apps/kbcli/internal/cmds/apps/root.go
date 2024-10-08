@@ -1,6 +1,7 @@
 package apps
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/syncs"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/updates"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/versions"
+	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/settings"
 	"github.com/spf13/cobra"
 )
 
@@ -31,24 +33,41 @@ func makeRootCommand() *cobra.Command {
 }
 
 func Execute() error {
-	service, err := cmds.NewService()
-	if err != nil {
-		return fmt.Errorf("unable to load service: %w", err)
-	}
-
 	rootCommand := makeRootCommand()
 	rootCommand.AddCommand(versions.MakeVersionCommand())
-	rootCommand.AddCommand(adds.MakeAddCommand(service))
-	rootCommand.AddCommand(imports.MakeImportCommand(service))
-	rootCommand.AddCommand(gets.MakeGetCommand(service))
 	rootCommand.AddCommand(setups.MakeConfigureCommand())
-	rootCommand.AddCommand(syncs.MakeSyncCommand(service))
-	rootCommand.AddCommand(updates.MakeUpdateCommand(service))
+
+	configuration, err := cmds.GetConfiguration()
+	if err != nil && !errors.Is(err, cmds.ErrNoConfiguration) {
+		return fmt.Errorf("unable to load configuration: %w", err)
+	}
+
+	err = initializeServiceCommand(rootCommand, configuration)
+	if err != nil {
+		return fmt.Errorf("unable to initialize service commands: %w", err)
+	}
 
 	if err := rootCommand.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return fmt.Errorf("unable to execute app")
 	}
+
+	return nil
+}
+
+func initializeServiceCommand(rootCommand *cobra.Command, configuration *settings.Configuration) error {
+	if configuration == nil {
+		return nil
+	}
+	service, err := cmds.NewService(configuration)
+	if err != nil {
+		return fmt.Errorf("unable to load service: %w", err)
+	}
+	rootCommand.AddCommand(adds.MakeAddCommand(service))
+	rootCommand.AddCommand(imports.MakeImportCommand(service))
+	rootCommand.AddCommand(gets.MakeGetCommand(service))
+	rootCommand.AddCommand(syncs.MakeSyncCommand(service))
+	rootCommand.AddCommand(updates.MakeUpdateCommand(service))
 
 	return nil
 }

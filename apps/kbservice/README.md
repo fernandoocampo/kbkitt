@@ -26,7 +26,21 @@ or
 cargo test
 ```
 
-## How to run it?
+## How to run it locally?
+
+* start database (use a different terminal)
+
+```sh
+make start-db-services
+```
+
+* provide database password first
+
+```sh
+export KB_DB_PWD=kbpwd
+```
+
+* run
 
 ```sh
 make run
@@ -63,68 +77,6 @@ debug
 trace
 ```
 
-## How to call the API?
-
-* Create a kb endpoint
-
-```sh
-curl -H "Content-Type: application/json" \
---data '{"name":"Esme"}' \
--X POST http://localhost:3030/people
-
-{"id":"f1601fc5-f0c9-4950-8017-e094b284cad9"}
-```
-
-* Calling get people endpoint
-
-```sh
-curl -X GET http://localhost:3030/people
-[{"id":"27c6bdd9-67d6-4503-884d-d75aba152f44","first_name":"Esme","last_name":"Esme"},{"id":"d49aed14-b5b0-4e49-972f-f823817ed93d","first_name":"Fernando","last_name":"Fernando"}]
-```
-
-with params
-
-limit: The index of the last item which has to be returned
-offset: The index of the first item which has to be returned
-
-```sh
-curl -X GET 'http://localhost:3030/people?limit=10&offset=0'
-
-[{"id":"27c6bdd9-67d6-4503-884d-d75aba152f44","first_name":"Esme","last_name":"Esme"},{"id":"d49aed14-b5b0-4e49-972f-f823817ed93d","first_name":"Fernando","last_name":"Fernando"}]
-```
-
-* Calling get a person endpoint
-
-```sh
-curl -X GET http://localhost:3030/people/27c6bdd9-67d6-4503-884d-d75aba152f44
-
-{"id":"27c6bdd9-67d6-4503-884d-d75aba152f44","first_name":"Esme","last_name":"Esme"}
-```
-
-```sh
-curl -X GET http://localhost:3030/people/200
-Person not found
-```
-
-* Update a person endpoint
-
-```sh
-curl -H "Content-Type: application/json" \
---data '{"id":"27c6bdd9-67d6-4503-884d-d75aba152f44", "first_name":"Esme", "last_name":"Emse"}' \
--X PUT http://localhost:3030/people
-
-{"id":"27c6bdd9-67d6-4503-884d-d75aba152f44","first_name":"Esme","last_name":"Emse"}
-```
-
-* Delete a person endpoint
-
-```sh
-curl -H "Content-Type: application/json" \
--X DELETE http://localhost:3030/people/d3bc8246-53da-4275-b833-5feb4489741d
-
-Person d3bc8246-53da-4275-b833-5feb4489741d deleted
-```
-
 ## Migration
 
 Project is using [sqlx-cli](https://docs.rs/crate/sqlx-cli/latest), so let's install it first.
@@ -132,6 +84,21 @@ Project is using [sqlx-cli](https://docs.rs/crate/sqlx-cli/latest), so let's ins
 ```sh
 cargo install sqlx-cli
 ```
+
+### run all migrations
+
+* using make
+```sh
+make run-migration
+```
+
+* using sqlx-cli
+
+```sh
+sqlx migrate run --database-url postgresql://localhost:5432/kbs
+```
+
+### Add
 
 * add migration for kbs table
 
@@ -149,13 +116,8 @@ migrations/20230917172957_people_table.up.sql
 migrations/20230917172957_people_table.down.sql
 ```
 
-* run migrations
 
-```sh
-sqlx migrate run --database-url postgresql://localhost:5432/kbs
-```
-
-* revert migrations
+### Revert migrations
 
 Each revert will trigger the latest migration and try to run the `*.down.sql` script.
 

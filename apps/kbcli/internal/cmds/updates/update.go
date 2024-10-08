@@ -53,7 +53,7 @@ func makeRunUpdateCommand() func(cmd *cobra.Command, args []string) {
 
 		err := showKBToUpdate(ctx)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "updating kb: %w", err)
+			fmt.Fprintf(os.Stderr, "updating kb: %s", err)
 			os.Exit(1)
 		}
 	}

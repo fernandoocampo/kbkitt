@@ -52,12 +52,6 @@ connect-db: ## connect to postgresql database
 run-migration: ## run pending migrations
 	sqlx migrate run --database-url postgres://kbdb:kbpwd@localhost:5432/kbdb
 
-    pub key: String,
-    pub value: String,
-    pub notes: String,
-    pub kind: String,
-    pub tags: Vec<String>,
-
 .PHONY: add-kb
 add-kb: ## add a new kb
 	curl -H "Content-Type: application/json" \

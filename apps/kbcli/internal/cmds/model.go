@@ -48,10 +48,16 @@ const (
 	GetKBIDLabel     = "id: "
 )
 
-func getConfiguration() (*settings.Configuration, error) {
+var ErrNoConfiguration = errors.New("no configuration has been created yet")
+
+func GetConfiguration() (*settings.Configuration, error) {
 	configuration, err := settings.LoadConfiguration()
 	if err != nil {
-		return nil, fmt.Errorf("unable to load kbkitt settings: %w", err)
+		return nil, fmt.Errorf("unable get configuration: %w", err)
+	}
+
+	if configuration == nil {
+		return nil, ErrNoConfiguration
 	}
 
 	if configuration.Invalid() {
@@ -61,12 +67,7 @@ func getConfiguration() (*settings.Configuration, error) {
 	return configuration, nil
 }
 
-func NewService() (*kbs.Service, error) {
-	configuration, err := getConfiguration()
-	if err != nil {
-		return nil, fmt.Errorf("unable to load configuration: %w", err)
-	}
-
+func NewService(configuration *settings.Configuration) (*kbs.Service, error) {
 	service, err := getKBKittService(configuration)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create service: %w", err)

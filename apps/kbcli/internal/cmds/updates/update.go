@@ -24,18 +24,6 @@ const (
 	updateQuestionLabel    = "> do you want to update it? [y/n]: "
 )
 
-// field labels
-const (
-	keyLabel       = "key%s: "
-	valueLabel     = "value%s: "
-	notesLabel     = "notes%s: "
-	kindLabel      = "class%s: "
-	tagLabel       = "tag: "
-	referenceLabel = "reference%s: "
-	tagsLabel      = "tags (space separated values): "
-	showValueLabel = "(%s)"
-)
-
 var exitGUI bool
 var updateKBData *updateKB
 

@@ -231,7 +231,7 @@ func fillMissingAddFields() {
 	if kbs.IsStringEmpty(addKBData.reference) {
 		addKBData.reference = cmds.RequestStringValue(getLabel(referenceLabel, addKBData.reference))
 	}
-	if kbs.IsStringEmpty(addKBData.rawTags) {
+	if kbs.IsStringEmpty(addKBData.rawTags) && len(addKBData.tags) == 0 {
 		addKBData.rawTags = cmds.RequestStringValue(getLabel(tagLabel, addKBData.rawTags))
 		addKBData.buildTags()
 	}

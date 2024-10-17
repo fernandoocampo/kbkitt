@@ -21,6 +21,7 @@ type addKBParams struct {
 	kind        string
 	reference   string
 	mediaType   string
+	rawTags     string
 	interactive bool
 	tags        []string
 }
@@ -36,7 +37,6 @@ const (
 	mediaSavedSuccessfully = "kb media added successfully"
 	kbSavedForSyncSuccess  = "kb successfully saved for later sync"
 	missingMediaType       = "it seems that the type of media cannot be determined..."
-	missingTags            = "it seems tag values are missing, they will be useful to find this kb entry, Please indicate some of them..."
 	saveMediaQuestionLabel = "> do you want to save this media kb locally on your computer? [y/n]: "
 )
 
@@ -46,10 +46,10 @@ const (
 	valueLabel     = "value%s: "
 	notesLabel     = "notes%s: "
 	kindLabel      = "class%s: "
-	tagLabel       = "tag: "
+	tagLabel       = "tags%s: "
 	referenceLabel = "reference%s: "
 	mediaTypeLabel = "media type%s: "
-	tagsLabel      = "tags (comma separated values): "
+	tagsLabel      = "tags (space separated values): "
 	showValueLabel = "(%s)"
 )
 
@@ -231,15 +231,12 @@ func fillMissingAddFields() {
 	if kbs.IsStringEmpty(addKBData.reference) {
 		addKBData.reference = cmds.RequestStringValue(getLabel(referenceLabel, addKBData.reference))
 	}
+	if kbs.IsStringEmpty(addKBData.rawTags) {
+		addKBData.rawTags = cmds.RequestStringValue(getLabel(tagLabel, addKBData.rawTags))
+		addKBData.buildTags()
+	}
 
 	checkMediaType()
-
-	if len(addKBData.tags) == 0 {
-		fmt.Println()
-		fmt.Println(missingTags)
-		fmt.Println()
-		addKBData.tags = cmds.ReadCSVFromStdin(tagLabel)
-	}
 }
 
 func checkMediaType() {
@@ -285,12 +282,7 @@ func fillExistingFields() {
 	addKBData.notes = readStringValue(notesLabel, addKBData.notes)
 	addKBData.kind = readStringValue(kindLabel, addKBData.kind)
 	addKBData.reference = readStringValue(referenceLabel, addKBData.reference)
-	if len(addKBData.tags) == 0 {
-		fmt.Println()
-		fmt.Println(missingTags)
-		fmt.Println()
-		addKBData.tags = cmds.ReadCSVFromStdin(tagLabel)
-	}
+	addKBData.rawTags = readStringValue(tagLabel, addKBData.rawTags)
 }
 
 func readStringValue(label, currentValue string) string {
@@ -324,4 +316,8 @@ func (a addKBParams) toNewKB() kbs.NewKB {
 	copy(newKB.Tags, a.tags)
 
 	return newKB
+}
+
+func (a *addKBParams) buildTags() {
+	a.tags = strings.Split(a.rawTags, " ")
 }

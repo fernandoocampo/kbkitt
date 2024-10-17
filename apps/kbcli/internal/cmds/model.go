@@ -35,7 +35,6 @@ const (
 
 // common labels
 const (
-	AreYouDoneLabel  = "> are you done? [y/n]: "
 	TitleSeparator   = "-------------"
 	IDCol            = "ID"
 	IDColSeparator   = "--"
@@ -114,23 +113,6 @@ func RequestStringValue(label string) string {
 	}
 
 	return output
-}
-
-func ReadCSVFromStdin(label string) []string {
-	var result []string
-	for {
-		var value string
-		fmt.Print(label)
-		fmt.Scan(&value)
-
-		result = append(result, value)
-
-		if AreYouSure(AreYouDoneLabel) {
-			fmt.Println()
-			break
-		}
-	}
-	return result
 }
 
 func AreYouSure(label string) bool {

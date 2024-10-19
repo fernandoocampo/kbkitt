@@ -7,6 +7,7 @@ import (
 
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestAddKBInvalidValues(t *testing.T) {
@@ -30,7 +31,6 @@ func TestAddKBInvalidValues(t *testing.T) {
 
 func TestAddKB(t *testing.T) {
 	// Given
-	withKBIDDummy := "88ac1fa1-2cdd-4f64-a4a3-13c6d162f504"
 	newKB := kbs.NewKB{
 		Key:   "halving",
 		Value: "The number of bitcoins generated per block is decreased 50% every four years",
@@ -47,48 +47,49 @@ func TestAddKB(t *testing.T) {
 		Tags:  []string{"bitcoin", "halving"},
 	}
 	ctx := context.TODO()
+	storageMock := newStorageMock()
+	storageMock.On("Create", ctx, mock.AnythingOfType("kbs.KB")).Return("1", nil)
+
 	settings := kbs.ServiceSetup{
-		KBClient: newKBServiceDummyWithCreate(withKBIDDummy, nil),
+		KBStorage: storageMock,
 	}
 	kbService := kbs.NewService(settings)
 	// When
 	gotKB, err := kbService.Add(ctx, newKB)
 	// Then
 	assert.NoError(t, err)
+	expectedKB.ID = gotKB.ID
 	assert.Equal(t, expectedKB, gotKB)
 }
 
-type kbServiceDummy struct {
-	createKBID    string
-	newKBInput    *kbs.NewKB
-	createKBError error
+type storageDummy struct {
+	mock.Mock
 }
 
-func newKBServiceDummyWithCreate(kbid string, err error) *kbServiceDummy {
-	return &kbServiceDummy{
-		createKBID:    kbid,
-		createKBError: err,
-	}
+func newStorageMock() *storageDummy {
+	return &storageDummy{}
 }
 
-func (k *kbServiceDummy) Create(ctx context.Context, newKB kbs.NewKB) (string, error) {
-	k.newKBInput = &newKB
+func (k *storageDummy) Create(ctx context.Context, newKB kbs.KB) (string, error) {
+	args := k.Called(ctx, newKB)
 
-	if k.createKBError != nil {
-		return "", k.createKBError
-	}
-
-	return k.createKBID, nil
+	return args.String(0), args.Error(1)
 }
 
-func (k *kbServiceDummy) Search(ctx context.Context, filter kbs.KBQueryFilter) (*kbs.SearchResult, error) {
-	return nil, nil
+func (k *storageDummy) Search(ctx context.Context, filter kbs.KBQueryFilter) (*kbs.SearchResult, error) {
+	args := k.Called(ctx, filter)
+
+	return args.Get(0).(*kbs.SearchResult), args.Error(1)
 }
 
-func (k *kbServiceDummy) Get(ctx context.Context, id string) (*kbs.KB, error) {
-	return nil, nil
+func (k *storageDummy) Get(ctx context.Context, id string) (*kbs.KB, error) {
+	args := k.Called(ctx, id)
+
+	return args.Get(0).(*kbs.KB), args.Error(1)
 }
 
-func (k *kbServiceDummy) Update(ctx context.Context, kb *kbs.KB) error {
-	return nil
+func (k *storageDummy) Update(ctx context.Context, kb *kbs.KB) error {
+	args := k.Called(ctx, kb)
+
+	return args.Error(0)
 }

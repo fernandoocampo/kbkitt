@@ -114,7 +114,7 @@ func newItemViewport() (*viewport.Model, error) {
 	return &vp, nil
 }
 
-func newPaginator(limit uint16, total int) *paginator.Model {
+func newPaginator(limit uint32, total int) *paginator.Model {
 	p := paginator.New()
 	p.Type = paginator.Dots
 	p.PerPage = int(limit)

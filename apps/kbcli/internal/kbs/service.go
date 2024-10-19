@@ -12,6 +12,13 @@ import (
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/adapters/webs"
 )
 
+type Storage interface {
+	Create(ctx context.Context, newKB KB) (string, error)
+	Get(ctx context.Context, id string) (*KB, error)
+	Update(ctx context.Context, kb *KB) error
+	Search(ctx context.Context, filter KBQueryFilter) (*SearchResult, error)
+}
+
 type KBServiceClient interface {
 	Create(ctx context.Context, newKB NewKB) (string, error)
 	Update(ctx context.Context, kb *KB) error
@@ -20,14 +27,16 @@ type KBServiceClient interface {
 }
 
 type ServiceSetup struct {
+	KBStorage       Storage
+	KBClient        KBServiceClient
 	Name            string
 	FileForSyncPath string
 	DirForMediaPath string
-	KBClient        KBServiceClient
 }
 
 type Service struct {
 	kbClient        KBServiceClient
+	storage         Storage
 	fileForSyncPath string
 	dirForMediaPath string
 }
@@ -35,6 +44,7 @@ type Service struct {
 func NewService(settings ServiceSetup) *Service {
 	newService := Service{
 		kbClient:        settings.KBClient,
+		storage:         settings.KBStorage,
 		fileForSyncPath: settings.FileForSyncPath,
 		dirForMediaPath: settings.DirForMediaPath,
 	}
@@ -52,7 +62,9 @@ func (s *Service) Add(ctx context.Context, newKB NewKB) (*KB, error) {
 		return nil, NewDataError(fmt.Sprintf("the given values are not valid: %s", err))
 	}
 
-	id, err := s.kbClient.Create(ctx, newKB)
+	kb := newKB.toKB()
+
+	_, err = s.storage.Create(ctx, kb)
 	if err != nil && errors.As(err, &ClientError{}) {
 		return nil, NewDataError(fmt.Sprintf("unable to add kb due to given data: %s", err))
 	}
@@ -61,7 +73,6 @@ func (s *Service) Add(ctx context.Context, newKB NewKB) (*KB, error) {
 		return nil, fmt.Errorf("failed to add kb: %w", err)
 	}
 
-	kb := newKB.toKB(id)
 	return &kb, nil
 }
 
@@ -71,7 +82,7 @@ func (s *Service) Update(ctx context.Context, kb KB) error {
 		return NewDataError(fmt.Sprintf("the given values are not valid: %s", err))
 	}
 
-	err = s.kbClient.Update(ctx, &kb)
+	err = s.storage.Update(ctx, &kb)
 	if err != nil && errors.As(err, &ClientError{}) {
 		return NewDataError(fmt.Sprintf("unable to update kb due to given data: %s", err))
 	}
@@ -95,13 +106,14 @@ func (s *Service) Import(ctx context.Context, newKBs []NewKB) (*ImportResult, er
 	}
 
 	for _, newKB := range newKBs {
-		id, err := s.kbClient.Create(ctx, newKB)
+		kb := newKB.toKB()
+		_, err := s.storage.Create(ctx, kb)
 		if err != nil {
 			result.FailedKeys[newKB.Key] = err.Error()
 			continue
 		}
 
-		result.NewIDs[newKB.Key] = id
+		result.NewIDs[newKB.Key] = kb.ID
 	}
 
 	return &result, nil
@@ -221,7 +233,7 @@ func isNotMediaFile(urlpath string) (bool, error) {
 		return false, nil
 	}
 
-	info, err := filesystems.FileNotExist(urlpath)
+	info, err := filesystems.CheckFile(urlpath)
 	if err != nil {
 		return true, fmt.Errorf("unable to verify if the media exists: %w", err)
 	}
@@ -242,7 +254,7 @@ func (s *Service) GetByID(ctx context.Context, id string) (*KB, error) {
 		return nil, fmt.Errorf("the given id is not valid, because it is empty")
 	}
 
-	kb, err := s.kbClient.Get(ctx, id)
+	kb, err := s.storage.Get(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get kb: %w", err)
 	}
@@ -255,7 +267,7 @@ func (s *Service) Search(ctx context.Context, filter KBQueryFilter) (*SearchResu
 		return nil, nil
 	}
 
-	kbs, err := s.kbClient.Search(ctx, filter)
+	kbs, err := s.storage.Search(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("failed to search kb: %w", err)
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	err := apps.Execute()
+	err := apps.NewApplication().Execute()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "unable to start app:", err)
 		os.Exit(1)

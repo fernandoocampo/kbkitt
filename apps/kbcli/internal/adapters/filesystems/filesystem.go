@@ -36,7 +36,7 @@ func ReadFile(filePath string) ([]byte, error) {
 	return file, nil
 }
 
-func FileNotExist(filePath string) (*MediaInfo, error) {
+func CheckFile(filePath string) (*MediaInfo, error) {
 	var result MediaInfo
 	stat, err := os.Stat(filePath)
 	if err != nil && os.IsNotExist(err) {
@@ -51,7 +51,22 @@ func FileNotExist(filePath string) (*MediaInfo, error) {
 		result.IsDir = true
 	}
 
+	result.Exist = true
+
 	return &result, nil
+}
+
+func FileExists(filePath string) (bool, error) {
+	result, err := CheckFile(filePath)
+	if err != nil {
+		return false, fmt.Errorf("unable to verify if file exists: %w", err)
+	}
+
+	if result == nil {
+		return false, nil
+	}
+
+	return (!result.IsDir && result.Exist), nil
 }
 
 func FileEmpty(filePath string) (bool, error) {

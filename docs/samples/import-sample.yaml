@@ -1197,3 +1197,249 @@ Tags:
     - intelligence
     - memory
     - calculator
+---
+Key: new-go-mux
+Value: https://eli.thegreenplace.net/2023/better-http-server-routing-in-go-122
+Notes: An exciting proposal is expected to land in Go 1.22 - enhancing the pattern-matching capabilities of the default HTTP serving multiplexer in the net/http package.
+Kind: bookmark
+Reference: golang mux
+Tags:
+    - golang
+    - routes
+    - multiplexer
+    - mux
+    - gorilla
+---
+Key: kubectl-api-resources
+Value: kubectl api-resources
+Notes: Print the supported API resources on the server.
+Kind: command
+Reference: kubectl
+Tags:
+    - kubectl
+    - api
+    - resources
+    - supported
+    - kubernetes
+---
+Key: deploy-low-latency-apps-aws
+Value: https://aws.amazon.com/tutorials/deploying-low-latency-applications-with-aws-local-zones/
+Notes: AWS Local Zones are a type of infrastructure deployment that places compute, storage, database, and other select AWS services close to large population and industry centers, enabling you to deliver applications that require single-digit millisecond latency to end users.
+Kind: bookmark
+Reference: aws
+Tags:
+    - low
+    - latency
+    - aws
+    - applications
+    - local
+    - zones
+---
+Key: candidate-interview-questions
+Value: "Who Would You Define As a Successful Person In This Role? \nWhat Are Your Expectations From The Person In This Job Position?\nCould You Give A Little Overview Of How A Day Goes For A Person In This Position?\nWhat Might Be The Most Challenging Part For This Role?\nWhat Is It That You Like Or Enjoy About The Company?"
+Notes: questions to ask to interviewer
+Kind: concept
+Reference: asking questions in interviews
+Tags:
+    - interviews
+    - questions
+    - candidate
+    - expectations
+---
+Key: push-up-back
+Value: Would it be okay if we pushed stand up back an hour?
+Notes: Pushing something back makes it further away from you. So pushing back an event makes it further away in time, so into the future. Pushing up an event means the event happens at a sooner time
+Kind: english
+Reference: english
+Tags:
+    - push
+    - back
+    - english
+    - language
+    - idioms
+---
+Key: grep-with-pattern
+Value: grep -E "{PATTERN1}|{PATTERN2}"
+Notes: The basic grep syntax when searching multiple patterns in a file includes using the grep command followed by strings and the name of the file or its path.
+Kind: command
+Reference: https://phoenixnap.com/kb/grep-multiple-strings
+Tags:
+    - linux
+    - grep
+    - command
+    - grep
+    - multiple
+    - patterns
+    - search
+---
+Key: cqrs-pattern
+Value: CQRS stands for Command and Query Responsibility Segregation, a pattern that separates read and update operations for a data store. Implementing CQRS in your application can maximize its performance, scalability, and security.
+Notes: |-
+    So, what’s the best way to get started using the CQRS patterns in your microservices architecture? First, clearly define the Commands and Queries specific to your application or service. Understanding which operations will modify the state and which will only read data is essential.
+
+    Next, you should design separate Command and Query Models tailored to your application's operational needs. This involves optimizing each model to ensure it can function effectively within the system.
+
+    The CQRS pattern works well with the Event Sourcing patterns, so you should consider adopting an Event Store to capture all changes in your systems as a series of events.
+Kind: concept
+Reference: https://martinfowler.com/bliki/CQRS.html
+Tags:
+    - cqrs
+    - pattern
+    - microservices
+    - command
+    - query
+    - responsibility
+    - segretation
+---
+Key: salt-pwd-bcrypt
+Value: https://www.gregorygaines.com/blog/how-to-properly-hash-and-salt-passwords-in-golang-bcrypt/
+Notes: How to Properly Hash and Salt Passwords in Golang Using Bcrypt. The bcypt function is secure and brute force resistant allowing programmers to safely handle the passwords of their users. Bcrypt uses a concept named cost which represents the number of hash iterations that bcrypt undertakes. Hashing time is calculated as 2 ^ cost and the higher the cost, the longer the hashing process takes.
+Kind: bookmark
+Reference: Gregory Gaines
+Tags:
+    - password
+    - encrypt
+    - hash
+    - bcrypt
+    - cost
+---
+Key: pgcrypto
+Value: https://github.com/leg100/pggen/tree/main/example/pgcrypto
+Notes: |-
+    how to use pgcrypto with samples
+    INSERT INTO "user" (email, pass) VALUES ($1, crypt($2, gen_salt('bf')));
+Kind: bookmark
+Reference: pgcrypto
+Tags:
+    - encrypt
+    - hash
+    - pgcrypto
+    - database
+    - postgresql
+---
+Key: dependabot
+Value: https://github.com/dependabot
+Notes: GitHub feature that automates the process of updating dependencies in a repository. It helps developers keep their dependencies up-to-date and secure by submitting pull requests (PRs) to update outdated or vulnerable dependencies.
+Kind: bookmark
+Reference: github
+Tags:
+    - github
+    - dependencies
+    - bot
+    - feature
+    - pipeline
+---
+Key: resume-io
+Value: https://resume.io
+Notes: to build resumes, good GUI
+Kind: bookmark
+Reference: internet
+Tags:
+    - resume
+    - curriculum
+    - builder
+    - profile
+---
+Key: spiffe-id-workloads
+Value: https://spiffe.io/
+Notes: SPIFFE and SPIRE provide a uniform identity control plane across modern and heterogeneous infrastructure. Since software and application architectures have grown substantially, they are spread across virtual machines in public clouds and private data centers. Security models for the organizations that manage them must keep up with these infrastructure technologies. And this is where SPIFFE and SPIRE come in. With SPIFFE/SPIRE, developers and operators can build software using new infrastructure technologies, while allowing security teams to step back from time-consuming security processes.
+Kind: bookmark
+Reference: project
+Tags:
+    - spire
+    - spiffe
+    - identity
+    - oauth
+    - control
+    - plane
+    - stosgale
+    - security
+---
+Key: spire-docker-compose
+Value: https://github.com/spiffe/spire-tutorials/tree/main/docker-compose/federation
+Notes: This tutorial shows how to authenticate two SPIFFE-identified workloads that are identified by two different SPIRE Servers.
+Kind: bookmark
+Reference: chauncey
+Tags:
+    - spire
+    - spiffe
+    - identity
+    - oauth
+    - security
+    - examples
+    - docker
+    - compose
+---
+Key: dijkstra-bugs-presence
+Value: Testing shows the presence, not the absence of bugs
+Notes: ""
+Kind: quote
+Reference: Edsger W. Dijkstra
+Tags:
+    - testing
+    - bugs
+    - dijkstra
+    - presence
+    - tdd
+    - software
+    - development
+---
+Key: eric-graceful-termination
+Value: https://github.com/integrii/go-k8s-graceful-termination
+Notes: This is an example Go appliation and self-paced tutorial for implementing the graceful shutdown of Kubernetes pods. This Go application does not drop connections when terminating due to proper shutdown signal trapping. If your app does not capture shutdown signals properly today, your service probably drops connections for users when your pods are re-deployed or removed for any reason.
+Kind: bookmark
+Reference: eric greer repo
+Tags:
+    - graceful
+    - termination
+    - shutdown
+    - code
+    - eric
+    - greer
+---
+Key: sqlite-bench-go
+Value: https://github.com/cvilsmeier/go-sqlite-bench
+Notes: Benchmarks for Golang SQLite Drivers
+Kind: bookmark
+Reference: internet
+Tags:
+    - sqlite
+    - drivers
+    - golang
+    - benchmark
+---
+Key: optimize-go-test-parallesim
+Value: https://threedots.tech/post/go-test-parallelism/
+Notes: Recently, I struggled for a couple of hours to understand why the API tests of one project were slow. In theory, we designed tests to run in a fully parallel way – the duration of tests should be close to the longest-running test. Unfortunately, the reality was different. Tests took 7x longer than the slowest test without using 100% available resources.
+Kind: bookmark
+Reference: Robert Laszczak
+Tags:
+    - golang
+    - testing
+    - parallesim
+    - performance
+    - practices
+---
+Key: k3s-lightweight
+Value: https://k3s.io
+Notes: The certified Kubernetes distribution built for IoT & Edge computing
+Kind: bookmark
+Reference: chaparro
+Tags:
+    - kubernetes
+    - lightweight
+    - edge
+    - computing
+    - iot
+---
+Key: edge-computing
+Value: Edge computing is a distributed computing framework that brings enterprise applications closer to data sources such as IoT devices or local edge servers.
+Notes: Sending all device-generated data to a centralized data center or to the cloud causes bandwidth and latency issues. Edge computing offers a more efficient alternative; data is processed and analyzed closer to the point where it's created. Because data does not traverse over a network to a cloud or data center to be processed, latency is reduced. Edge computing—and mobile edge computing on 5G networks—enables faster and more comprehensive data analysis, creating the opportunity for deeper insights, faster response times and improved customer experiences.
+Kind: concept
+Reference: https://www.ibm.com/topics/edge-computing
+Tags:
+    - edge
+    - computing
+    - iot
+    - devices
+    - process

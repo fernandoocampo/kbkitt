@@ -73,7 +73,7 @@ run-add-media: ## Run add app to save kb with media.
 
 .PHONY: run-import-with-args
 run-import-with-args: ## Run import app with predefined arguments.
-	$(GO_TOOL) run cmd/kbcli/main.go import -f /Users/Fernando_Ocampo/.kbkitt/sample.yaml --show-added-kbs --show-failed-kbs
+	$(GO_TOOL) run cmd/kbcli/main.go import -f ../../docs/samples/import-sample.yaml --show-added-kbs --show-failed-kbs
 
 .PHONY: run-sync-with-args
 run-sync-with-args: ## Run sync app with predefined arguments.

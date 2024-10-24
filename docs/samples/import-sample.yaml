@@ -1,7 +1,7 @@
 Key: stateful firewall
 Value: allows the return traffic automatically
 Notes: in aws cloud used by security groups
-Kind: concept
+Category: concept
 Reference: aws
 Tags:
     - security
@@ -13,7 +13,7 @@ Tags:
 Key: stateless firewall
 Value: checks for an allow rule for both connections in/out
 Notes: ACLs in AWS you need inbound and outbound rules even for same connection
-Kind: concept
+Category: concept
 Reference: aws
 Tags:
     - security
@@ -26,7 +26,7 @@ Tags:
 Key: p2p network
 Value: there's no central master or server node coordinating them
 Notes: ethereum network is a p2p network
-Kind: concept
+Category: concept
 Reference: ethereum
 Tags:
     - blockchain
@@ -37,7 +37,7 @@ Tags:
 Key: coupling
 Value: when we say that coupling is bad, what we usually imply is that we have to change those two components simultaneously. For example, you want to change one of them, but then you’re forced to apply a corresponding change to the second component.
 Notes: coupling as part of system design
-Kind: concept
+Category: concept
 Reference: Vladik Khononov at techleadjournal
 Tags:
     - coupling
@@ -47,7 +47,7 @@ Tags:
 Key: cynefin framework
 Value: is a conceptual framework used to aid decision-making. Cynefin offers five decision-making contexts or "domains". obvious, complicated, complex, chaotic, and confusion.
 Notes: that help managers to identify how they perceive situations and make sense of their own and other people's behaviour.
-Kind: concept
+Category: concept
 Reference: Dave Snowden
 Tags:
     - cynefin
@@ -57,7 +57,7 @@ Tags:
 Key: cynefin obvious
 Value: If I know exactly what the effect of that change is going to be, then that code base is not complex. It’s probably simple.
 Notes: That’s why this domain, in Cynefin terms, is called clear. It’s something that is simple, clear. If I am making a change, I know what’s going to happen.
-Kind: concept
+Category: concept
 Reference: vladik khononov
 Tags:
     - cynefin
@@ -69,7 +69,7 @@ Tags:
 Key: lead time
 Value: the difference between when an item is defined and done
 Notes: metrics
-Kind: concept
+Category: concept
 Reference: vaughn vernon
 Tags:
     - lifecycle
@@ -80,7 +80,7 @@ Tags:
 Key: cycle time
 Value: the difference between when an item is in progress and done
 Notes: metrics
-Kind: concept
+Category: concept
 Reference: vaughn vernon
 Tags:
     - lifecycle
@@ -91,7 +91,7 @@ Tags:
 Key: program testing
 Value: Program testing can be a very effective way to show the presence of bugs, but it is hopelessly inadequate for showing their absence
 Notes: programming test thoughs
-Kind: quote
+Category: quote
 Reference: Edsger W. Dijkstra
 Tags:
     - dijkstra
@@ -102,7 +102,7 @@ Tags:
 Key: correctness
 Value: it is the extent to which our code does what we intend it to do
 Notes: correctness in our programs
-Kind: concept
+Category: concept
 Reference: rust book
 Tags:
     - correctness
@@ -112,7 +112,7 @@ Tags:
 Key: netshoot command
 Value: kubectl run tmp-shell-fo --rm -i --tty --image nicolaka/netshoot
 Notes: create a temporal pod to run network commands
-Kind: command
+Category: command
 Reference: network
 Tags:
     - network
@@ -124,7 +124,7 @@ Tags:
 Key: terraform rm
 Value: terraform state rm "<path>"
 Notes: to remove specific resource from terraform state
-Kind: command
+Category: command
 Reference: terraform
 Tags:
     - terraform
@@ -135,7 +135,7 @@ Tags:
 Key: aristoteles-1
 Value: The purpose of knowledge is action, not knowledge
 Notes: ""
-Kind: quote
+Category: quote
 Reference: aristotle
 Tags:
     - quote
@@ -146,7 +146,7 @@ Tags:
 Key: zero-overhead
 Value: What you dont use, you dont pay for. And further What you do use, you couldn’t hand code any better.
 Notes: In general, C++ implementations obey the zero-overhead principle
-Kind: concept
+Category: concept
 Reference: Bjarne Stroustrup
 Tags:
     - overhead
@@ -155,7 +155,7 @@ Tags:
     - implementation
 ---
 Key: lsof
-Kind: command
+Category: command
 Tags: 
     - linux
     - command
@@ -169,7 +169,7 @@ Notes: |+
 Reference: 
 ---
 Key: grep-with-lines
-Kind: command
+Category: command
 Tags: 
     - linux
     - command
@@ -183,7 +183,7 @@ Notes: file pattern searcher. 5 lineas after the word and 5 line Before word
 Reference: 
 ---
 Key: casco-quote
-Kind: quote
+Category: quote
 Tags: 
     - helmet
     - casco
@@ -196,7 +196,7 @@ Notes:
 Reference: Airton Sena
 ---
 Key: alone-quote
-Kind: quote
+Category: quote
 Tags: 
     - alone
     - quote
@@ -207,7 +207,7 @@ Notes:
 Reference: Henry David Thoreau
 ---
 Key: best-of-breed systems
-Kind: quote
+Category: quote
 Tags: 
     - breed
     - system
@@ -219,7 +219,7 @@ Notes: How machine learning applies to your business
 Reference: 
 ---
 Key: solow paradox
-Kind: quote
+Category: quote
 Tags: 
     - solow
     - paradox
@@ -233,7 +233,7 @@ Notes: If computers were really helping us become more productive, why is it tha
 Reference: Robert Solow
 ---
 Key: ml-quote
-Kind: quote
+Category: quote
 Tags: 
     - machine
     - learning
@@ -246,7 +246,7 @@ Notes:
 Reference: How machine learning applies to your business
 ---
 Key: target variable
-Kind: concept
+Category: concept
 Tags: 
     - machine
     - learning
@@ -258,7 +258,7 @@ Notes: In machine learning lingo, Person’s decision is called the target varia
 Reference: How machine learning applies to your business
 ---
 Key: categorical target variable
-Kind: concept
+Category: concept
 Tags: 
     - machine
     - learning
@@ -271,7 +271,7 @@ Notes:
 Reference: How machine learning applies to your business
 ---
 Key: binary target variable
-Kind: concept
+Category: concept
 Tags: 
     - machine
     - learning
@@ -285,7 +285,7 @@ Notes:
 Reference: How machine learning applies to your business
 ---
 Key: multiclass target variable
-Kind: concept
+Category: concept
 Tags: 
     - machine
     - learning
@@ -299,7 +299,7 @@ Notes:
 Reference: How machine learning applies to your business
 ---
 Key: Continuous target variable
-Kind: concept
+Category: concept
 Tags: 
     - machine
     - learning
@@ -312,7 +312,7 @@ Notes:
 Reference: How machine learning applies to your business
 ---
 Key: ML Features
-Kind: concept
+Category: concept
 Tags: 
     - machine
     - learning
@@ -323,7 +323,7 @@ Notes:
 Reference: Grokking Machine Learning
 ---
 Key: Supervised machine learning
-Kind: concept
+Category: concept
 Tags: 
     - machine
     - learning
@@ -334,7 +334,7 @@ Notes: The model first remembers the dataset of dogs and cats, then formulates a
 Reference: Grokking Machine Learning
 ---
 Key: Unsupervised machine learning
-Kind: concept
+Category: concept
 Tags: 
     - machine
     - learning
@@ -345,7 +345,7 @@ Notes:
 Reference: Grokking Machine Learning
 ---
 Key: Regression Models
-Kind: concept
+Category: concept
 Tags: 
     - machine
     - learning
@@ -356,7 +356,7 @@ Notes:
 Reference: Grokking Machine Learning
 ---
 Key: Classification Models
-Kind: concept
+Category: concept
 Tags: 
     - machine
     - learning
@@ -367,7 +367,7 @@ Notes:
 Reference: Grokking Machine Learning
 ---
 Key: ML Annotation
-Kind: concept
+Category: concept
 Tags: 
     - machine
     - learning
@@ -380,7 +380,7 @@ Reference: Human in the loop
 Key: borrowing
 Value: We call the action of creating a reference borrowing.
 Notes: As in real life, if a person owns something, you can borrow it from them. When you’re done, you have to give it back. You don’t own it.
-Kind: concept
+Category: concept
 Reference: rust book
 Tags:
     - rust
@@ -392,7 +392,7 @@ Tags:
 Key: ownership
 Value: set of rules that govern how a Rust program manages memory
 Notes: 'Rust uses a third approach: memory is managed through a system of ownership with a set of rules that the compiler checks.'
-Kind: concept
+Category: concept
 Reference: rust book
 Tags:
     - rust
@@ -403,7 +403,7 @@ Tags:
 Key: ownership rules
 Value: 1. Each value in Rust has an owner. 2. There can only be one owner at a time. 3. When the owner goes out of scope, the value will be dropped.
 Notes: ""
-Kind: concept
+Category: concept
 Reference: rust book
 Tags:
     - rust
@@ -414,7 +414,7 @@ Tags:
 Key: stack memory
 Value: part of memory available to your code to use at runtime. All data stored on the stack must have a known, fixed size.
 Notes: The stack stores values in the order it gets them and removes the values in the opposite order (FIFO).
-Kind: concept
+Category: concept
 Reference: rust book
 Tags:
     - memory
@@ -424,7 +424,7 @@ Tags:
 Key: heap memory
 Value: 'The heap is less organized: when you put data on the heap, you request a certain amount of space. The memory allocator finds an empty spot in the heap that is big enough, marks it as being in use, and returns a pointer, which is the address of that location.'
 Notes: This process is called allocating on the heap and is sometimes abbreviated as just allocating (pushing values onto the stack is not considered allocating). Because the pointer to the heap is a known, fixed size, you can store the pointer on the stack, but when you want the actual data, you must follow the pointer.
-Kind: concept
+Category: concept
 Reference: rust book
 Tags:
     - heap
@@ -435,7 +435,7 @@ Tags:
 Key: concurrent programming
 Value: where different parts of a program execute independently
 Notes: ""
-Kind: concept
+Category: concept
 Tags:
     - concurrency
     - programming
@@ -444,7 +444,7 @@ Tags:
 Key: parallel programming
 Value: where different parts of a program execute at the same time
 Notes: ""
-Kind: concept
+Category: concept
 Tags:
     - parallel
     - programming
@@ -453,7 +453,7 @@ Tags:
 Key: design patterns
 Value: poweful abstractions that every programmer can use  to produce high quality code.
 Notes: 'Humans are good at pattern recognition, and following well understood and easily recognized patterns helps us solve 2 tricky problems: reasoning about whether a design is good or bad amd help other people understand our code'
-Kind: concept
+Category: concept
 Reference: idiomatic rust
 Tags:
     - patterns
@@ -464,7 +464,7 @@ Tags:
 Key: JWK
 Value: The JSON Web Key Set (JWKS) is a set of keys which contains the public keys used to verify any JSON Web Token (JWT) issued by the authorization server and signed using the RS256 signing algorithm.
 Notes: ""
-Kind: concept
+Category: concept
 Reference: jwt
 Tags:
     - token
@@ -475,7 +475,7 @@ Tags:
 Key: oh-my-zsh-git-shortcuts
 Value: https://kapeli.com/cheat_sheets/Oh-My-Zsh_Git.docset/Contents/Resources/Documents/index
 Notes: Enjoy this cheat sheet at its fullest within Dash, the macOS documentation browser.
-Kind: bookmark
+Category: bookmark
 Reference: zsh+git
 Tags:
     - oh-my-zsh
@@ -488,7 +488,7 @@ Tags:
 Key: oauth2-proxy
 Value: https://github.com/oauth2-proxy/oauth2-proxy
 Notes: A reverse proxy and static file server that provides authentication using Providers (Google, Keycloak, GitHub and others) to validate accounts by email, domain or group.
-Kind: bookmark
+Category: bookmark
 Reference: uas epic proxy
 Tags:
     - proxy
@@ -500,7 +500,7 @@ Tags:
 Key: testdata
 Value: https://dave.cheney.net/2016/05/10/test-fixtures-in-go
 Notes: the Go tool will ignore any directory in your $GOPATH that starts with a period, an underscore, or matches the word testdata.
-Kind: bookmark
+Category: bookmark
 Reference: dave cheney
 Tags:
     - golang
@@ -512,7 +512,7 @@ Tags:
 Key: podman-multi-arch-build
 Value: https://blog.while-true-do.io/podman-multi-arch-images/
 Notes: Have you built a container image on your workstation, just to find out that it doesn't work on your Raspberry Pi? Maybe your project considers publishing a software for arm64 and amd64, so your users can run it on different platforms? No worries, Podman got you covered! With multi-arch builds, you can build your image once and run them on multiple platforms.
-Kind: bookmark
+Category: bookmark
 Reference: Daniel Schier
 Tags:
     - podman
@@ -524,7 +524,7 @@ Tags:
 Key: obansajo-vision
 Value: I’ve found more durable is being clear on what problems you are solving, why the problem is important and how you’ll do it. Strategy.
 Notes: A lot of leadership teams spend time creating mission, vision and values statements which are ignored almost as soon as they’re created.
-Kind: quote
+Category: quote
 Reference: dare obansajo
 Tags:
     - vision
@@ -536,7 +536,7 @@ Tags:
 Key: Dare Obansajo
 Value: '@Carnage4Life'
 Notes: Opinions about product management, technology news and inclusivity in tech. Diversity is about demographics, inclusion is about creating a sense of belonging.
-Kind: influencer
+Category: influencer
 Reference: twitter
 Tags:
     - dare
@@ -548,7 +548,7 @@ Tags:
 Key: Grady Booch
 Value: '@Grady_Booch'
 Notes: scientist, storyteller, philosopher
-Kind: influencer
+Category: influencer
 Reference: Grady Booch
 Tags:
     - grady
@@ -560,7 +560,7 @@ Tags:
 Key: Allen Holub
 Value: '@allenholub'
 Notes: I help ppl build software better
-Kind: influencer
+Category: influencer
 Reference: twitter
 Tags:
     - allen
@@ -571,7 +571,7 @@ Tags:
 Key: vault-login-oidc
 Value: VAULT_ADDR=https://{VAULT_HOST}/ vault login -method=oidc
 Notes: login against vault
-Kind: command
+Category: command
 Reference: vault
 Tags:
     - vault
@@ -582,7 +582,7 @@ Tags:
 Key: terraform-destroy-target
 Value: terraform destroy --target "{MODULE_OR_RESOURCE_TO_DESTROY}"
 Notes: To destroy a specific EC2 instance (demo_vm_1), the --target argument can be supplied to the destroy command with the resource path to identify the correct. terraform destroy --target aws_instance.demo_vm_1
-Kind: command
+Category: command
 Reference: https://spacelift.io/blog/how-to-destroy-terraform-resources
 Tags:
     - terraform
@@ -593,7 +593,7 @@ Tags:
 Key: future-tools-ai
 Value: https://www.futuretools.io
 Notes: FutureTools Collects & Organizes All The Best AI Tools So YOU Too Can Become Superhuman!
-Kind: bookmark
+Category: bookmark
 Reference: internet
 Tags:
     - tools
@@ -605,7 +605,7 @@ Tags:
 Key: operators handbook
 Value: https://www.operatorshandbook.com
 Notes: My goal with this newsletter is to provide you with actionable advice, frameworks and guides to grow your career and your business based on my experience as an operator over the last 10 years at companies like Uber, Meta and Rippling.
-Kind: bookmark
+Category: bookmark
 Reference: internet
 Tags:
     - handbook
@@ -618,7 +618,7 @@ Tags:
 Key: sematic-release
 Value: https://semantic-release.gitbook.io/semantic-release
 Notes: 'Fully automated version management and package publishing. semantic-release automates the whole package release workflow including: determining the next version number, generating the release notes, and publishing the package. ~/Downloads/ADR 15 - Automate Semantic Release.pdf'
-Kind: bookmark
+Category: bookmark
 Reference: conventional commits
 Tags:
     - semantic
@@ -629,7 +629,7 @@ Tags:
 Key: conventional-commits
 Value: https://www.conventionalcommits.org/
 Notes: The Conventional Commits specification is a lightweight convention on top of commit messages. It provides an easy set of rules for creating an explicit commit history; which makes it easier to write automated tools on top of. This convention dovetails with SemVer, by describing the features, fixes, and breaking changes made in commit messages.
-Kind: bookmark
+Category: bookmark
 Reference: conventional commits
 Tags:
     - conventional
@@ -641,7 +641,7 @@ Tags:
 Key: levelupcoding
 Value: '@LevelUpCoding_'
 Notes: Level up your engineering & system design skills. Complex topics simplified.
-Kind: influencer
+Category: influencer
 Reference: https://x.com/LevelUpCoding_
 Tags:
     - twitter
@@ -654,7 +654,7 @@ Tags:
 Key: phuong le
 Value: '@func25'
 Notes: dive into untold insights of golang and system design with blog.devtrovert.com
-Kind: influencer
+Category: influencer
 Reference: https://x.com/func25
 Tags:
     - golang
@@ -666,7 +666,7 @@ Tags:
 Key: devtrovert
 Value: https://blog.devtrovert.com
 Notes: Phuong Le blog about go and system design
-Kind: bookmark
+Category: bookmark
 Reference: '@func25 at twitter'
 Tags:
     - golang
@@ -681,7 +681,7 @@ Notes: |-
     list all the files in a commit
     -r argument is to recurse into sub-trees
     --name-only argument shows only the file names that were affected
-Kind: command
+Category: command
 Reference: stackoverflow
 Tags:
     - git
@@ -692,7 +692,7 @@ Tags:
 Key: jwt-claims
 Value: JSON web tokens (JWTs) claims are pieces of information asserted about a subject. For example, an ID token (which is always a JWT) can contain a claim called name that asserts that the name of the user authenticating is "John Doe". In a JWT, a claim appears as a name/value pair where the name is always a string and the value can be any JSON value
 Notes: https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-token-claims
-Kind: concept
+Category: concept
 Reference: auth0
 Tags:
     - jwt
@@ -704,7 +704,7 @@ Tags:
 Key: singleflight-go
 Value: https://victoriametrics.com/blog/go-singleflight/index.html
 Notes: The singleflight package in Go is built specifically to handle that situation when you’ve got multiple requests coming in at the same time asking for the same data, the default behavior is that each of those requests would go to the database individually to get the same information
-Kind: bookmark
+Category: bookmark
 Reference: victoriametrics
 Tags:
     - singleflight
@@ -717,7 +717,7 @@ Tags:
 Key: jetstream
 Value: https://docs.nats.io/nats-concepts/jetstream
 Notes: NATS has a built-in persistence engine called JetStream which enables messages to be stored and replayed at a later time. Unlike NATS Core which requires you to have an active subscription to process messages as they happen, JetStream allows the NATS server to capture messages and replay them to consumers as needed. This functionality enables a different quality of service for your NATS messages, and enables fault-tolerant and high-availability configurations.
-Kind: bookmark
+Category: bookmark
 Reference: Fabian
 Tags:
     - jetstream
@@ -729,7 +729,7 @@ Tags:
 Key: learn-mlops-2024
 Value: https://neptune.ai/blog/how-to-learn-mlops
 Notes: With the recent rapid advancements in machine learning and its widespread application in various industries, Machine Learning Operations (MLOps for short) has become a rapidly advancing field. The recent popularity of Large Language Models (LLMs) has only accelerated this development and increased the demand for MLOps specialists.
-Kind: bookmark
+Category: bookmark
 Reference: Chauncey
 Tags:
     - mlops
@@ -741,7 +741,7 @@ Tags:
 Key: mlops-repository
 Value: https://github.com/raminmohammadi/MLOps
 Notes: This repository is dedicated to sharing reading contents, labs and exercises for the MLOps (Machine Learning Operations) course at Northeastern University.
-Kind: bookmark
+Category: bookmark
 Reference: Chauncey
 Tags:
     - mlops
@@ -754,7 +754,7 @@ Tags:
 Key: business-logic-module
 Value: The business logic module is explicit and bounded. It contains what you have coded from business requirements, and importantly, your application does not contain what has not been coded. Indeed, business logic can be extended at runtime through externalization of rules, different rule engines, domain-specific languages, allowing users to code, and so on.
 Notes: ""
-Kind: concept
+Category: concept
 Reference: epam course
 Tags:
     - business
@@ -767,7 +767,7 @@ Tags:
 Key: business-reasoning-module
 Value: allows business logic to be extended at runtime without explicit coding effort by leveraging the generative nature of Gen AI. This way, you can envision a conventional-looking application that doesn't have a chat interface anywhere. Instead, it contains a business reasoning module that considers user activities to devise solutions to a problem.
 Notes: ""
-Kind: concept
+Category: concept
 Reference: epam training
 Tags:
     - business
@@ -781,7 +781,7 @@ Tags:
 Key: ccu
 Value: Concurrent Users metric
 Notes: This can either be in reference to number of sessions per single server instance OR the number of users participating in an experience / event at the same time.
-Kind: concept
+Category: concept
 Reference: load testing
 Tags:
     - testing
@@ -793,7 +793,7 @@ Tags:
 Key: structured-request
 Value: 'Outside the business reasoning software module, you encounter the world of code, API calls, and SDKs, which handles conventional structured content: message formats, schema definitions, and public contracts. Structured content from the outside is passed to the business reasoning module via API.'
 Notes: The Inner Workings of a Business Reasoning Module
-Kind: concept
+Category: concept
 Reference: epam training
 Tags:
     - genai
@@ -809,7 +809,7 @@ Value: |-
 
     One might see dim reflections of inductive and deductive reasoning only in so far as the training data set contains such examples, but abductive reasoning - indeed any color of reasoning that requires the production of new abstractions - is unreachable..
 Notes: This is not to say that LLMs have no utility - they do - but it is to say that one should not give LLMs powers they do not and cannot possess. To think this is an AGI or even a path to AGI is folly.
-Kind: quote
+Category: quote
 Reference: https://x.com/Grady_Booch/status/1790085016606880001
 Tags:
     - grady
@@ -824,7 +824,7 @@ Tags:
 Key: jwt-go-cognito
 Value: https://www.angelospanag.me/blog/verifying-a-json-web-token-from-cognito-in-go-and-gin
 Notes: Verifying a JSON Web Token from Amazon Cognito in Go and Gin. One popular option for integrating Amazon Cognito authentication/authorization with a backend, requires the decoding and verifying of JSON Web Tokens (JWT) for server-side processing.
-Kind: bookmark
+Category: bookmark
 Reference: internet
 Tags:
     - cognito
@@ -839,7 +839,7 @@ Tags:
 Key: k8s-resource-limits
 Value: https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-resource-requests-and-limits
 Notes: When Kubernetes schedules a Pod, it’s important that the containers have enough resources to actually run. If you schedule a large application on a node with limited resources, it is possible for the node to run out of memory or CPU resources and for things to stop working!
-Kind: bookmark
+Category: bookmark
 Reference: k8s resources
 Tags:
     - kubernetes
@@ -853,7 +853,7 @@ Tags:
 Key: k8s-cpu-limits
 Value: https://www.ardanlabs.com/blog/2024/02/kubernetes-cpu-limits-go.html
 Notes: I believe there are many Go services running in K8s under CPU limits that are not running as efficiently as they otherwise could be. In this post, I will explain what I learned and show what happens when CPU limits are being used and your Go service isn’t configured to run within the scope of that setting.
-Kind: bookmark
+Category: bookmark
 Reference: Ardan Lab bill kennedy
 Tags:
     - kubernetes
@@ -867,7 +867,7 @@ Tags:
 Key: k8s-memory-limits
 Value: https://www.ardanlabs.com/blog/2024/02/kubernetes-memory-limits-go.html
 Notes: After writing the Kubernetes (K8s) CPU Limits post, I was wondering what happens when a K8s memory limit is set for the same service. I’ve been hearing at workshops and at Ardan how people are experiencing Out Of Memory (OOM) problems with their PODs when setting K8s memory limits. I’m often told that when an OOM occurs, K8s will terminate and restart the POD.
-Kind: bookmark
+Category: bookmark
 Reference: ardan labs bill kennedy
 Tags:
     - kubernetes
@@ -883,7 +883,7 @@ Value: |-
     set of definitions and protocols for building and integrating application software.
     APIs let your product or service communicate with other products and services without having to know how they’re implemented
 Notes: API are gateways between services and consumers. APIs are sometimes thought of as contracts
-Kind: concept
+Category: concept
 Reference: api notes by russi
 Tags:
     - api
@@ -902,7 +902,7 @@ Value: |-
     Monitor and assess API usage.
     Continually improve.
 Notes: 7 habits of highly effectives API
-Kind: concept
+Category: concept
 Reference: apis by russi
 Tags:
     - api
@@ -916,7 +916,7 @@ Value: |-
     * experience apis
     * process apis
 Notes: layered approach to APIs
-Kind: concept
+Category: concept
 Reference: apis by russi
 Tags:
     - layered
@@ -929,7 +929,7 @@ Tags:
 Key: system-apis
 Value: "They are the APIs that expose the APIs of record.\nThey expose the data information of the assets in a very easily consumable manner. \nTypically these APIs actually are the ones that change more slowly. "
 Notes: layered approach to apis
-Kind: concept
+Category: concept
 Reference: apis by russi
 Tags:
     - system
@@ -941,7 +941,7 @@ Tags:
 Key: experience-apis
 Value: "* They are the ones that change at the fastest pace. That is because applications come to life at a much quicker rate than systems in the back-end. \n* They expose the data from the back-end data sources in exactly the right form for the application or devices in question that need to consume the data. "
 Notes: Layered approach to APIs
-Kind: concept
+Category: concept
 Reference: apis by russi
 Tags:
     - experience
@@ -955,7 +955,7 @@ Value: |-
     * They are In the middleware between Experience and System APIs.
     * This is the orchestration and composition that need to take place with System APIs in order to provide that data in a new way using business logic through the Experience APIs.
 Notes: Layered approach to APIs
-Kind: concept
+Category: concept
 Reference: apis by russi
 Tags:
     - process
@@ -967,7 +967,7 @@ Tags:
 Key: openapi-bookmark
 Value: https://www.openapis.org
 Notes: The OpenAPI Specifications provides a formal standard for describing HTTP APIs.
-Kind: bookmark
+Category: bookmark
 Reference: internet
 Tags:
     - openapi
@@ -987,7 +987,7 @@ Notes: |-
     Operation parameters Input and output for each operation
     Authentication methods
     Contact information, license, terms of use and other information.
-Kind: concept
+Category: concept
 Reference: apis by russi
 Tags:
     - opeanapi
@@ -999,7 +999,7 @@ Tags:
 Key: api-documentation
 Value: https://swagger.io/blog/api-documentation/api-documentation-best-practices/?_ga=2.12203965.869733376.1654161586-1840811407.1654161586
 Notes: 'API Documentation: The Secret to a Great API Developer Experience'
-Kind: bookmark
+Category: bookmark
 Reference: swagger
 Tags:
     - apis
@@ -1014,7 +1014,7 @@ Value: |-
     * URL path
     * Query string
 Notes: There are different schools of thought to version your API, but most of them fall under these three categories
-Kind: concept
+Category: concept
 Reference: apis by russi
 Tags:
     - apis
@@ -1031,7 +1031,7 @@ Value: |-
     * Using accept header to specify your version such as
     => Accept: application/vnd.hashmapinc.v2+json
 Notes: 2 ways you can specify version in headers
-Kind: concept
+Category: concept
 Reference: |-
     * GData-version: 2 (google)
     * application/vnd.github[.version]
@@ -1049,7 +1049,7 @@ Notes: |-
     * /2010-04-01/
     * /1/
     * /v1/
-Kind: concept
+Category: concept
 Reference: apis by russi
 Tags:
     - api
@@ -1063,7 +1063,7 @@ Tags:
 Key: api-versioning-query
 Value: Include a version query string parameter with the number of version to use.
 Notes: e.g. ?v=2
-Kind: concept
+Category: concept
 Reference: apis by russi
 Tags:
     - apis
@@ -1077,7 +1077,7 @@ Tags:
 Key: oauth2
 Value: stands for “Open Authorization”, is a standard designed to allow a website or application to access resources hosted by other web apps on behalf of a user. It replaced OAuth 1.0 in 2012 and is now the de facto industry standard for online authorization. OAuth 2.0 provides consented access and restricts actions of what the client app can perform on resources on behalf of the user, without ever sharing the user's credentials.
 Notes: OAuth 2.0 is an authorization protocol and NOT an authentication protocol. As such, it is designed primarily as a means of granting access to a set of resources, for example, remote APIs or user data.
-Kind: concept
+Category: concept
 Reference: https://auth0.com/intro-to-iam/what-is-oauth-2
 Tags:
     - oauth2
@@ -1089,7 +1089,7 @@ Tags:
 Key: jwks-properties
 Value: https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-key-set-properties
 Notes: Each property in the key is defined by the JWK specification RFC 7517 Section 4
-Kind: bookmark
+Category: bookmark
 Reference: auth0
 Tags:
     - jwks
@@ -1103,7 +1103,7 @@ Tags:
 Key: low-latency-network
 Value: Low latency describes a computer network that is optimized to process a very high volume of data messages with minimal delay (latency). These networks are designed to support operations that require near real-time access to rapidly changing data.
 Notes: Low latency is desirable in a wide range of use cases. In a general sense, lower latency is nearly always an improvement over slower packet transport. Low latency is desirable in online gaming as it contributes to a more realistic gaming environment. However, the term low latency is most often used to describe specific business use cases, in particular high-frequency trading in capital markets.
-Kind: concept
+Category: concept
 Reference: networks
 Tags:
     - networks
@@ -1117,7 +1117,7 @@ Tags:
 Key: book-bundles
 Value: https://www.humblebundle.com/books
 Notes: Looking for your next great read? Immerse yourself in adventurous comics, discover spectacular fantasy worlds, whip up your soon-to-be favorite recipe, run a new tabletop RPG system, and more with our curated book bundles. Whether you're a voracious reader or want to explore new genres, our exclusive bundles can help you find your next literary love. Plus, a portion of the bundle proceeds go to charity!
-Kind: bookmark
+Category: bookmark
 Reference: jorge mario chaparro
 Tags:
     - books
@@ -1130,7 +1130,7 @@ Tags:
 Key: grpc
 Value: In gRPC, a client application can directly call a method on a server application on a different machine as if it were a local object, making it easier for you to create distributed applications and services. As in many RPC systems, gRPC is based around the idea of defining a service, specifying the methods that can be called remotely with their parameters and return types. On the server side, the server implements this interface and runs a gRPC server to handle client calls. On the client side, the client has a stub (referred to as just a client in some languages) that provides the same methods as the server.
 Notes: gRPC can use protocol buffers as both its Interface Definition Language (IDL) and as its underlying message interchange format
-Kind: concept
+Category: concept
 Reference: https://grpc.io/docs/what-is-grpc/introduction/
 Tags:
     - grpc
@@ -1146,7 +1146,7 @@ Notes: |-
     It’s like JSON, except it’s smaller and faster, and it generates native language bindings. You define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to and from a variety of data streams and using a variety of languages.
 
     Protocol buffers are a combination of the definition language (created in .proto files), the code that the proto compiler generates to interface with data, language-specific runtime libraries, the serialization format for data that is written to a file (or sent across a network connection), and the serialized data.
-Kind: concept
+Category: concept
 Reference: https://protobuf.dev/overview/
 Tags:
     - protocol
@@ -1159,7 +1159,7 @@ Tags:
 Key: grpc.io
 Value: https://grpc.io
 Notes: A high performance, open source universal RPC framework
-Kind: bookmark
+Category: bookmark
 Reference: grpc.io tutorial
 Tags:
     - grpc
@@ -1175,7 +1175,7 @@ Notes: |-
     The strongest REST convention is to use a URL to express the resource you're working with, and a HTTP verb to express the action to take.
 
     REST aims to follow HTTP semantics closely: a REST request is structured like an HTTP request
-Kind: concept
+Category: concept
 Reference: https://algodaily.com/lessons/rest-rpc-and-distributed-api-desig
 Tags:
     - rest
@@ -1188,7 +1188,7 @@ Tags:
 Key: can-gpu-run-llm
 Value: https://github.com/RahulSChand/gpu_poor
 Notes: Calculates how much GPU memory you need and how much token/s you can get for any LLM & GPU/CPU.
-Kind: bookmark
+Category: bookmark
 Reference: https://rahulschand.github.io/gpu_poor/
 Tags:
     - gpu
@@ -1201,7 +1201,7 @@ Tags:
 Key: new-go-mux
 Value: https://eli.thegreenplace.net/2023/better-http-server-routing-in-go-122
 Notes: An exciting proposal is expected to land in Go 1.22 - enhancing the pattern-matching capabilities of the default HTTP serving multiplexer in the net/http package.
-Kind: bookmark
+Category: bookmark
 Reference: golang mux
 Tags:
     - golang
@@ -1213,7 +1213,7 @@ Tags:
 Key: kubectl-api-resources
 Value: kubectl api-resources
 Notes: Print the supported API resources on the server.
-Kind: command
+Category: command
 Reference: kubectl
 Tags:
     - kubectl
@@ -1225,7 +1225,7 @@ Tags:
 Key: deploy-low-latency-apps-aws
 Value: https://aws.amazon.com/tutorials/deploying-low-latency-applications-with-aws-local-zones/
 Notes: AWS Local Zones are a type of infrastructure deployment that places compute, storage, database, and other select AWS services close to large population and industry centers, enabling you to deliver applications that require single-digit millisecond latency to end users.
-Kind: bookmark
+Category: bookmark
 Reference: aws
 Tags:
     - low
@@ -1238,7 +1238,7 @@ Tags:
 Key: candidate-interview-questions
 Value: "Who Would You Define As a Successful Person In This Role? \nWhat Are Your Expectations From The Person In This Job Position?\nCould You Give A Little Overview Of How A Day Goes For A Person In This Position?\nWhat Might Be The Most Challenging Part For This Role?\nWhat Is It That You Like Or Enjoy About The Company?"
 Notes: questions to ask to interviewer
-Kind: concept
+Category: concept
 Reference: asking questions in interviews
 Tags:
     - interviews
@@ -1249,7 +1249,7 @@ Tags:
 Key: push-up-back
 Value: Would it be okay if we pushed stand up back an hour?
 Notes: Pushing something back makes it further away from you. So pushing back an event makes it further away in time, so into the future. Pushing up an event means the event happens at a sooner time
-Kind: english
+Category: english
 Reference: english
 Tags:
     - push
@@ -1261,7 +1261,7 @@ Tags:
 Key: grep-with-pattern
 Value: grep -E "{PATTERN1}|{PATTERN2}"
 Notes: The basic grep syntax when searching multiple patterns in a file includes using the grep command followed by strings and the name of the file or its path.
-Kind: command
+Category: command
 Reference: https://phoenixnap.com/kb/grep-multiple-strings
 Tags:
     - linux
@@ -1280,7 +1280,7 @@ Notes: |-
     Next, you should design separate Command and Query Models tailored to your application's operational needs. This involves optimizing each model to ensure it can function effectively within the system.
 
     The CQRS pattern works well with the Event Sourcing patterns, so you should consider adopting an Event Store to capture all changes in your systems as a series of events.
-Kind: concept
+Category: concept
 Reference: https://martinfowler.com/bliki/CQRS.html
 Tags:
     - cqrs
@@ -1294,7 +1294,7 @@ Tags:
 Key: salt-pwd-bcrypt
 Value: https://www.gregorygaines.com/blog/how-to-properly-hash-and-salt-passwords-in-golang-bcrypt/
 Notes: How to Properly Hash and Salt Passwords in Golang Using Bcrypt. The bcypt function is secure and brute force resistant allowing programmers to safely handle the passwords of their users. Bcrypt uses a concept named cost which represents the number of hash iterations that bcrypt undertakes. Hashing time is calculated as 2 ^ cost and the higher the cost, the longer the hashing process takes.
-Kind: bookmark
+Category: bookmark
 Reference: Gregory Gaines
 Tags:
     - password
@@ -1308,7 +1308,7 @@ Value: https://github.com/leg100/pggen/tree/main/example/pgcrypto
 Notes: |-
     how to use pgcrypto with samples
     INSERT INTO "user" (email, pass) VALUES ($1, crypt($2, gen_salt('bf')));
-Kind: bookmark
+Category: bookmark
 Reference: pgcrypto
 Tags:
     - encrypt
@@ -1320,7 +1320,7 @@ Tags:
 Key: dependabot
 Value: https://github.com/dependabot
 Notes: GitHub feature that automates the process of updating dependencies in a repository. It helps developers keep their dependencies up-to-date and secure by submitting pull requests (PRs) to update outdated or vulnerable dependencies.
-Kind: bookmark
+Category: bookmark
 Reference: github
 Tags:
     - github
@@ -1332,7 +1332,7 @@ Tags:
 Key: resume-io
 Value: https://resume.io
 Notes: to build resumes, good GUI
-Kind: bookmark
+Category: bookmark
 Reference: internet
 Tags:
     - resume
@@ -1343,7 +1343,7 @@ Tags:
 Key: spiffe-id-workloads
 Value: https://spiffe.io/
 Notes: SPIFFE and SPIRE provide a uniform identity control plane across modern and heterogeneous infrastructure. Since software and application architectures have grown substantially, they are spread across virtual machines in public clouds and private data centers. Security models for the organizations that manage them must keep up with these infrastructure technologies. And this is where SPIFFE and SPIRE come in. With SPIFFE/SPIRE, developers and operators can build software using new infrastructure technologies, while allowing security teams to step back from time-consuming security processes.
-Kind: bookmark
+Category: bookmark
 Reference: project
 Tags:
     - spire
@@ -1358,7 +1358,7 @@ Tags:
 Key: spire-docker-compose
 Value: https://github.com/spiffe/spire-tutorials/tree/main/docker-compose/federation
 Notes: This tutorial shows how to authenticate two SPIFFE-identified workloads that are identified by two different SPIRE Servers.
-Kind: bookmark
+Category: bookmark
 Reference: chauncey
 Tags:
     - spire
@@ -1373,7 +1373,7 @@ Tags:
 Key: dijkstra-bugs-presence
 Value: Testing shows the presence, not the absence of bugs
 Notes: ""
-Kind: quote
+Category: quote
 Reference: Edsger W. Dijkstra
 Tags:
     - testing
@@ -1387,7 +1387,7 @@ Tags:
 Key: eric-graceful-termination
 Value: https://github.com/integrii/go-k8s-graceful-termination
 Notes: This is an example Go appliation and self-paced tutorial for implementing the graceful shutdown of Kubernetes pods. This Go application does not drop connections when terminating due to proper shutdown signal trapping. If your app does not capture shutdown signals properly today, your service probably drops connections for users when your pods are re-deployed or removed for any reason.
-Kind: bookmark
+Category: bookmark
 Reference: eric greer repo
 Tags:
     - graceful
@@ -1400,7 +1400,7 @@ Tags:
 Key: sqlite-bench-go
 Value: https://github.com/cvilsmeier/go-sqlite-bench
 Notes: Benchmarks for Golang SQLite Drivers
-Kind: bookmark
+Category: bookmark
 Reference: internet
 Tags:
     - sqlite
@@ -1411,7 +1411,7 @@ Tags:
 Key: optimize-go-test-parallesim
 Value: https://threedots.tech/post/go-test-parallelism/
 Notes: Recently, I struggled for a couple of hours to understand why the API tests of one project were slow. In theory, we designed tests to run in a fully parallel way – the duration of tests should be close to the longest-running test. Unfortunately, the reality was different. Tests took 7x longer than the slowest test without using 100% available resources.
-Kind: bookmark
+Category: bookmark
 Reference: Robert Laszczak
 Tags:
     - golang
@@ -1423,7 +1423,7 @@ Tags:
 Key: k3s-lightweight
 Value: https://k3s.io
 Notes: The certified Kubernetes distribution built for IoT & Edge computing
-Kind: bookmark
+Category: bookmark
 Reference: chaparro
 Tags:
     - kubernetes
@@ -1435,7 +1435,7 @@ Tags:
 Key: edge-computing
 Value: Edge computing is a distributed computing framework that brings enterprise applications closer to data sources such as IoT devices or local edge servers.
 Notes: Sending all device-generated data to a centralized data center or to the cloud causes bandwidth and latency issues. Edge computing offers a more efficient alternative; data is processed and analyzed closer to the point where it's created. Because data does not traverse over a network to a cloud or data center to be processed, latency is reduced. Edge computing—and mobile edge computing on 5G networks—enables faster and more comprehensive data analysis, creating the opportunity for deeper insights, faster response times and improved customer experiences.
-Kind: concept
+Category: concept
 Reference: https://www.ibm.com/topics/edge-computing
 Tags:
     - edge

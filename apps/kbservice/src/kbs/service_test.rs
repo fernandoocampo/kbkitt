@@ -17,7 +17,7 @@ fn test_get_kb_with_id() {
         id: KBID("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8".to_string()),
         key: "red".to_string(),
         value: "of the colour of fresh blood".to_string(),
-        kind: "concepts".to_string(),
+        category: "concepts".to_string(),
         notes: String::from("to know about color red"),
         reference: Some(String::from("Some Author")),
         tags: vec![
@@ -30,7 +30,7 @@ fn test_get_kb_with_id() {
         id: KBID("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8".to_string()),
         key: "red".to_string(),
         value: "of the colour of fresh blood".to_string(),
-        kind: "concepts".to_string(),
+        category: "concepts".to_string(),
         notes: String::from("to know about color red"),
         reference: Some(String::from("Some Author")),
         tags: vec![
@@ -79,7 +79,7 @@ fn test_get_kb_with_key() {
         id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
         key: String::from("red"),
         value: String::from("of the colour of fresh blood"),
-        kind: String::from("concepts"),
+        category: String::from("concepts"),
         reference: Some(String::from("Some Author")),
         notes: String::from("to know about color red"),
         tags: vec![
@@ -92,7 +92,7 @@ fn test_get_kb_with_key() {
         id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
         key: String::from("red"),
         value: String::from("of the colour of fresh blood"),
-        kind: String::from("concepts"),
+        category: String::from("concepts"),
         reference: Some(String::from("Some Author")),
         notes: String::from("to know about color red"),
         tags: vec![
@@ -126,7 +126,7 @@ fn test_search_by_key() {
         KBItem {
             id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
             key: String::from("red"),
-            kind: String::from("concepts"),
+            category: String::from("concepts"),
             tags: vec![
                 String::from("concept"),
                 String::from("color"),
@@ -136,7 +136,7 @@ fn test_search_by_key() {
         KBItem {
             id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
             key: String::from("redemption"),
-            kind: String::from("concepts"),
+            category: String::from("concepts"),
             tags: vec![
                 String::from("concept"),
                 String::from("saving"),
@@ -154,7 +154,7 @@ fn test_search_by_key() {
         KBItem {
             id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
             key: String::from("red"),
-            kind: String::from("concepts"),
+            category: String::from("concepts"),
             tags: vec![
                 String::from("concept"),
                 String::from("color"),
@@ -164,7 +164,7 @@ fn test_search_by_key() {
         KBItem {
             id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
             key: String::from("redemption"),
-            kind: String::from("concepts"),
+            category: String::from("concepts"),
             tags: vec![
                 String::from("concept"),
                 String::from("saving"),
@@ -228,7 +228,7 @@ fn test_search() {
             KBItem {
                 id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
                 key: String::from("red"),
-                kind: String::from("concepts"),
+                category: String::from("concepts"),
                 tags: vec![
                     String::from("concept"),
                     String::from("color"),
@@ -238,7 +238,7 @@ fn test_search() {
             KBItem {
                 id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
                 key: String::from("redemption"),
-                kind: String::from("concepts"),
+                category: String::from("concepts"),
                 tags: vec![
                     String::from("concept"),
                     String::from("saving"),
@@ -255,7 +255,7 @@ fn test_search() {
             KBItem {
                 id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c8")),
                 key: String::from("red"),
-                kind: String::from("concepts"),
+                category: String::from("concepts"),
                 tags: vec![
                     String::from("concept"),
                     String::from("color"),
@@ -265,7 +265,7 @@ fn test_search() {
             KBItem {
                 id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
                 key: String::from("redemption"),
-                kind: String::from("concepts"),
+                category: String::from("concepts"),
                 tags: vec![
                     String::from("concept"),
                     String::from("saving"),
@@ -338,7 +338,7 @@ fn test_add_kb() {
     let new_kb = NewKnowledgeBase {
         key: String::from("red"),
         value: String::from("of the colour of fresh blood"),
-        kind: String::from("concepts"),
+        category: String::from("concepts"),
         notes: String::from("to know about color red"),
         reference: Some(String::from("Some Author")),
         tags: vec![
@@ -351,7 +351,7 @@ fn test_add_kb() {
         id: KBID(String::from("")),
         key: String::from("red"),
         value: String::from("of the colour of fresh blood"),
-        kind: String::from("concepts"),
+        category: String::from("concepts"),
         notes: String::from("to know about color red"),
         reference: Some(String::from("Some Author")),
         tags: vec![
@@ -428,7 +428,7 @@ fn test_add_kb_with_error() {
     let new_kb = NewKnowledgeBase {
         key: String::from("red"),
         value: String::from("of the colour of fresh blood"),
-        kind: String::from("concepts"),
+        category: String::from("concepts"),
         notes: String::from("to know about color red"),
         reference: Some(String::from("Some Author")),
         tags: vec![
@@ -457,7 +457,7 @@ fn test_update_kb() {
     let updated_kb = KnowledgeBase {
         id: KBID(String::from("dcb8fac0-0756-4c8a-b625-a9a4d1c871c9")),
         key: String::from("btc"),
-        kind: String::from("crypto"),
+        category: String::from("crypto"),
         value: String::from("new currency state"),
         notes: String::from("it is here to stay"),
         reference: Some(String::from("Satoshi Nakamoto")),

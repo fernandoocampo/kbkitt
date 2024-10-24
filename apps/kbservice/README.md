@@ -149,7 +149,7 @@ project is using [TSVECTOR](https://www.postgresql.org/docs/current/datatype-tex
 * How to insert a record
 
 ```sql
-INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) 
+INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS) 
  	VALUES ('e9efcab6-adc0-4987-af18-49ca6da35f87', 'green', 'other color', 'to remember other color', 'concepts', 'color green paint concepts');
 ```
 

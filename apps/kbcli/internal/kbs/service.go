@@ -263,7 +263,7 @@ func (s *Service) GetByID(ctx context.Context, id string) (*KB, error) {
 }
 
 func (s *Service) Search(ctx context.Context, filter KBQueryFilter) (*SearchResult, error) {
-	if IsStringEmpty(filter.Key) && IsStringEmpty(filter.Keyword) {
+	if filter.nothingToLookFor() {
 		return nil, nil
 	}
 

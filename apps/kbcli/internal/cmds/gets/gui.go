@@ -127,13 +127,13 @@ func newPaginator(limit uint32, total int) *paginator.Model {
 
 func (m *model) updateTable() {
 	keyLength := m.result.GetLongerKey()
-	kindLength := m.result.GetLongerKind()
+	categoryLength := m.result.GetLongerCategory()
 	tagLength := m.result.GetLongerTags()
 
 	columns := []table.Column{
 		{Title: cmds.IDCol, Width: 36},
 		{Title: cmds.KeyCol, Width: keyLength},
-		{Title: cmds.KindCol, Width: kindLength},
+		{Title: cmds.CategoryCol, Width: categoryLength},
 		{Title: cmds.TagCol, Width: tagLength},
 	}
 
@@ -279,16 +279,16 @@ func (m *model) loadKBItem(kbID string) error {
 }
 
 func (m *model) empty() bool {
-	return len(m.result.Items) == 0
+	return m.result == nil || len(m.result.Items) == 0
 }
 
 func (m *model) formatItems() []string {
 	var items []string
 	keyLength := m.result.GetLongerKey()
-	kindLength := m.result.GetLongerKind()
+	categoryLength := m.result.GetLongerCategory()
 
 	for _, kb := range m.result.Items {
-		row := fmt.Sprintln(kb.ID, fmt.Sprintf("%s%*s", kb.Key, keyLength-len(kb.Key), ""), fmt.Sprintf("%s%*s", kb.Kind, kindLength-len(kb.Kind), ""), strings.Join(kb.Tags, ","))
+		row := fmt.Sprintln(kb.ID, fmt.Sprintf("%s%*s", kb.Key, keyLength-len(kb.Key), ""), fmt.Sprintf("%s%*s", kb.Category, categoryLength-len(kb.Category), ""), strings.Join(kb.Tags, ","))
 		items = append(items, row)
 	}
 
@@ -328,7 +328,7 @@ func renderKBItem(k *kbs.KB) string {
 		inputStyle.Width(30).Render("Key"), k.Key,
 		inputStyle.Width(30).Render("Value"), k.Value,
 		inputStyle.Width(30).Render("Notes"), k.Notes,
-		inputStyle.Width(30).Render("Kind"), k.Kind,
+		inputStyle.Width(30).Render("Category"), k.Category,
 		inputStyle.Width(30).Render("Reference"), k.Reference,
 		inputStyle.Width(30).Render("Tags"), k.Tags)
 }

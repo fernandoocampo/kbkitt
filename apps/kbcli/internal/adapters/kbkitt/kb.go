@@ -66,7 +66,7 @@ func newHTTPClient(settings Setup) *http.Client {
 func (c *Client) Create(ctx context.Context, newKB kbs.NewKB) (string, error) {
 	postBody, err := json.Marshal(newKB)
 	if err != nil {
-		return "", fmt.Errorf("unable to marsal kb data: %w")
+		return "", fmt.Errorf("unable to marshal kb data: %w", err)
 	}
 
 	request, err := http.NewRequest(http.MethodPost, c.getKBURL(), bytes.NewBuffer(postBody))
@@ -173,7 +173,7 @@ func (c *Client) Get(ctx context.Context, id string) (*kbs.KB, error) {
 func (c *Client) Update(ctx context.Context, kb *kbs.KB) error {
 	postBody, err := json.Marshal(kb)
 	if err != nil {
-		return fmt.Errorf("unable to marsal kb data: %w")
+		return fmt.Errorf("unable to marshal kb data: %w", err)
 	}
 
 	request, err := http.NewRequest(http.MethodPatch, c.getKBURL(), bytes.NewBuffer(postBody))

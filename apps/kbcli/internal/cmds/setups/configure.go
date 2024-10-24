@@ -1,6 +1,7 @@
 package setups
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -53,7 +54,9 @@ func makeRunConfigureCommand() func(cmd *cobra.Command, args []string) {
 			os.Exit(0)
 		}
 
-		err = settings.Save(newKBKitt())
+		ctx := context.Background()
+
+		err = saveConfiguration(ctx)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "unable to save configuration: %s", err)
 			fmt.Println()
@@ -64,16 +67,34 @@ func makeRunConfigureCommand() func(cmd *cobra.Command, args []string) {
 	}
 }
 
+func saveConfiguration(ctx context.Context) error {
+	newConfiguration := newKBKitt()
+	err := settings.Save(newConfiguration)
+	if err != nil {
+		return fmt.Errorf("unable to save file with given settings")
+	}
+
+	storage, err := cmds.NewStorage(newConfiguration)
+	if err != nil {
+		return fmt.Errorf("unable to initialize internal database: %w", err)
+	}
+
+	defer storage.Close()
+
+	err = settings.CreateDatabaseIfNotExist(ctx, newConfiguration, storage)
+	if err != nil {
+		return fmt.Errorf("unable to initialize internal database: %w", err)
+	}
+
+	return nil
+}
+
 func startConfiguration() bool {
 	var yesOrNot string
 	fmt.Print(startConfigurationMessage)
 	fmt.Scan(&yesOrNot)
 
-	if cmds.Yes(yesOrNot) {
-		return true
-	}
-
-	return false
+	return cmds.Yes(yesOrNot)
 }
 
 func newKBKitt() *settings.Configuration {
@@ -83,7 +104,7 @@ func newKBKitt() *settings.Configuration {
 	newConfiguration.Server = &settings.Server{}
 
 	newConfiguration.Server.URL = cmds.RequestStringValue(hostLabel)
-	newConfiguration.FilepathForSyncPath = cmds.RequestStringValue(filePathForSyncLabel)
+	newConfiguration.FileForSyncPath = cmds.RequestStringValue(filePathForSyncLabel)
 	newConfiguration.DirForMediaPath = cmds.RequestStringValue(dirForMediaLabel)
 
 	return &newConfiguration

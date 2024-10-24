@@ -10,7 +10,7 @@ import (
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/adapters/kbkitt"
+	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/adapters/storages"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/settings"
 )
@@ -66,34 +66,47 @@ func GetConfiguration() (*settings.Configuration, error) {
 	return configuration, nil
 }
 
-func NewService(configuration *settings.Configuration) (*kbs.Service, error) {
-	service, err := getKBKittService(configuration)
+func NewStorage(configuration *settings.Configuration) (*storages.SQLite, error) {
+	sqlConn, err := storages.CreateSQLiteConnection(configuration.GetDBPath())
 	if err != nil {
-		return nil, fmt.Errorf("unable to create service: %w", err)
+		return nil, fmt.Errorf("unable to create db connection: %w", err)
 	}
 
-	return service, nil
-}
-
-func getKBKittService(conf *settings.Configuration) (*kbs.Service, error) {
-	serviceSetup := kbs.ServiceSetup{
-		KBClient:        newKBKittClient(conf),
-		FileForSyncPath: conf.FilepathForSyncPath,
-		DirForMediaPath: conf.DirForMediaPath,
+	setup := storages.SQLiteSetup{
+		DB: sqlConn,
 	}
 
-	newService := kbs.NewService(serviceSetup)
-
-	return newService, nil
+	return storages.NewSQLite(&setup), nil
 }
 
-func newKBKittClient(conf *settings.Configuration) *kbkitt.Client {
-	kbkittSetup := kbkitt.Setup{
-		URL: conf.Server.URL,
-	}
+// func NewService(configuration *settings.Configuration) (*kbs.Service, error) {
+// 	service, err := getKBKittService(configuration)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("unable to create service: %w", err)
+// 	}
 
-	return kbkitt.NewClient(kbkittSetup)
-}
+// 	return service, nil
+// }
+
+// func getKBKittService(conf *settings.Configuration) (*kbs.Service, error) {
+// 	serviceSetup := kbs.ServiceSetup{
+// 		KBClient:        newKBKittClient(conf),
+// 		FileForSyncPath: conf.FileForSyncPath,
+// 		DirForMediaPath: conf.DirForMediaPath,
+// 	}
+
+// 	newService := kbs.NewService(serviceSetup)
+
+// 	return newService, nil
+// }
+
+// func newKBKittClient(conf *settings.Configuration) *kbkitt.Client {
+// 	kbkittSetup := kbkitt.Setup{
+// 		URL: conf.Server.URL,
+// 	}
+
+// 	return kbkitt.NewClient(kbkittSetup)
+// }
 
 func Yes(answer string) bool {
 	return strings.EqualFold(answer, yesValue) || strings.EqualFold(answer, yesShortValue)

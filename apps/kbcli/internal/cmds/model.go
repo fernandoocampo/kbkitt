@@ -35,16 +35,16 @@ const (
 
 // common labels
 const (
-	TitleSeparator   = "-------------"
-	IDCol            = "ID"
-	IDColSeparator   = "--"
-	KeyCol           = "KEY"
-	KeyColSeparator  = "---"
-	KindCol          = "KIND"
-	KindColSeparator = "----"
-	TagCol           = "TAGS"
-	TagColSeparator  = "----"
-	GetKBIDLabel     = "id: "
+	TitleSeparator       = "-------------"
+	IDCol                = "ID"
+	IDColSeparator       = "--"
+	KeyCol               = "KEY"
+	KeyColSeparator      = "---"
+	CategoryCol          = "CATEGORY"
+	CategoryColSeparator = "----"
+	TagCol               = "TAGS"
+	TagColSeparator      = "----"
+	GetKBIDLabel         = "id: "
 )
 
 var ErrNoConfiguration = errors.New("no configuration has been created yet")
@@ -78,35 +78,6 @@ func NewStorage(configuration *settings.Configuration) (*storages.SQLite, error)
 
 	return storages.NewSQLite(&setup), nil
 }
-
-// func NewService(configuration *settings.Configuration) (*kbs.Service, error) {
-// 	service, err := getKBKittService(configuration)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("unable to create service: %w", err)
-// 	}
-
-// 	return service, nil
-// }
-
-// func getKBKittService(conf *settings.Configuration) (*kbs.Service, error) {
-// 	serviceSetup := kbs.ServiceSetup{
-// 		KBClient:        newKBKittClient(conf),
-// 		FileForSyncPath: conf.FileForSyncPath,
-// 		DirForMediaPath: conf.DirForMediaPath,
-// 	}
-
-// 	newService := kbs.NewService(serviceSetup)
-
-// 	return newService, nil
-// }
-
-// func newKBKittClient(conf *settings.Configuration) *kbkitt.Client {
-// 	kbkittSetup := kbkitt.Setup{
-// 		URL: conf.Server.URL,
-// 	}
-
-// 	return kbkitt.NewClient(kbkittSetup)
-// }
 
 func Yes(answer string) bool {
 	return strings.EqualFold(answer, yesValue) || strings.EqualFold(answer, yesShortValue)
@@ -156,7 +127,7 @@ func PrintKB(k *kbs.KB) string {
 		kbs.KeyLabel, k.Key,
 		kbs.ValueLabel, k.Value,
 		kbs.NotesLabel, k.Notes,
-		kbs.KindLabel, k.Kind,
+		kbs.CategoryLabel, k.Category,
 		kbs.ReferenceLabel, k.Reference,
 		kbs.TagsLabel, k.Tags)
 }

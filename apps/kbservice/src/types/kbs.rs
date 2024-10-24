@@ -19,7 +19,7 @@ pub struct KnowledgeBase {
     pub key: String,
     pub value: String,
     pub notes: String,
-    pub kind: String,
+    pub category: String,
     pub reference: Option<String>,
     pub tags: Vec<String>,
 }
@@ -29,7 +29,7 @@ pub struct NewKnowledgeBase {
     pub key: String,
     pub value: String,
     pub notes: String,
-    pub kind: String,
+    pub category: String,
     pub reference: Option<String>,
     pub tags: Vec<String>,
 }
@@ -46,7 +46,7 @@ pub struct SearchResult {
 pub struct KBItem {
     pub id: KBID,
     pub key: String,
-    pub kind: String,
+    pub category: String,
     pub tags: Vec<String>,
 }
 
@@ -74,7 +74,7 @@ impl Default for KnowledgeBase {
             key: Default::default(),
             value: Default::default(),
             notes: Default::default(),
-            kind: Default::default(),
+            category: Default::default(),
             reference: None,
             tags: Default::default(),
         }
@@ -90,7 +90,7 @@ impl KnowledgeBase {
             key: kb_key,
             value: Default::default(),
             notes: Default::default(),
-            kind: Default::default(),
+            category: Default::default(),
             reference: None,
             tags: Default::default(),
         }
@@ -105,7 +105,7 @@ impl NewKnowledgeBase {
             key: self.key.clone(),
             value: self.value.clone(),
             notes: self.notes.clone(),
-            kind: self.kind.clone(),
+            category: self.category.clone(),
             reference: self.reference.clone(),
             tags: self.tags.clone(),
         }

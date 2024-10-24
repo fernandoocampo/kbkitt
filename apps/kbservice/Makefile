@@ -55,7 +55,7 @@ run-migration: ## run pending migrations
 .PHONY: add-kb
 add-kb: ## add a new kb
 	curl -H "Content-Type: application/json" \
-	--data '{"key":"esme", "value":"emerald203", "notes":"her name", "kind":"names", "tags":["name", "emerald"]}' \
+	--data '{"key":"esme", "value":"emerald203", "notes":"her name", "category":"names", "tags":["name", "emerald"]}' \
 	-X POST http://localhost:3030/kbs
 
 .PHONY: search-kbs
@@ -75,7 +75,7 @@ get-kb-by-id: ## get the existing kb by id in the service
 	curl -X GET http://localhost:3030/kbs/6411a28b-640a-43d9-b901-1c4b15d91568
 
         
-# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS)
+# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS)
 # VALUES ('681cca89-890b-4667-8ca0-e328546e268c', 'red', 'remember this color', 'one color', 'concepts', 'color concepts')
 # RETURNING KB_ID
 .PHONY: test-get-kb-by-id
@@ -84,7 +84,7 @@ test-get-kb-by-id : ## test get kb by id in the persistence layer.
 	-- adapters::pgstorage::pgdb_test::pgstorage_test::test_get_kb_by_id \
 	--exact --show-output
 
-# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS)
+# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS)
 # VALUES ('681cca89-890b-4667-8ca0-e328546e268c', 'red', 'remember this color', 'one color', 'concepts', 'color concepts')
 # RETURNING KB_ID
 .PHONY: test-get-kb-by-key
@@ -93,20 +93,20 @@ test-get-kb-by-key : ## test get kb by key in the persistence layer.
 	-- adapters::pgstorage::pgdb_test::pgstorage_test::test_get_kb_by_key \
 	--exact --show-output
 
-# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('6411a28b-640a-43d9-b901-1c4b15d91568', 'frederick', 'long name', 'multiple names', 'names', 'name names');
-# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('5a2579f7-83b9-4891-8dbc-e0024b5f3505', 'rick', 'short name', 'just one name', 'names', 'name names');
-# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('22cfc4fb-f9b6-4f6e-9158-9982347ad2a7', 'patrick', 'a saint', 'names', 'words', 'over words');
-# SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY LIKE '%rick%' LIMIT 10 OFFSET 0;
+# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS) VALUES ('6411a28b-640a-43d9-b901-1c4b15d91568', 'frederick', 'long name', 'multiple names', 'names', 'name names');
+# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS) VALUES ('5a2579f7-83b9-4891-8dbc-e0024b5f3505', 'rick', 'short name', 'just one name', 'names', 'name names');
+# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS) VALUES ('22cfc4fb-f9b6-4f6e-9158-9982347ad2a7', 'patrick', 'a saint', 'names', 'words', 'over words');
+# SELECT KB_ID, KB_KEY, CATEGORY, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY LIKE '%rick%' LIMIT 10 OFFSET 0;
 .PHONY: test-search-by-key
 test-search-by-key : ## test search by key in the persistence layer.
 	INTEGRATION_TEST=1 cargo test --package kbservice --bin kbservice \
 	-- adapters::pgstorage::pgdb_test::pgstorage_test::test_search_by_key \
 	--exact --show-output
 
-# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('6411a28b-640a-43d9-b901-1c4b15d91568', 'frederick', 'long name', 'multiple names', 'names', 'name names');
-# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('5a2579f7-83b9-4891-8dbc-e0024b5f3505', 'rick', 'short name', 'just one name', 'names', 'name names');
-# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('22cfc4fb-f9b6-4f6e-9158-9982347ad2a7', 'patrick', 'a saint', 'names', 'words', 'over words');
-# SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY LIKE '%rick%' LIMIT 10 OFFSET 0;
+# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS) VALUES ('6411a28b-640a-43d9-b901-1c4b15d91568', 'frederick', 'long name', 'multiple names', 'names', 'name names');
+# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS) VALUES ('5a2579f7-83b9-4891-8dbc-e0024b5f3505', 'rick', 'short name', 'just one name', 'names', 'name names');
+# INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS) VALUES ('22cfc4fb-f9b6-4f6e-9158-9982347ad2a7', 'patrick', 'a saint', 'names', 'words', 'over words');
+# SELECT KB_ID, KB_KEY, CATEGORY, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY LIKE '%rick%' LIMIT 10 OFFSET 0;
 .PHONY: test-search
 test-search : ## test search in the persistence layer.
 	INTEGRATION_TEST=1 cargo test --package kbservice --bin kbservice \

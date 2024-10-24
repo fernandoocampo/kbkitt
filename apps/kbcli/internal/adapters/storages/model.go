@@ -22,10 +22,10 @@ type kb struct {
 }
 
 type kbItem struct {
-	ID   string
-	Key  string
-	Kind string
-	Tags string
+	ID       string
+	Key      string
+	Category string
+	Tags     string
 }
 
 type filterBuilder struct {
@@ -51,6 +51,7 @@ const (
 // user columns.
 const (
 	keyColumn              = "k.KB_KEY"
+	categoryColumn         = "k.CATEGORY"
 	tagValuesVirtualColumn = "t.tag_values"
 	rowIDVirtualColum      = "t.rowid"
 	internalIDColumn       = "k.INTERNAL_ID"
@@ -67,7 +68,7 @@ func (k kb) toKB() *kbs.KB {
 		Key:       k.Key,
 		Value:     k.Value,
 		Notes:     k.Notes,
-		Kind:      k.Category,
+		Category:  k.Category,
 		Reference: k.Reference,
 		Tags:      strings.Split(k.Tags, aSpace),
 	}
@@ -110,7 +111,7 @@ func toDBKB(akb *kbs.KB) kb {
 		Key:         akb.Key,
 		Value:       akb.Value,
 		Notes:       akb.Notes,
-		Category:    akb.Kind,
+		Category:    akb.Category,
 		Reference:   akb.Reference,
 		Tags:        strings.Join(akb.Tags, aSpace),
 		DateCreated: time.Now().UTC(),
@@ -119,10 +120,10 @@ func toDBKB(akb *kbs.KB) kb {
 
 func (k kbItem) toKBItem() kbs.KBItem {
 	return kbs.KBItem{
-		ID:   k.ID,
-		Key:  k.Key,
-		Kind: k.Kind,
-		Tags: strings.Split(k.Tags, aSpace),
+		ID:       k.ID,
+		Key:      k.Key,
+		Category: k.Category,
+		Tags:     strings.Split(k.Tags, aSpace),
 	}
 }
 

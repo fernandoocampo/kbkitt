@@ -18,7 +18,7 @@ type addKBParams struct {
 	key         string
 	value       string
 	notes       string
-	kind        string
+	category    string
 	reference   string
 	mediaType   string
 	rawTags     string
@@ -45,7 +45,7 @@ const (
 	keyLabel       = "key%s: "
 	valueLabel     = "value%s: "
 	notesLabel     = "notes%s: "
-	kindLabel      = "class%s: "
+	categoryLabel  = "class%s: "
 	tagLabel       = "tags%s: "
 	referenceLabel = "reference%s: "
 	mediaTypeLabel = "media type%s: "
@@ -67,7 +67,7 @@ func MakeAddCommand(service *kbs.Service) *cobra.Command {
 	newCmd.PersistentFlags().StringVarP(&addKBData.key, "key", "k", "", "knowledge base key")
 	newCmd.PersistentFlags().StringVarP(&addKBData.value, "value", "v", "", "knowledge base value")
 	newCmd.PersistentFlags().StringVarP(&addKBData.notes, "notes", "n", "", "knowledge base notes")
-	newCmd.PersistentFlags().StringVarP(&addKBData.kind, "class", "c", "", "kind of knowledge base")
+	newCmd.PersistentFlags().StringVarP(&addKBData.category, "category", "c", "", "category of knowledge base")
 	newCmd.PersistentFlags().StringVarP(&addKBData.reference, "reference", "r", "", "author or refence of this kb")
 	newCmd.PersistentFlags().StringSliceVarP(&addKBData.tags, "tags", "t", []string{}, "comma separated tags for this kb")
 	newCmd.PersistentFlags().BoolVarP(&addKBData.interactive, "ux", "u", false, "add KB in interactive mode")
@@ -225,8 +225,8 @@ func fillMissingAddFields() {
 	if kbs.IsStringEmpty(addKBData.notes) {
 		addKBData.notes = cmds.RequestStringValue(getLabel(notesLabel, addKBData.notes))
 	}
-	if kbs.IsStringEmpty(addKBData.kind) {
-		addKBData.kind = cmds.RequestStringValue(getLabel(kindLabel, addKBData.kind))
+	if kbs.IsStringEmpty(addKBData.category) {
+		addKBData.category = cmds.RequestStringValue(getLabel(categoryLabel, addKBData.category))
 	}
 	if kbs.IsStringEmpty(addKBData.reference) {
 		addKBData.reference = cmds.RequestStringValue(getLabel(referenceLabel, addKBData.reference))
@@ -258,7 +258,7 @@ func isMediaTypeEmpty() bool {
 }
 
 func isMediaType() bool {
-	return strings.EqualFold(addKBData.kind, kbs.MediaKind)
+	return strings.EqualFold(addKBData.category, kbs.MediaCategory)
 }
 
 func requestMediaTypeValue() string {
@@ -280,7 +280,7 @@ func fillExistingFields() {
 	addKBData.key = readStringValue(keyLabel, addKBData.key)
 	addKBData.value = readStringValue(valueLabel, addKBData.value)
 	addKBData.notes = readStringValue(notesLabel, addKBData.notes)
-	addKBData.kind = readStringValue(kindLabel, addKBData.kind)
+	addKBData.category = readStringValue(categoryLabel, addKBData.category)
 	addKBData.reference = readStringValue(referenceLabel, addKBData.reference)
 	addKBData.rawTags = readStringValue(tagLabel, addKBData.rawTags)
 }
@@ -306,7 +306,7 @@ func (a addKBParams) toNewKB() kbs.NewKB {
 	newKB := kbs.NewKB{
 		Key:       a.key,
 		Value:     a.value,
-		Kind:      a.kind,
+		Category:  a.category,
 		Notes:     a.notes,
 		Reference: a.reference,
 		MediaType: a.mediaType,

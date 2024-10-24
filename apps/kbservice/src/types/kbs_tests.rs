@@ -9,7 +9,7 @@ mod kbs_tests {
         let new_knowledge_base = NewKnowledgeBase {
             key: String::from("red"),
             value: String::from("of the colour of fresh blood"),
-            kind: String::from("concepts"),
+            category: String::from("concepts"),
             notes: String::from("to know about color red"),
             reference: Some(String::from("Some Author")),
             tags: vec![
@@ -23,7 +23,7 @@ mod kbs_tests {
             id: KBID("".to_string()),
             key: "red".to_string(),
             value: "of the colour of fresh blood".to_string(),
-            kind: "concepts".to_string(),
+            category: "concepts".to_string(),
             notes: String::from("to know about color red"),
             reference: Some(String::from("Some Author")),
             tags: vec![

@@ -44,14 +44,14 @@ mod pgstorage_test {
 
         let id = KBID(String::from("681cca89-890b-4667-8ca0-e328546e268c"));
         /*
-        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS)
+        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS)
         VALUES ('681cca89-890b-4667-8ca0-e328546e268c', 'red', 'remember this color', 'one color', 'concepts', 'color concepts')
         RETURNING KB_ID
         */
         let want = KnowledgeBase {
             id: KBID(String::from("681cca89-890b-4667-8ca0-e328546e268c")),
             key: String::from("red"),
-            kind: String::from("concepts"),
+            category: String::from("concepts"),
             notes: String::from("one color"),
             value: String::from("remember this color"),
             reference: None,
@@ -84,14 +84,14 @@ mod pgstorage_test {
 
         let key = String::from("red");
         /*
-        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, REFERENCE, TAGS)
+        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, REFERENCE, TAGS)
         VALUES ('681cca89-890b-4667-8ca0-e328546e268c', 'red', 'remember this color', 'one color', 'concepts', 'color concepts')
         RETURNING KB_ID
         */
         let want = KnowledgeBase {
             id: KBID(String::from("681cca89-890b-4667-8ca0-e328546e268c")),
             key: String::from("red"),
-            kind: String::from("concepts"),
+            category: String::from("concepts"),
             notes: String::from("one color"),
             value: String::from("remember this color"),
             reference: None,
@@ -129,29 +129,29 @@ mod pgstorage_test {
             offset: 0,
         };
         /*
-        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('6411a28b-640a-43d9-b901-1c4b15d91568', 'frederick', 'long name', 'multiple names', 'names', 'name names');
-        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('5a2579f7-83b9-4891-8dbc-e0024b5f3505', 'rick', 'short name', 'just one name', 'names', 'name names');
-        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('22cfc4fb-f9b6-4f6e-9158-9982347ad2a7', 'patrick', 'a saint', 'names', 'words', 'over words');
-        SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY LIKE '%rick%' LIMIT 10 OFFSET 0;
+        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS) VALUES ('6411a28b-640a-43d9-b901-1c4b15d91568', 'frederick', 'long name', 'multiple names', 'names', 'name names');
+        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS) VALUES ('5a2579f7-83b9-4891-8dbc-e0024b5f3505', 'rick', 'short name', 'just one name', 'names', 'name names');
+        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS) VALUES ('22cfc4fb-f9b6-4f6e-9158-9982347ad2a7', 'patrick', 'a saint', 'names', 'words', 'over words');
+        SELECT KB_ID, KB_KEY, CATEGORY, TAGS::TEXT AS TAGS FROM kbs WHERE KB_KEY LIKE '%rick%' LIMIT 10 OFFSET 0;
         */
         let want: SearchResult = SearchResult {
             items: vec![
                 KBItem {
                     id: KBID(String::from("6411a28b-640a-43d9-b901-1c4b15d91568")),
                     key: String::from("frederick"),
-                    kind: String::from("names"),
+                    category: String::from("names"),
                     tags: vec![String::from("name"), String::from("names")],
                 },
                 KBItem {
                     id: KBID(String::from("22cfc4fb-f9b6-4f6e-9158-9982347ad2a7")),
                     key: String::from("patrick"),
-                    kind: String::from("words"),
+                    category: String::from("words"),
                     tags: vec![String::from("over"), String::from("words")],
                 },
                 KBItem {
                     id: KBID(String::from("5a2579f7-83b9-4891-8dbc-e0024b5f3505")),
                     key: String::from("rick"),
-                    kind: String::from("names"),
+                    category: String::from("names"),
                     tags: vec![String::from("name"), String::from("names")],
                 },
             ],
@@ -191,23 +191,23 @@ mod pgstorage_test {
             offset: 0,
         };
         /*
-        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('6411a28b-640a-43d9-b901-1c4b15d91568', 'frederick', 'long name', 'multiple names', 'names', 'name names');
-        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('5a2579f7-83b9-4891-8dbc-e0024b5f3505', 'rick', 'short name', 'just one name', 'names', 'name names');
-        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, KIND, TAGS) VALUES ('22cfc4fb-f9b6-4f6e-9158-9982347ad2a7', 'patrick', 'a saint', 'names', 'words', 'over words');
-        SELECT KB_ID, KB_KEY, KIND, TAGS::TEXT AS TAGS FROM kbs WHERE TAGS @@ to_tsquery('names') ORDER BY KB_KEY LIMIT 10 OFFSET 0;
+        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS) VALUES ('6411a28b-640a-43d9-b901-1c4b15d91568', 'frederick', 'long name', 'multiple names', 'names', 'name names');
+        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS) VALUES ('5a2579f7-83b9-4891-8dbc-e0024b5f3505', 'rick', 'short name', 'just one name', 'names', 'name names');
+        INSERT INTO kbs (KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAGS) VALUES ('22cfc4fb-f9b6-4f6e-9158-9982347ad2a7', 'patrick', 'a saint', 'names', 'words', 'over words');
+        SELECT KB_ID, KB_KEY, CATEGORY, TAGS::TEXT AS TAGS FROM kbs WHERE TAGS @@ to_tsquery('names') ORDER BY KB_KEY LIMIT 10 OFFSET 0;
         */
         let want = SearchResult {
             items: vec![
                 KBItem {
                     id: KBID(String::from("6411a28b-640a-43d9-b901-1c4b15d91568")),
                     key: String::from("frederick"),
-                    kind: String::from("names"),
+                    category: String::from("names"),
                     tags: vec![String::from("name"), String::from("names")],
                 },
                 KBItem {
                     id: KBID(String::from("5a2579f7-83b9-4891-8dbc-e0024b5f3505")),
                     key: String::from("rick"),
-                    kind: String::from("names"),
+                    category: String::from("names"),
                     tags: vec![String::from("name"), String::from("names")],
                 },
             ],
@@ -243,7 +243,7 @@ mod pgstorage_test {
         let mut newkb = KnowledgeBase::new(String::from("new_kb_key"));
         newkb.value = String::from("a new kb item");
         newkb.notes = String::from("this is a test");
-        newkb.kind = String::from("tests");
+        newkb.category = String::from("tests");
         newkb.tags = vec![String::from("test"), String::from("save")];
 
         let wanted_id = newkb.id.clone();
@@ -277,7 +277,7 @@ mod pgstorage_test {
         let mut newkb = KnowledgeBase::new(String::from("new_kb_key"));
         newkb.value = String::from("a new kb item");
         newkb.notes = String::from("this is a test");
-        newkb.kind = String::from("tests");
+        newkb.category = String::from("tests");
         newkb.tags = vec![String::from("test"), String::from("save")];
 
         let want = true;

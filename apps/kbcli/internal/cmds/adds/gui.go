@@ -24,7 +24,7 @@ type model struct {
 // ui form fields
 const (
 	key = iota
-	kind
+	category
 	value
 	notes
 	reference
@@ -66,13 +66,13 @@ func initialModel() model {
 	keyInput.SetValue(addKBData.key)
 	inputs[key].TextInput = &keyInput
 
-	kindInput := textinput.New()
-	kindInput.Placeholder = "category"
-	kindInput.CharLimit = 64
-	kindInput.Width = 70
-	kindInput.Prompt = ""
-	kindInput.SetValue(addKBData.kind)
-	inputs[kind].TextInput = &kindInput
+	categoryInput := textinput.New()
+	categoryInput.Placeholder = "category"
+	categoryInput.CharLimit = 64
+	categoryInput.Width = 70
+	categoryInput.Prompt = ""
+	categoryInput.SetValue(addKBData.category)
+	inputs[category].TextInput = &categoryInput
 
 	valueInput := textarea.New()
 	valueInput.Placeholder = "..."
@@ -191,7 +191,7 @@ func (m model) View() string {
 		inputStyle.Width(30).Render(kbs.KeyLabel),
 		m.inputs[key].View(),
 		inputStyle.Width(8).Render(kbs.CategoryLabel),
-		m.inputs[kind].View(),
+		m.inputs[category].View(),
 		inputStyle.Width(6).Render(kbs.ValueLabel),
 		m.inputs[value].View(),
 		inputStyle.Width(6).Render(kbs.NotesLabel),
@@ -220,7 +220,7 @@ func (m *model) prevInput() {
 
 func (m *model) toAddKBParams() {
 	addKBData.key = m.inputs[key].Value()
-	addKBData.kind = m.inputs[kind].Value()
+	addKBData.category = m.inputs[category].Value()
 	addKBData.value = m.inputs[value].Value()
 	addKBData.notes = m.inputs[notes].Value()
 	addKBData.reference = m.inputs[reference].Value()

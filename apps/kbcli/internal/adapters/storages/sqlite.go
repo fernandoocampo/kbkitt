@@ -278,7 +278,7 @@ func (s *SQLite) queryKBs(ctx context.Context, searchFilters *filterBuilder) ([]
 	for rows.Next() {
 		kb := new(kbItem)
 		// id, firstname, lastname, nickname, country
-		rowErr := rows.Scan(&kb.ID, &kb.Key, &kb.Kind, &kb.Tags)
+		rowErr := rows.Scan(&kb.ID, &kb.Key, &kb.Category, &kb.Tags)
 		if rowErr != nil {
 			slog.Error("scanning rows for searching kbs with search criteria",
 				slog.Any("filter", searchFilters),
@@ -323,6 +323,10 @@ func buildSQLFilters(filters kbs.KBQueryFilter) *filterBuilder {
 
 	if filters.Key != "" {
 		newFilterBuilder.addCondition(keyColumn, likeOperator, fmt.Sprintf("%%%s%%", filters.Key))
+	}
+
+	if filters.Category != "" {
+		newFilterBuilder.addCondition(categoryColumn, equalsOperator, filters.Category)
 	}
 
 	var countWhereClause string

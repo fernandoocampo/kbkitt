@@ -68,7 +68,7 @@ Usage:
   kb add [flags]
 
 Flags:
-  -c, --class string       kind of knowledge base
+  -c, --class string       category of knowledge base
   -h, --help               help for add
   -k, --key string         knowledge base key
   -n, --notes string       knowledge base notes
@@ -138,7 +138,7 @@ If you want to save all at once, you can use all the parameters that the add com
 Key: btc
 Value: crypto
 Notes: currencies
-Kind: crypto
+Category: crypto
 Reference: dementor
 Tags: [btc crypto currencies blockchain]
 

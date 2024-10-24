@@ -1,7 +1,9 @@
 package settings
 
 import (
+	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 
@@ -15,11 +17,16 @@ server:
   url: http://localhost:8080
 */
 
+type Storage interface {
+	InitializeDB(ctx context.Context) error
+}
+
 type Configuration struct {
-	Version             string  `yaml:"version"`
-	FilepathForSyncPath string  `yaml:"fileForSyncPath"`
-	DirForMediaPath     string  `yaml:"dirForMediaPath"`
-	Server              *Server `yaml:"server"`
+	Version          string  `yaml:"version"`
+	KBKittFolderPath string  `yaml:"-"`
+	FileForSyncPath  string  `yaml:"fileForSyncPath"`
+	DirForMediaPath  string  `yaml:"dirForMediaPath"`
+	Server           *Server `yaml:"server"`
 }
 
 type Server struct {
@@ -27,25 +34,28 @@ type Server struct {
 }
 
 const (
-	folderName = ".kbkitt"
-	fileName   = "config.yaml"
+	folderName      = ".kbkitt"
+	mediaFolderName = "media"
+	fileName        = "config.yaml"
+	syncFileName    = "sync.yaml"
+	dbName          = "kbkitt.db"
 )
 
 func (c *Configuration) Invalid() bool {
 	return c == nil ||
 		c.Server == nil ||
 		c.Server.URL == "" ||
-		c.FilepathForSyncPath == "" ||
+		c.FileForSyncPath == "" ||
 		c.DirForMediaPath == ""
 }
 
 func LoadConfiguration() (*Configuration, error) {
-	filePath, err := getKBKittConfigurationPath()
+	kbKittFolderPath, err := getKBKittFolderPath()
 	if err != nil {
-		return nil, fmt.Errorf("unable to load configuration: %w", err)
+		return nil, fmt.Errorf("unable to get kbkitt folder path")
 	}
 
-	yamlFile, err := filesystems.ReadFile(filePath)
+	yamlFile, err := filesystems.ReadFile(getKBKittConfigurationPath(kbKittFolderPath))
 	if err != nil {
 		return nil, fmt.Errorf("unable to load configuration: %w", err)
 	}
@@ -61,6 +71,8 @@ func LoadConfiguration() (*Configuration, error) {
 		return nil, fmt.Errorf("unable to load configuration: %w", err)
 	}
 
+	configuration.KBKittFolderPath = kbKittFolderPath
+
 	return &configuration, nil
 }
 
@@ -70,7 +82,7 @@ func CheckAndCreateKBKittFolder() error {
 		return fmt.Errorf("unable to get kbkitt folder path: %w", err)
 	}
 
-	exist, err := configurationFolderExist(kbkittDir)
+	exist, err := filesystems.FolderExist(kbkittDir)
 	if err != nil {
 		return fmt.Errorf("unable to check if kbkitt folder (%q) exist: %w", kbkittDir, err)
 	}
@@ -88,17 +100,27 @@ func CheckAndCreateKBKittFolder() error {
 }
 
 func Save(newConf *Configuration) error {
+	err := newConf.setKBKittFolderPath()
+	if err != nil {
+		return fmt.Errorf("unable to get kbkitt folder path: %w", err)
+	}
+
+	if newConf.DirForMediaPath == "" {
+		slog.Info("using default media dir", slog.String("file", newConf.getDefaultMediaDir()))
+		newConf.DirForMediaPath = newConf.getDefaultMediaDir()
+	}
+
+	if newConf.FileForSyncPath == "" {
+		slog.Info("using default sync file", slog.String("file", newConf.getDefaultSyncFilePath()))
+		newConf.FileForSyncPath = newConf.getDefaultSyncFilePath()
+	}
+
 	yamlFile, err := yaml.Marshal(newConf)
 	if err != nil {
 		return fmt.Errorf("unable to save configuration: %w", err)
 	}
 
-	path, err := getKBKittConfigurationPath()
-	if err != nil {
-		return fmt.Errorf("unable to save configuration: %w", err)
-	}
-
-	err = filesystems.SaveFile(path, yamlFile)
+	err = filesystems.SaveFile(newConf.getKBKittConfigurationPath(), yamlFile)
 	if err != nil {
 		return fmt.Errorf("unable to save configuration: %w", err)
 	}
@@ -106,13 +128,31 @@ func Save(newConf *Configuration) error {
 	return nil
 }
 
-func getKBKittConfigurationPath() (string, error) {
-	kbKittDir, err := getKBKittFolderPath()
+func CreateDatabaseIfNotExist(ctx context.Context, newConf *Configuration, storage Storage) error {
+	fmt.Println("file db", newConf.GetDBPath())
+	fileExist, err := filesystems.FileExists(newConf.GetDBPath())
 	if err != nil {
-		return "", fmt.Errorf("unable to get kbkitt folder path")
+		return fmt.Errorf("unable to create database: %w", err)
 	}
 
-	return filepath.Join(kbKittDir, fileName), nil
+	if fileExist {
+		return nil
+	}
+
+	err = storage.InitializeDB(ctx)
+	if err != nil {
+		return fmt.Errorf("unable to create database: %w", err)
+	}
+
+	return nil
+}
+
+func (c Configuration) getKBKittConfigurationPath() string {
+	return filepath.Join(c.KBKittFolderPath, fileName)
+}
+
+func getKBKittConfigurationPath(kbKittFolderPath string) string {
+	return filepath.Join(kbKittFolderPath, fileName)
 }
 
 func getKBKittFolderPath() (string, error) {
@@ -124,16 +164,29 @@ func getKBKittFolderPath() (string, error) {
 	return filepath.Join(homeDir, folderName), nil
 }
 
-func configurationFolderExist(kbkittFolder string) (bool, error) {
-	_, err := os.Stat(kbkittFolder)
+func (c Configuration) GetDBPath() string {
+	return filepath.Join(c.KBKittFolderPath, dbName)
+}
 
-	if os.IsNotExist(err) {
-		return false, nil
+func (c Configuration) getDefaultMediaDir() string {
+	return filepath.Join(c.KBKittFolderPath, mediaFolderName)
+}
+
+func (c Configuration) getDefaultSyncFilePath() string {
+	return filepath.Join(c.KBKittFolderPath, syncFileName)
+}
+
+func (c *Configuration) setKBKittFolderPath() error {
+	if c.KBKittFolderPath != "" {
+		return nil
 	}
 
+	kbKittFolderPath, err := getKBKittFolderPath()
 	if err != nil {
-		return false, fmt.Errorf("unable to check if configuration folder exists: %w", err)
+		return fmt.Errorf("unable to get kbkitt folder path")
 	}
 
-	return true, nil
+	c.KBKittFolderPath = kbKittFolderPath
+
+	return nil
 }

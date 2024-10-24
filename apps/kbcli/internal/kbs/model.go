@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/adapters/filesystems"
+	"github.com/google/uuid"
 	yaml "gopkg.in/yaml.v3"
 )
 
@@ -39,9 +40,9 @@ type SearchResult struct {
 	Items []KBItem `json:"items"`
 	Total int      `json:"total"`
 	// determines the number of rows.
-	Limit uint16 `json:"limit"`
+	Limit uint32 `json:"limit"`
 	// skips the offset rows before beginning to return the rows.
-	Offset uint16 `json:"offset"`
+	Offset uint32 `json:"offset"`
 }
 
 type ImportResult struct {
@@ -305,9 +306,9 @@ func (k KBQueryFilter) validate() error {
 	return nil
 }
 
-func (n NewKB) toKB(id string) KB {
+func (n NewKB) toKB() KB {
 	return KB{
-		ID:        id,
+		ID:        uuid.New().String(),
 		Key:       n.Key,
 		Value:     n.Value,
 		Notes:     n.Notes,

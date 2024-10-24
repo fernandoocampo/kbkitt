@@ -15,6 +15,7 @@ import (
 type getKBParams struct {
 	id          string
 	key         string
+	category    string
 	keyword     string
 	limit       uint32
 	offset      uint32
@@ -23,12 +24,13 @@ type getKBParams struct {
 
 // field labels
 const (
-	totalLabel        = "Total:"
-	limitLabel        = "Limit:"
-	offsetLabel       = "Offset:"
-	getKBIDLabel      = "id (hit <enter> if want to keep it empty): "
-	getKBKeyLabel     = "key (hit <enter> if want to keep it empty): "
-	getKBKeywordLabel = "keyword (hit <enter> if want to keep it empty): "
+	totalLabel         = "Total:"
+	limitLabel         = "Limit:"
+	offsetLabel        = "Offset:"
+	getKBIDLabel       = "id (hit <enter> if want to keep it empty): "
+	getKBKeyLabel      = "key (hit <enter> if want to keep it empty): "
+	getKBCategoryLabel = "category (hit <enter> if want to keep it empty): "
+	getKBKeywordLabel  = "keyword (hit <enter> if want to keep it empty): "
 )
 
 var getKBData getKBParams
@@ -43,6 +45,7 @@ func MakeGetCommand(service *kbs.Service) *cobra.Command {
 
 	newCmd.PersistentFlags().StringVarP(&getKBData.id, "id", "i", "", "knowledge base id")
 	newCmd.PersistentFlags().StringVarP(&getKBData.key, "key", "k", "", "knowledge base key")
+	newCmd.PersistentFlags().StringVarP(&getKBData.category, "category", "c", "", "knowledge base category. e.g bookmark, quote, etc")
 	newCmd.PersistentFlags().StringVarP(&getKBData.keyword, "keyword", "w", "", "knowledge base keyword to search based on tags")
 	newCmd.PersistentFlags().Uint32VarP(&getKBData.limit, "limit", "l", 5, "number of rows you want to retrieve")
 	newCmd.PersistentFlags().Uint32VarP(&getKBData.offset, "offset", "o", 0, "number of rows to skip before starting to return result rows")
@@ -70,7 +73,7 @@ func makeGetKBCommand(service *kbs.Service) func(cmd *cobra.Command, args []stri
 			return
 		}
 
-		if kbs.IsStringEmpty(getKBData.key) && kbs.IsStringEmpty(getKBData.keyword) {
+		if getKBData.nothingToLookFor() {
 			os.Exit(0)
 		}
 
@@ -136,11 +139,15 @@ func fillFilterFields() {
 		return
 	}
 
+	if kbs.IsStringEmpty(getKBData.category) {
+		getKBData.category = cmds.RequestStringValue(getKBCategoryLabel)
+	}
+
 	if kbs.IsStringEmpty(getKBData.keyword) {
 		getKBData.keyword = cmds.RequestStringValue(getKBKeywordLabel)
 	}
 
-	if !kbs.IsStringEmpty(getKBData.keyword) {
+	if !kbs.IsStringEmpty(getKBData.keyword) || !kbs.IsStringEmpty(getKBData.category) {
 		return
 	}
 
@@ -149,24 +156,31 @@ func fillFilterFields() {
 
 func printSimpleKBReport(result *kbs.SearchResult) {
 	keyLength := result.GetLongerKey()
-	kindLength := result.GetLongerKind()
+	categoryLength := result.GetLongerCategory()
 	fmt.Println()
 	fmt.Println(totalLabel, result.Total)
 	fmt.Println(limitLabel, result.Limit)
 	fmt.Println(offsetLabel, result.Offset)
 	fmt.Println()
-	fmt.Println(fmt.Sprintf("%-36s", cmds.IDCol), fmt.Sprintf("%s%*s", cmds.KeyCol, keyLength-len(cmds.KeyCol), ""), fmt.Sprintf("%s%*s", cmds.KindCol, kindLength-len(cmds.KindCol), ""), cmds.TagCol)
-	fmt.Println(fmt.Sprintf("%-36s", cmds.IDColSeparator), fmt.Sprintf("%s%*s", cmds.KeyColSeparator, keyLength-len(cmds.KeyCol), ""), fmt.Sprintf("%s%*s", cmds.KindColSeparator, kindLength-len(cmds.KindCol), ""), cmds.TagColSeparator)
+	fmt.Println(fmt.Sprintf("%-36s", cmds.IDCol), fmt.Sprintf("%s%*s", cmds.KeyCol, keyLength-len(cmds.KeyCol), ""), fmt.Sprintf("%s%*s", cmds.CategoryCol, categoryLength-len(cmds.CategoryCol), ""), cmds.TagCol)
+	fmt.Println(fmt.Sprintf("%-36s", cmds.IDColSeparator), fmt.Sprintf("%s%*s", cmds.KeyColSeparator, keyLength-len(cmds.KeyCol), ""), fmt.Sprintf("%s%*s", cmds.CategoryColSeparator, categoryLength-len(cmds.CategoryCol), ""), cmds.TagColSeparator)
 	for _, kb := range result.Items {
-		fmt.Println(kb.ID, fmt.Sprintf("%s%*s", kb.Key, keyLength-len(kb.Key), ""), fmt.Sprintf("%s%*s", kb.Kind, kindLength-len(kb.Kind), ""), strings.Join(kb.Tags, ","))
+		fmt.Println(kb.ID, fmt.Sprintf("%s%*s", kb.Key, keyLength-len(kb.Key), ""), fmt.Sprintf("%s%*s", kb.Category, categoryLength-len(kb.Category), ""), strings.Join(kb.Tags, ","))
 	}
 }
 
 func (g *getKBParams) toKBQueryFilter() kbs.KBQueryFilter {
 	return kbs.KBQueryFilter{
-		Keyword: getKBData.keyword,
-		Key:     getKBData.key,
-		Limit:   getKBData.limit,
-		Offset:  getKBData.offset,
+		Keyword:  getKBData.keyword,
+		Key:      getKBData.key,
+		Category: getKBData.category,
+		Limit:    getKBData.limit,
+		Offset:   getKBData.offset,
 	}
+}
+
+func (g *getKBParams) nothingToLookFor() bool {
+	return kbs.IsStringEmpty(getKBData.key) &&
+		kbs.IsStringEmpty(getKBData.keyword) &&
+		kbs.IsStringEmpty(getKBData.category)
 }

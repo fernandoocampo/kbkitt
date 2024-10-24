@@ -21,7 +21,7 @@ type KB struct {
 	Key       string   `json:"key"`
 	Value     string   `json:"value"`
 	Notes     string   `json:"notes"`
-	Kind      string   `json:"kind"`
+	Category  string   `json:"category"`
 	Reference string   `json:"reference,omitempty"`
 	Tags      []string `json:"tags"`
 }
@@ -30,7 +30,7 @@ type NewKB struct {
 	Key       string   `json:"key" yaml:"Key"`
 	Value     string   `json:"value" yaml:"Value"`
 	Notes     string   `json:"notes" yaml:"Notes"`
-	Kind      string   `json:"kind" yaml:"Kind"`
+	Category  string   `json:"category" yaml:"Category"`
 	Reference string   `json:"reference,omitempty" yaml:"Reference,omitempty"`
 	MediaType string   `json:"media_type,omitempty" yaml:"MediaType,omitempty"`
 	Tags      []string `json:"tags" yaml:"Tags"`
@@ -60,15 +60,16 @@ type SyncResult struct {
 }
 
 type KBItem struct {
-	ID   string   `json:"id"`
-	Key  string   `json:"key"`
-	Kind string   `json:"kind"`
-	Tags []string `json:"tags"`
+	ID       string   `json:"id"`
+	Key      string   `json:"key"`
+	Category string   `json:"category"`
+	Tags     []string `json:"tags"`
 }
 
 type KBQueryFilter struct {
-	Keyword string `json:"keyword"`
-	Key     string `json:"key"`
+	Keyword  string `json:"keyword"`
+	Key      string `json:"key"`
+	Category string `json:"category"`
 	// determines the number of rows.
 	Limit uint32 `json:"limit"`
 	// skips the offset rows before beginning to return the rows.
@@ -103,7 +104,6 @@ const (
 	KeyLabel       = "Key"
 	ValueLabel     = "Value"
 	NotesLabel     = "Notes"
-	KindLabel      = "Kind"
 	CategoryLabel  = "Category"
 	ReferenceLabel = "Reference"
 	MediaTypeLabel = "Media Type"
@@ -111,8 +111,8 @@ const (
 )
 
 const (
-	MediaKind   = "media"
-	mediaFolder = "media"
+	MediaCategory = "media"
+	mediaFolder   = "media"
 )
 
 // media file type
@@ -125,11 +125,11 @@ var (
 )
 
 var (
-	errEmptyKBKey   = errors.New("kb key is empty")
-	errEmptyKBValue = errors.New("kb value is empty")
-	errEmptyKBKind  = errors.New("kb kind is empty")
-	errEmptyKBTags  = errors.New("kb tags is empty")
-	errKBTagValues  = errors.New("kb tag must contain only alphabetic characters")
+	errEmptyKBKey      = errors.New("kb key is empty")
+	errEmptyKBValue    = errors.New("kb value is empty")
+	errEmptyKBCategory = errors.New("kb category is empty")
+	errEmptyKBTags     = errors.New("kb tags is empty")
+	errKBTagValues     = errors.New("kb tag must contain only alphabetic characters")
 )
 
 var IsLetter = regexp.MustCompile(`^[a-zA-Z0-9-]+$`).MatchString
@@ -144,10 +144,10 @@ func (s *SearchResult) Keys() iter.Seq[string] {
 	}
 }
 
-func (s *SearchResult) Kinds() iter.Seq[string] {
+func (s *SearchResult) Categories() iter.Seq[string] {
 	return func(yield func(string) bool) {
 		for _, v := range s.Items {
-			if !yield(v.Kind) {
+			if !yield(v.Category) {
 				return
 			}
 		}
@@ -244,8 +244,8 @@ func (n NewKB) validate() error {
 		err = errors.Join(err, errEmptyKBValue)
 	}
 
-	if n.Kind == "" {
-		err = errors.Join(err, errEmptyKBKind)
+	if n.Category == "" {
+		err = errors.Join(err, errEmptyKBCategory)
 	}
 
 	if len(n.Tags) == 0 {
@@ -272,8 +272,8 @@ func (k KB) validate() error {
 		err = errors.Join(err, errEmptyKBValue)
 	}
 
-	if k.Kind == "" {
-		err = errors.Join(err, errEmptyKBKind)
+	if k.Category == "" {
+		err = errors.Join(err, errEmptyKBCategory)
 	}
 
 	if len(k.Tags) == 0 {
@@ -312,7 +312,7 @@ func (n NewKB) toKB() KB {
 		Key:       n.Key,
 		Value:     n.Value,
 		Notes:     n.Notes,
-		Kind:      n.Kind,
+		Category:  n.Category,
 		Reference: n.Reference,
 		Tags:      slices.Clone(n.Tags),
 	}
@@ -331,7 +331,7 @@ func (k KB) String() string {
 		KeyLabel, k.Key,
 		ValueLabel, k.Value,
 		NotesLabel, k.Notes,
-		KindLabel, k.Kind,
+		CategoryLabel, k.Category,
 		ReferenceLabel, k.Reference,
 		TagsLabel, k.Tags)
 }
@@ -341,19 +341,19 @@ func (n NewKB) String() string {
 		return fmt.Sprintf(`Key: %s
 Value: %s
 Notes: %s
-Kind: %s
+Category: %s
 Reference: %s
 Tags: %+v
-`, n.Key, n.Value, n.Notes, n.Kind, n.Reference, n.Tags)
+`, n.Key, n.Value, n.Notes, n.Category, n.Reference, n.Tags)
 	}
 	return fmt.Sprintf(`Key: %s
 Value: %s
 Notes: %s
-Kind: %s
+Category: %s
 Reference: %s
 Media Type: %s
 Tags: %+v
-`, n.Key, n.Value, n.Notes, n.Kind, n.Reference, n.MediaType, n.Tags)
+`, n.Key, n.Value, n.Notes, n.Category, n.Reference, n.MediaType, n.Tags)
 }
 
 func (i *ImportResult) Ok() bool {
@@ -409,15 +409,15 @@ func (s *SearchResult) GetLongerKey() int {
 	return keyLength
 }
 
-func (s *SearchResult) GetLongerKind() int {
-	kindLength := len("kind")
-	for kind := range s.Kinds() {
-		if len(kind) > kindLength {
-			kindLength = len(kind)
+func (s *SearchResult) GetLongerCategory() int {
+	categoryLength := len("category")
+	for category := range s.Categories() {
+		if len(category) > categoryLength {
+			categoryLength = len(category)
 		}
 	}
 
-	return kindLength
+	return categoryLength
 }
 
 func (s *SearchResult) GetLongerTags() int {
@@ -436,7 +436,13 @@ func (s *SearchResult) TotalPages() int {
 }
 
 func (k KBItem) ToArray() []string {
-	return []string{k.ID, k.Key, k.Kind, strings.Join(k.Tags, " ")}
+	return []string{k.ID, k.Key, k.Category, strings.Join(k.Tags, " ")}
+}
+
+func (k KBQueryFilter) nothingToLookFor() bool {
+	return IsStringEmpty(k.Key) &&
+		IsStringEmpty(k.Keyword) &&
+		IsStringEmpty(k.Category)
 }
 
 func isWebURL(anURL string) bool {

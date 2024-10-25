@@ -68,7 +68,7 @@ Usage:
   kb add [flags]
 
 Flags:
-  -c, --class string       category of knowledge base
+  -c, --category string       category of knowledge base
   -h, --help               help for add
   -k, --key string         knowledge base key
   -n, --notes string       knowledge base notes
@@ -88,7 +88,7 @@ The application will ask you for all the necessary parameters if you did not ent
 key:
 value:
 notes:
-class:
+category:
 reference:
 tags:
 ```

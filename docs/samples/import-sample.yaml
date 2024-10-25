@@ -1,8 +1,22 @@
+Key: motogp-twitter
+Value: https://x.com/MotoGP
+Notes: First on the throttle, last on the brakes
+Category: bookmark
+Reference: motogp twitter
+Namespace: default
+Tags:
+    - motogp
+    - motorcycles
+    - twitter
+    - account
+    - bookmark
+---
 Key: stateful firewall
 Value: allows the return traffic automatically
 Notes: in aws cloud used by security groups
 Category: concept
 Reference: aws
+Namespace: default
 Tags:
     - security
     - aws
@@ -15,6 +29,7 @@ Value: checks for an allow rule for both connections in/out
 Notes: ACLs in AWS you need inbound and outbound rules even for same connection
 Category: concept
 Reference: aws
+Namespace: default
 Tags:
     - security
     - aws
@@ -28,6 +43,7 @@ Value: there's no central master or server node coordinating them
 Notes: ethereum network is a p2p network
 Category: concept
 Reference: ethereum
+Namespace: default
 Tags:
     - blockchain
     - ethereum
@@ -39,6 +55,7 @@ Value: when we say that coupling is bad, what we usually imply is that we have t
 Notes: coupling as part of system design
 Category: concept
 Reference: Vladik Khononov at techleadjournal
+Namespace: default
 Tags:
     - coupling
     - design
@@ -49,6 +66,7 @@ Value: is a conceptual framework used to aid decision-making. Cynefin offers fiv
 Notes: that help managers to identify how they perceive situations and make sense of their own and other people's behaviour.
 Category: concept
 Reference: Dave Snowden
+Namespace: default
 Tags:
     - cynefin
     - framework
@@ -59,6 +77,7 @@ Value: If I know exactly what the effect of that change is going to be, then tha
 Notes: That’s why this domain, in Cynefin terms, is called clear. It’s something that is simple, clear. If I am making a change, I know what’s going to happen.
 Category: concept
 Reference: vladik khononov
+Namespace: default
 Tags:
     - cynefin
     - framework
@@ -71,6 +90,7 @@ Value: the difference between when an item is defined and done
 Notes: metrics
 Category: concept
 Reference: vaughn vernon
+Namespace: default
 Tags:
     - lifecycle
     - metrics
@@ -82,6 +102,7 @@ Value: the difference between when an item is in progress and done
 Notes: metrics
 Category: concept
 Reference: vaughn vernon
+Namespace: default
 Tags:
     - lifecycle
     - metrics
@@ -93,6 +114,7 @@ Value: Program testing can be a very effective way to show the presence of bugs,
 Notes: programming test thoughs
 Category: quote
 Reference: Edsger W. Dijkstra
+Namespace: default
 Tags:
     - dijkstra
     - testing
@@ -104,6 +126,7 @@ Value: it is the extent to which our code does what we intend it to do
 Notes: correctness in our programs
 Category: concept
 Reference: rust book
+Namespace: default
 Tags:
     - correctness
     - programming
@@ -114,6 +137,7 @@ Value: kubectl run tmp-shell-fo --rm -i --tty --image nicolaka/netshoot
 Notes: create a temporal pod to run network commands
 Category: command
 Reference: network
+Namespace: default
 Tags:
     - network
     - netshoot
@@ -126,6 +150,7 @@ Value: terraform state rm "<path>"
 Notes: to remove specific resource from terraform state
 Category: command
 Reference: terraform
+Namespace: default
 Tags:
     - terraform
     - remove
@@ -137,6 +162,7 @@ Value: The purpose of knowledge is action, not knowledge
 Notes: ""
 Category: quote
 Reference: aristotle
+Namespace: default
 Tags:
     - quote
     - knowledge
@@ -148,6 +174,7 @@ Value: What you dont use, you dont pay for. And further What you do use, you cou
 Notes: In general, C++ implementations obey the zero-overhead principle
 Category: concept
 Reference: Bjarne Stroustrup
+Namespace: default
 Tags:
     - overhead
     - principle
@@ -155,22 +182,27 @@ Tags:
     - implementation
 ---
 Key: lsof
+Value: lsof -i :3000
+Notes: |
+    command to list open files.
+    i: selects the listing of files any of whose Internet address matches the address specified in i
 Category: command
-Tags: 
+Reference: ""
+Namespace: default
+Tags:
     - linux
     - command
     - list
     - open
     - files
-Value: lsof -i :3000
-Notes: |+
-    command to list open files.
-    i: selects the listing of files any of whose Internet address matches the address specified in i
-Reference: 
 ---
 Key: grep-with-lines
+Value: grep -A5 -B5 lender
+Notes: file pattern searcher. 5 lineas after the word and 5 line Before word
 Category: command
-Tags: 
+Reference: ""
+Namespace: default
+Tags:
     - linux
     - command
     - grep
@@ -178,49 +210,54 @@ Tags:
     - pattern
     - search
     - lines
-Value: grep -A5 -B5 lender
-Notes: file pattern searcher. 5 lineas after the word and 5 line Before word
-Reference: 
 ---
 Key: casco-quote
+Value: El casco esconde sentimientos que no se pueden entender
+Notes: ""
 Category: quote
-Tags: 
+Reference: Airton Sena
+Namespace: default
+Tags:
     - helmet
     - casco
     - quote
     - sena
     - pilot
     - formula
-Value: El casco esconde sentimientos que no se pueden entender
-Notes: 
-Reference: Airton Sena
 ---
 Key: alone-quote
+Value: The man who goes alone can start today; but he who travels with another must wait till that other is ready
+Notes: ""
 Category: quote
-Tags: 
+Reference: Henry David Thoreau
+Namespace: default
+Tags:
     - alone
     - quote
     - travel
     - ready
-Value: The man who goes alone can start today; but he who travels with another must wait till that other is ready
-Notes: 
-Reference: Henry David Thoreau
 ---
 Key: best-of-breed systems
+Value: The problem with end-to-end systems is that, because they do everything, there are better systems available for each thing that they do
+Notes: How machine learning applies to your business
 Category: quote
-Tags: 
+Reference: ""
+Namespace: default
+Tags:
     - breed
     - system
     - machine
     - learning
     - quote
-Value: The problem with end-to-end systems is that, because they do everything, there are better systems available for each thing that they do
-Notes: How machine learning applies to your business
-Reference: 
+
 ---
 Key: solow paradox
+Value: You can see the computer age everywhere but in the productivity statistics
+Notes: If computers were really helping us become more productive, why is it that much faster computers don’t lead to much greater productivity?
 Category: quote
-Tags: 
+Reference: Robert Solow
+Namespace: default
+Tags:
     - solow
     - paradox
     - quote
@@ -228,51 +265,55 @@ Tags:
     - computer
     - machine
     - learning
-Value: You can see the computer age everywhere but in the productivity statistics
-Notes: If computers were really helping us become more productive, why is it that much faster computers don’t lead to much greater productivity?
-Reference: Robert Solow
 ---
 Key: ml-quote
+Value: Any point in a process where a person needs to make a decision is an opportunity to use machine learning to automate the decision or to present a restricted choice of options for the person to consider.
+Notes: ""
 Category: quote
-Tags: 
+Reference: How machine learning applies to your business
+Namespace: default
+Tags:
     - machine
     - learning
     - decision
     - opportunity
     - automation
     - quote
-Value: Any point in a process where a person needs to make a decision is an opportunity to use machine learning to automate the decision or to present a restricted choice of options for the person to consider.
-Notes: 
-Reference: How machine learning applies to your business
 ---
 Key: target variable
+Value: person's decision about something in machine learning. Categorical and Continuous.
+Notes: In machine learning lingo, Person’s decision is called the target variable, and the types of things she considers when making the decision are called features.
 Category: concept
-Tags: 
+Reference: How machine learning applies to your business
+Namespace: default
+Tags:
     - machine
     - learning
     - decision
     - target
     - concept
-Value: person's decision about something in machine learning. Categorical and Continuous.
-Notes: In machine learning lingo, Person’s decision is called the target variable, and the types of things she considers when making the decision are called features.
-Reference: How machine learning applies to your business
 ---
 Key: categorical target variable
+Value: include things like yes or no; and north, south, east, or west.
+Notes: ""
 Category: concept
-Tags: 
+Reference: How machine learning applies to your business
+Namespace: default
+Tags:
     - machine
     - learning
     - variable
     - categoricla
     - target
     - concept
-Value: include things like yes or no; and north, south, east, or west.
-Notes: 
-Reference: How machine learning applies to your business
 ---
 Key: binary target variable
+Value: categorical target variable with two only possible variables
+Notes: ""
 Category: concept
-Tags: 
+Reference: How machine learning applies to your business
+Namespace: default
+Tags:
     - machine
     - learning
     - concept
@@ -280,13 +321,14 @@ Tags:
     - binary
     - target
     - variable
-Value: categorical target variable with two only possible variables
-Notes: 
-Reference: How machine learning applies to your business
 ---
 Key: multiclass target variable
+Value: categorical target variable with more than two variables
+Notes: ""
 Category: concept
-Tags: 
+Reference: How machine learning applies to your business
+Namespace: default
+Tags:
     - machine
     - learning
     - concept
@@ -294,94 +336,99 @@ Tags:
     - multiclass
     - target
     - variable
-Value: categorical target variable with more than two variables
-Notes: 
-Reference: How machine learning applies to your business
 ---
 Key: Continuous target variable
+Value: it is just numbers. if your machine learning application predicts number values based on features.
+Notes: ""
 Category: concept
-Tags: 
+Reference: How machine learning applies to your business
+Namespace: default
+Tags:
     - machine
     - learning
     - continuous
     - variable
     - target
     - concept
-Value: it is just numbers. if your machine learning application predicts number values based on features.
-Notes: 
-Reference: How machine learning applies to your business
 ---
 Key: ML Features
+Value: the columns of the table. The features may be size, name, type, weight, and so on. This is what describes our data. Certain features are special, though, and we call them labels.
+Notes: ""
 Category: concept
-Tags: 
+Reference: Grokking Machine Learning
+Namespace: default
+Tags:
     - machine
     - learning
     - features
     - concept
-Value: the columns of the table. The features may be size, name, type, weight, and so on. This is what describes our data. Certain features are special, though, and we call them labels.
-Notes: 
-Reference: Grokking Machine Learning
 ---
 Key: Supervised machine learning
+Value: type of machine learning. it is a type of predictive machine learning in which the data comes with labels, where the label is the target we are interested in predicting. Remember-Formulate-Predict.
+Notes: The model first remembers the dataset of dogs and cats, then formulates a model, or a rule for what is a dog and what is a cat, and when a new image comes in, the model makes a prediction about what the label of the image is, namely, is it a dog or a cat.
 Category: concept
-Tags: 
+Reference: Grokking Machine Learning
+Namespace: default
+Tags:
     - machine
     - learning
     - supervised
     - concept
-Value: type of machine learning. it is a type of predictive machine learning in which the data comes with labels, where the label is the target we are interested in predicting. Remember-Formulate-Predict.
-Notes: The model first remembers the dataset of dogs and cats, then formulates a model, or a rule for what is a dog and what is a cat, and when a new image comes in, the model makes a prediction about what the label of the image is, namely, is it a dog or a cat.
-Reference: Grokking Machine Learning
 ---
 Key: Unsupervised machine learning
+Value: It differs from supervised learning in that the data has no labels. it is a dataset with only features, and no target to predict. It is where we point a machine learning application at a bunch of data and tell it to do its thing.
+Notes: ""
 Category: concept
-Tags: 
+Reference: Grokking Machine Learning
+Namespace: default
+Tags:
     - machine
     - learning
     - unsupervised
     - concept
-Value: It differs from supervised learning in that the data has no labels. it is a dataset with only features, and no target to predict. It is where we point a machine learning application at a bunch of data and tell it to do its thing.
-Notes: 
-Reference: Grokking Machine Learning
 ---
 Key: Regression Models
+Value: These are the types of models that predict a number, such as the weight of the animal
+Notes: ""
 Category: concept
-Tags: 
+Reference: Grokking Machine Learning
+Namespace: default
+Tags:
     - machine
     - learning
     - supervised
     - concept
-Value: These are the types of models that predict a number, such as the weight of the animal
-Notes: 
-Reference: Grokking Machine Learning
 ---
 Key: Classification Models
+Value: These are the types of models that predict a state, such as the type of animal (cat or dog).
+Notes: ""
 Category: concept
-Tags: 
+Reference: Grokking Machine Learning
+Namespace: default
+Tags:
     - machine
     - learning
     - supervised
     - concept
-Value: These are the types of models that predict a state, such as the type of animal (cat or dog).
-Notes: 
-Reference: Grokking Machine Learning
 ---
 Key: ML Annotation
+Value: the process of labeling raw data so that it becomes training data for Machine Learning
+Notes: ""
 Category: concept
-Tags: 
+Reference: Human in the loop
+Namespace: default
+Tags:
     - machine
     - learning
     - annotation
     - concept
-Value: the process of labeling raw data so that it becomes training data for Machine Learning
-Notes: 
-Reference: Human in the loop
 ---
 Key: borrowing
 Value: We call the action of creating a reference borrowing.
 Notes: As in real life, if a person owns something, you can borrow it from them. When you’re done, you have to give it back. You don’t own it.
 Category: concept
 Reference: rust book
+Namespace: default
 Tags:
     - rust
     - borrowing
@@ -394,6 +441,7 @@ Value: set of rules that govern how a Rust program manages memory
 Notes: 'Rust uses a third approach: memory is managed through a system of ownership with a set of rules that the compiler checks.'
 Category: concept
 Reference: rust book
+Namespace: default
 Tags:
     - rust
     - ownership
@@ -405,6 +453,7 @@ Value: 1. Each value in Rust has an owner. 2. There can only be one owner at a t
 Notes: ""
 Category: concept
 Reference: rust book
+Namespace: default
 Tags:
     - rust
     - ownership
@@ -416,6 +465,7 @@ Value: part of memory available to your code to use at runtime. All data stored 
 Notes: The stack stores values in the order it gets them and removes the values in the opposite order (FIFO).
 Category: concept
 Reference: rust book
+Namespace: default
 Tags:
     - memory
     - stack
@@ -426,6 +476,7 @@ Value: 'The heap is less organized: when you put data on the heap, you request a
 Notes: This process is called allocating on the heap and is sometimes abbreviated as just allocating (pushing values onto the stack is not considered allocating). Because the pointer to the heap is a known, fixed size, you can store the pointer on the stack, but when you want the actual data, you must follow the pointer.
 Category: concept
 Reference: rust book
+Namespace: default
 Tags:
     - heap
     - memory
@@ -436,6 +487,8 @@ Key: concurrent programming
 Value: where different parts of a program execute independently
 Notes: ""
 Category: concept
+Reference: ""
+Namespace: default
 Tags:
     - concurrency
     - programming
@@ -445,16 +498,20 @@ Key: parallel programming
 Value: where different parts of a program execute at the same time
 Notes: ""
 Category: concept
+Reference: ""
+Namespace: default
 Tags:
     - parallel
     - programming
     - concurrency
+
 ---
 Key: design patterns
 Value: poweful abstractions that every programmer can use  to produce high quality code.
 Notes: 'Humans are good at pattern recognition, and following well understood and easily recognized patterns helps us solve 2 tricky problems: reasoning about whether a design is good or bad amd help other people understand our code'
 Category: concept
 Reference: idiomatic rust
+Namespace: default
 Tags:
     - patterns
     - design
@@ -466,6 +523,7 @@ Value: The JSON Web Key Set (JWKS) is a set of keys which contains the public ke
 Notes: ""
 Category: concept
 Reference: jwt
+Namespace: default
 Tags:
     - token
     - keyset
@@ -477,6 +535,7 @@ Value: https://kapeli.com/cheat_sheets/Oh-My-Zsh_Git.docset/Contents/Resources/D
 Notes: Enjoy this cheat sheet at its fullest within Dash, the macOS documentation browser.
 Category: bookmark
 Reference: zsh+git
+Namespace: default
 Tags:
     - oh-my-zsh
     - shortcuts
@@ -490,6 +549,7 @@ Value: https://github.com/oauth2-proxy/oauth2-proxy
 Notes: A reverse proxy and static file server that provides authentication using Providers (Google, Keycloak, GitHub and others) to validate accounts by email, domain or group.
 Category: bookmark
 Reference: uas epic proxy
+Namespace: default
 Tags:
     - proxy
     - oauth2
@@ -502,6 +562,7 @@ Value: https://dave.cheney.net/2016/05/10/test-fixtures-in-go
 Notes: the Go tool will ignore any directory in your $GOPATH that starts with a period, an underscore, or matches the word testdata.
 Category: bookmark
 Reference: dave cheney
+Namespace: default
 Tags:
     - golang
     - testdata
@@ -514,6 +575,7 @@ Value: https://blog.while-true-do.io/podman-multi-arch-images/
 Notes: Have you built a container image on your workstation, just to find out that it doesn't work on your Raspberry Pi? Maybe your project considers publishing a software for arm64 and amd64, so your users can run it on different platforms? No worries, Podman got you covered! With multi-arch builds, you can build your image once and run them on multiple platforms.
 Category: bookmark
 Reference: Daniel Schier
+Namespace: default
 Tags:
     - podman
     - build
@@ -526,6 +588,7 @@ Value: I’ve found more durable is being clear on what problems you are solving
 Notes: A lot of leadership teams spend time creating mission, vision and values statements which are ignored almost as soon as they’re created.
 Category: quote
 Reference: dare obansajo
+Namespace: default
 Tags:
     - vision
     - mission
@@ -538,6 +601,7 @@ Value: '@Carnage4Life'
 Notes: Opinions about product management, technology news and inclusivity in tech. Diversity is about demographics, inclusion is about creating a sense of belonging.
 Category: influencer
 Reference: twitter
+Namespace: default
 Tags:
     - dare
     - obansajo
@@ -550,6 +614,7 @@ Value: '@Grady_Booch'
 Notes: scientist, storyteller, philosopher
 Category: influencer
 Reference: Grady Booch
+Namespace: default
 Tags:
     - grady
     - booch
@@ -562,6 +627,7 @@ Value: '@allenholub'
 Notes: I help ppl build software better
 Category: influencer
 Reference: twitter
+Namespace: default
 Tags:
     - allen
     - holub
@@ -573,6 +639,7 @@ Value: VAULT_ADDR=https://{VAULT_HOST}/ vault login -method=oidc
 Notes: login against vault
 Category: command
 Reference: vault
+Namespace: default
 Tags:
     - vault
     - login
@@ -584,6 +651,7 @@ Value: terraform destroy --target "{MODULE_OR_RESOURCE_TO_DESTROY}"
 Notes: To destroy a specific EC2 instance (demo_vm_1), the --target argument can be supplied to the destroy command with the resource path to identify the correct. terraform destroy --target aws_instance.demo_vm_1
 Category: command
 Reference: https://spacelift.io/blog/how-to-destroy-terraform-resources
+Namespace: default
 Tags:
     - terraform
     - destroy
@@ -595,6 +663,7 @@ Value: https://www.futuretools.io
 Notes: FutureTools Collects & Organizes All The Best AI Tools So YOU Too Can Become Superhuman!
 Category: bookmark
 Reference: internet
+Namespace: default
 Tags:
     - tools
     - artificial
@@ -607,6 +676,7 @@ Value: https://www.operatorshandbook.com
 Notes: My goal with this newsletter is to provide you with actionable advice, frameworks and guides to grow your career and your business based on my experience as an operator over the last 10 years at companies like Uber, Meta and Rippling.
 Category: bookmark
 Reference: internet
+Namespace: default
 Tags:
     - handbook
     - advice
@@ -620,6 +690,7 @@ Value: https://semantic-release.gitbook.io/semantic-release
 Notes: 'Fully automated version management and package publishing. semantic-release automates the whole package release workflow including: determining the next version number, generating the release notes, and publishing the package. ~/Downloads/ADR 15 - Automate Semantic Release.pdf'
 Category: bookmark
 Reference: conventional commits
+Namespace: default
 Tags:
     - semantic
     - release
@@ -631,6 +702,7 @@ Value: https://www.conventionalcommits.org/
 Notes: The Conventional Commits specification is a lightweight convention on top of commit messages. It provides an easy set of rules for creating an explicit commit history; which makes it easier to write automated tools on top of. This convention dovetails with SemVer, by describing the features, fixes, and breaking changes made in commit messages.
 Category: bookmark
 Reference: conventional commits
+Namespace: default
 Tags:
     - conventional
     - commits
@@ -643,6 +715,7 @@ Value: '@LevelUpCoding_'
 Notes: Level up your engineering & system design skills. Complex topics simplified.
 Category: influencer
 Reference: https://x.com/LevelUpCoding_
+Namespace: default
 Tags:
     - twitter
     - levelup
@@ -656,6 +729,7 @@ Value: '@func25'
 Notes: dive into untold insights of golang and system design with blog.devtrovert.com
 Category: influencer
 Reference: https://x.com/func25
+Namespace: default
 Tags:
     - golang
     - insights
@@ -668,6 +742,7 @@ Value: https://blog.devtrovert.com
 Notes: Phuong Le blog about go and system design
 Category: bookmark
 Reference: '@func25 at twitter'
+Namespace: default
 Tags:
     - golang
     - system
@@ -683,17 +758,20 @@ Notes: |-
     --name-only argument shows only the file names that were affected
 Category: command
 Reference: stackoverflow
+Namespace: default
 Tags:
     - git
     - commit
     - list
     - files
+
 ---
 Key: jwt-claims
 Value: JSON web tokens (JWTs) claims are pieces of information asserted about a subject. For example, an ID token (which is always a JWT) can contain a claim called name that asserts that the name of the user authenticating is "John Doe". In a JWT, a claim appears as a name/value pair where the name is always a string and the value can be any JSON value
 Notes: https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-token-claims
 Category: concept
 Reference: auth0
+Namespace: default
 Tags:
     - jwt
     - token
@@ -706,6 +784,7 @@ Value: https://victoriametrics.com/blog/go-singleflight/index.html
 Notes: The singleflight package in Go is built specifically to handle that situation when you’ve got multiple requests coming in at the same time asking for the same data, the default behavior is that each of those requests would go to the database individually to get the same information
 Category: bookmark
 Reference: victoriametrics
+Namespace: default
 Tags:
     - singleflight
     - query
@@ -719,6 +798,7 @@ Value: https://docs.nats.io/nats-concepts/jetstream
 Notes: NATS has a built-in persistence engine called JetStream which enables messages to be stored and replayed at a later time. Unlike NATS Core which requires you to have an active subscription to process messages as they happen, JetStream allows the NATS server to capture messages and replay them to consumers as needed. This functionality enables a different quality of service for your NATS messages, and enables fault-tolerant and high-availability configurations.
 Category: bookmark
 Reference: Fabian
+Namespace: default
 Tags:
     - jetstream
     - events
@@ -731,6 +811,7 @@ Value: https://neptune.ai/blog/how-to-learn-mlops
 Notes: With the recent rapid advancements in machine learning and its widespread application in various industries, Machine Learning Operations (MLOps for short) has become a rapidly advancing field. The recent popularity of Large Language Models (LLMs) has only accelerated this development and increased the demand for MLOps specialists.
 Category: bookmark
 Reference: Chauncey
+Namespace: default
 Tags:
     - mlops
     - learning
@@ -743,6 +824,7 @@ Value: https://github.com/raminmohammadi/MLOps
 Notes: This repository is dedicated to sharing reading contents, labs and exercises for the MLOps (Machine Learning Operations) course at Northeastern University.
 Category: bookmark
 Reference: Chauncey
+Namespace: default
 Tags:
     - mlops
     - repository
@@ -756,6 +838,7 @@ Value: The business logic module is explicit and bounded. It contains what you h
 Notes: ""
 Category: concept
 Reference: epam course
+Namespace: default
 Tags:
     - business
     - logic
@@ -769,6 +852,7 @@ Value: allows business logic to be extended at runtime without explicit coding e
 Notes: ""
 Category: concept
 Reference: epam training
+Namespace: default
 Tags:
     - business
     - reasoning
@@ -783,6 +867,7 @@ Value: Concurrent Users metric
 Notes: This can either be in reference to number of sessions per single server instance OR the number of users participating in an experience / event at the same time.
 Category: concept
 Reference: load testing
+Namespace: default
 Tags:
     - testing
     - load
@@ -795,6 +880,7 @@ Value: 'Outside the business reasoning software module, you encounter the world 
 Notes: The Inner Workings of a Business Reasoning Module
 Category: concept
 Reference: epam training
+Namespace: default
 Tags:
     - genai
     - generative
@@ -811,6 +897,7 @@ Value: |-
 Notes: This is not to say that LLMs have no utility - they do - but it is to say that one should not give LLMs powers they do not and cannot possess. To think this is an AGI or even a path to AGI is folly.
 Category: quote
 Reference: https://x.com/Grady_Booch/status/1790085016606880001
+Namespace: default
 Tags:
     - grady
     - booch
@@ -826,6 +913,7 @@ Value: https://www.angelospanag.me/blog/verifying-a-json-web-token-from-cognito-
 Notes: Verifying a JSON Web Token from Amazon Cognito in Go and Gin. One popular option for integrating Amazon Cognito authentication/authorization with a backend, requires the decoding and verifying of JSON Web Tokens (JWT) for server-side processing.
 Category: bookmark
 Reference: internet
+Namespace: default
 Tags:
     - cognito
     - golang
@@ -841,6 +929,7 @@ Value: https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-b
 Notes: When Kubernetes schedules a Pod, it’s important that the containers have enough resources to actually run. If you schedule a large application on a node with limited resources, it is possible for the node to run out of memory or CPU resources and for things to stop working!
 Category: bookmark
 Reference: k8s resources
+Namespace: default
 Tags:
     - kubernetes
     - k8s
@@ -855,6 +944,7 @@ Value: https://www.ardanlabs.com/blog/2024/02/kubernetes-cpu-limits-go.html
 Notes: I believe there are many Go services running in K8s under CPU limits that are not running as efficiently as they otherwise could be. In this post, I will explain what I learned and show what happens when CPU limits are being used and your Go service isn’t configured to run within the scope of that setting.
 Category: bookmark
 Reference: Ardan Lab bill kennedy
+Namespace: default
 Tags:
     - kubernetes
     - k8s
@@ -869,6 +959,7 @@ Value: https://www.ardanlabs.com/blog/2024/02/kubernetes-memory-limits-go.html
 Notes: After writing the Kubernetes (K8s) CPU Limits post, I was wondering what happens when a K8s memory limit is set for the same service. I’ve been hearing at workshops and at Ardan how people are experiencing Out Of Memory (OOM) problems with their PODs when setting K8s memory limits. I’m often told that when an OOM occurs, K8s will terminate and restart the POD.
 Category: bookmark
 Reference: ardan labs bill kennedy
+Namespace: default
 Tags:
     - kubernetes
     - k8s
@@ -885,6 +976,7 @@ Value: |-
 Notes: API are gateways between services and consumers. APIs are sometimes thought of as contracts
 Category: concept
 Reference: api notes by russi
+Namespace: default
 Tags:
     - api
     - interface
@@ -904,6 +996,7 @@ Value: |-
 Notes: 7 habits of highly effectives API
 Category: concept
 Reference: apis by russi
+Namespace: default
 Tags:
     - api
     - effective
@@ -918,6 +1011,7 @@ Value: |-
 Notes: layered approach to APIs
 Category: concept
 Reference: apis by russi
+Namespace: default
 Tags:
     - layered
     - approach
@@ -931,6 +1025,7 @@ Value: "They are the APIs that expose the APIs of record.\nThey expose the data 
 Notes: layered approach to apis
 Category: concept
 Reference: apis by russi
+Namespace: default
 Tags:
     - system
     - apis
@@ -943,6 +1038,7 @@ Value: "* They are the ones that change at the fastest pace. That is because app
 Notes: Layered approach to APIs
 Category: concept
 Reference: apis by russi
+Namespace: default
 Tags:
     - experience
     - apis
@@ -957,18 +1053,21 @@ Value: |-
 Notes: Layered approach to APIs
 Category: concept
 Reference: apis by russi
+Namespace: default
 Tags:
     - process
     - apis
     - layered
     - approach
     - rest
+
 ---
 Key: openapi-bookmark
 Value: https://www.openapis.org
 Notes: The OpenAPI Specifications provides a formal standard for describing HTTP APIs.
 Category: bookmark
 Reference: internet
+Namespace: default
 Tags:
     - openapi
     - specification
@@ -989,6 +1088,7 @@ Notes: |-
     Contact information, license, terms of use and other information.
 Category: concept
 Reference: apis by russi
+Namespace: default
 Tags:
     - opeanapi
     - apis
@@ -1001,6 +1101,7 @@ Value: https://swagger.io/blog/api-documentation/api-documentation-best-practice
 Notes: 'API Documentation: The Secret to a Great API Developer Experience'
 Category: bookmark
 Reference: swagger
+Namespace: default
 Tags:
     - apis
     - documentation
@@ -1016,6 +1117,7 @@ Value: |-
 Notes: There are different schools of thought to version your API, but most of them fall under these three categories
 Category: concept
 Reference: apis by russi
+Namespace: default
 Tags:
     - apis
     - versioning
@@ -1035,6 +1137,7 @@ Category: concept
 Reference: |-
     * GData-version: 2 (google)
     * application/vnd.github[.version]
+Namespace: default
 Tags:
     - apis
     - versioning
@@ -1051,6 +1154,7 @@ Notes: |-
     * /v1/
 Category: concept
 Reference: apis by russi
+Namespace: default
 Tags:
     - api
     - versioning
@@ -1065,6 +1169,7 @@ Value: Include a version query string parameter with the number of version to us
 Notes: e.g. ?v=2
 Category: concept
 Reference: apis by russi
+Namespace: default
 Tags:
     - apis
     - versioning
@@ -1079,6 +1184,7 @@ Value: stands for “Open Authorization”, is a standard designed to allow a we
 Notes: OAuth 2.0 is an authorization protocol and NOT an authentication protocol. As such, it is designed primarily as a means of granting access to a set of resources, for example, remote APIs or user data.
 Category: concept
 Reference: https://auth0.com/intro-to-iam/what-is-oauth-2
+Namespace: default
 Tags:
     - oauth2
     - standard
@@ -1091,6 +1197,7 @@ Value: https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-key-set-pro
 Notes: Each property in the key is defined by the JWK specification RFC 7517 Section 4
 Category: bookmark
 Reference: auth0
+Namespace: default
 Tags:
     - jwks
     - properties
@@ -1105,6 +1212,7 @@ Value: Low latency describes a computer network that is optimized to process a v
 Notes: Low latency is desirable in a wide range of use cases. In a general sense, lower latency is nearly always an improvement over slower packet transport. Low latency is desirable in online gaming as it contributes to a more realistic gaming environment. However, the term low latency is most often used to describe specific business use cases, in particular high-frequency trading in capital markets.
 Category: concept
 Reference: networks
+Namespace: default
 Tags:
     - networks
     - latency
@@ -1119,6 +1227,7 @@ Value: https://www.humblebundle.com/books
 Notes: Looking for your next great read? Immerse yourself in adventurous comics, discover spectacular fantasy worlds, whip up your soon-to-be favorite recipe, run a new tabletop RPG system, and more with our curated book bundles. Whether you're a voracious reader or want to explore new genres, our exclusive bundles can help you find your next literary love. Plus, a portion of the bundle proceeds go to charity!
 Category: bookmark
 Reference: jorge mario chaparro
+Namespace: default
 Tags:
     - books
     - ecommerce
@@ -1132,6 +1241,7 @@ Value: In gRPC, a client application can directly call a method on a server appl
 Notes: gRPC can use protocol buffers as both its Interface Definition Language (IDL) and as its underlying message interchange format
 Category: concept
 Reference: https://grpc.io/docs/what-is-grpc/introduction/
+Namespace: default
 Tags:
     - grpc
     - remote
@@ -1148,6 +1258,7 @@ Notes: |-
     Protocol buffers are a combination of the definition language (created in .proto files), the code that the proto compiler generates to interface with data, language-specific runtime libraries, the serialization format for data that is written to a file (or sent across a network connection), and the serialized data.
 Category: concept
 Reference: https://protobuf.dev/overview/
+Namespace: default
 Tags:
     - protocol
     - buffers
@@ -1161,6 +1272,7 @@ Value: https://grpc.io
 Notes: A high performance, open source universal RPC framework
 Category: bookmark
 Reference: grpc.io tutorial
+Namespace: default
 Tags:
     - grpc
     - site
@@ -1177,6 +1289,7 @@ Notes: |-
     REST aims to follow HTTP semantics closely: a REST request is structured like an HTTP request
 Category: concept
 Reference: https://algodaily.com/lessons/rest-rpc-and-distributed-api-desig
+Namespace: default
 Tags:
     - rest
     - protocol
@@ -1190,6 +1303,7 @@ Value: https://github.com/RahulSChand/gpu_poor
 Notes: Calculates how much GPU memory you need and how much token/s you can get for any LLM & GPU/CPU.
 Category: bookmark
 Reference: https://rahulschand.github.io/gpu_poor/
+Namespace: default
 Tags:
     - gpu
     - llm
@@ -1203,6 +1317,7 @@ Value: https://eli.thegreenplace.net/2023/better-http-server-routing-in-go-122
 Notes: An exciting proposal is expected to land in Go 1.22 - enhancing the pattern-matching capabilities of the default HTTP serving multiplexer in the net/http package.
 Category: bookmark
 Reference: golang mux
+Namespace: default
 Tags:
     - golang
     - routes
@@ -1215,6 +1330,7 @@ Value: kubectl api-resources
 Notes: Print the supported API resources on the server.
 Category: command
 Reference: kubectl
+Namespace: default
 Tags:
     - kubectl
     - api
@@ -1227,6 +1343,7 @@ Value: https://aws.amazon.com/tutorials/deploying-low-latency-applications-with-
 Notes: AWS Local Zones are a type of infrastructure deployment that places compute, storage, database, and other select AWS services close to large population and industry centers, enabling you to deliver applications that require single-digit millisecond latency to end users.
 Category: bookmark
 Reference: aws
+Namespace: default
 Tags:
     - low
     - latency
@@ -1240,17 +1357,20 @@ Value: "Who Would You Define As a Successful Person In This Role? \nWhat Are You
 Notes: questions to ask to interviewer
 Category: concept
 Reference: asking questions in interviews
+Namespace: default
 Tags:
     - interviews
     - questions
     - candidate
     - expectations
+
 ---
 Key: push-up-back
 Value: Would it be okay if we pushed stand up back an hour?
 Notes: Pushing something back makes it further away from you. So pushing back an event makes it further away in time, so into the future. Pushing up an event means the event happens at a sooner time
 Category: english
 Reference: english
+Namespace: default
 Tags:
     - push
     - back
@@ -1263,6 +1383,7 @@ Value: grep -E "{PATTERN1}|{PATTERN2}"
 Notes: The basic grep syntax when searching multiple patterns in a file includes using the grep command followed by strings and the name of the file or its path.
 Category: command
 Reference: https://phoenixnap.com/kb/grep-multiple-strings
+Namespace: default
 Tags:
     - linux
     - grep
@@ -1282,6 +1403,7 @@ Notes: |-
     The CQRS pattern works well with the Event Sourcing patterns, so you should consider adopting an Event Store to capture all changes in your systems as a series of events.
 Category: concept
 Reference: https://martinfowler.com/bliki/CQRS.html
+Namespace: default
 Tags:
     - cqrs
     - pattern
@@ -1296,6 +1418,7 @@ Value: https://www.gregorygaines.com/blog/how-to-properly-hash-and-salt-password
 Notes: How to Properly Hash and Salt Passwords in Golang Using Bcrypt. The bcypt function is secure and brute force resistant allowing programmers to safely handle the passwords of their users. Bcrypt uses a concept named cost which represents the number of hash iterations that bcrypt undertakes. Hashing time is calculated as 2 ^ cost and the higher the cost, the longer the hashing process takes.
 Category: bookmark
 Reference: Gregory Gaines
+Namespace: default
 Tags:
     - password
     - encrypt
@@ -1310,6 +1433,7 @@ Notes: |-
     INSERT INTO "user" (email, pass) VALUES ($1, crypt($2, gen_salt('bf')));
 Category: bookmark
 Reference: pgcrypto
+Namespace: default
 Tags:
     - encrypt
     - hash
@@ -1322,6 +1446,7 @@ Value: https://github.com/dependabot
 Notes: GitHub feature that automates the process of updating dependencies in a repository. It helps developers keep their dependencies up-to-date and secure by submitting pull requests (PRs) to update outdated or vulnerable dependencies.
 Category: bookmark
 Reference: github
+Namespace: default
 Tags:
     - github
     - dependencies
@@ -1334,6 +1459,7 @@ Value: https://resume.io
 Notes: to build resumes, good GUI
 Category: bookmark
 Reference: internet
+Namespace: default
 Tags:
     - resume
     - curriculum
@@ -1345,6 +1471,7 @@ Value: https://spiffe.io/
 Notes: SPIFFE and SPIRE provide a uniform identity control plane across modern and heterogeneous infrastructure. Since software and application architectures have grown substantially, they are spread across virtual machines in public clouds and private data centers. Security models for the organizations that manage them must keep up with these infrastructure technologies. And this is where SPIFFE and SPIRE come in. With SPIFFE/SPIRE, developers and operators can build software using new infrastructure technologies, while allowing security teams to step back from time-consuming security processes.
 Category: bookmark
 Reference: project
+Namespace: default
 Tags:
     - spire
     - spiffe
@@ -1360,6 +1487,7 @@ Value: https://github.com/spiffe/spire-tutorials/tree/main/docker-compose/federa
 Notes: This tutorial shows how to authenticate two SPIFFE-identified workloads that are identified by two different SPIRE Servers.
 Category: bookmark
 Reference: chauncey
+Namespace: default
 Tags:
     - spire
     - spiffe
@@ -1375,6 +1503,7 @@ Value: Testing shows the presence, not the absence of bugs
 Notes: ""
 Category: quote
 Reference: Edsger W. Dijkstra
+Namespace: default
 Tags:
     - testing
     - bugs
@@ -1389,6 +1518,7 @@ Value: https://github.com/integrii/go-k8s-graceful-termination
 Notes: This is an example Go appliation and self-paced tutorial for implementing the graceful shutdown of Kubernetes pods. This Go application does not drop connections when terminating due to proper shutdown signal trapping. If your app does not capture shutdown signals properly today, your service probably drops connections for users when your pods are re-deployed or removed for any reason.
 Category: bookmark
 Reference: eric greer repo
+Namespace: default
 Tags:
     - graceful
     - termination
@@ -1402,6 +1532,7 @@ Value: https://github.com/cvilsmeier/go-sqlite-bench
 Notes: Benchmarks for Golang SQLite Drivers
 Category: bookmark
 Reference: internet
+Namespace: default
 Tags:
     - sqlite
     - drivers
@@ -1413,6 +1544,7 @@ Value: https://threedots.tech/post/go-test-parallelism/
 Notes: Recently, I struggled for a couple of hours to understand why the API tests of one project were slow. In theory, we designed tests to run in a fully parallel way – the duration of tests should be close to the longest-running test. Unfortunately, the reality was different. Tests took 7x longer than the slowest test without using 100% available resources.
 Category: bookmark
 Reference: Robert Laszczak
+Namespace: default
 Tags:
     - golang
     - testing
@@ -1425,6 +1557,7 @@ Value: https://k3s.io
 Notes: The certified Kubernetes distribution built for IoT & Edge computing
 Category: bookmark
 Reference: chaparro
+Namespace: default
 Tags:
     - kubernetes
     - lightweight
@@ -1437,9 +1570,257 @@ Value: Edge computing is a distributed computing framework that brings enterpris
 Notes: Sending all device-generated data to a centralized data center or to the cloud causes bandwidth and latency issues. Edge computing offers a more efficient alternative; data is processed and analyzed closer to the point where it's created. Because data does not traverse over a network to a cloud or data center to be processed, latency is reduced. Edge computing—and mobile edge computing on 5G networks—enables faster and more comprehensive data analysis, creating the opportunity for deeper insights, faster response times and improved customer experiences.
 Category: concept
 Reference: https://www.ibm.com/topics/edge-computing
+Namespace: default
 Tags:
     - edge
     - computing
     - iot
     - devices
     - process
+---
+Key: sqlitebrowser
+Value: https://sqlitebrowser.org
+Notes: DB Browser for SQLite (DB4S) is a high quality, visual, open source tool designed for people who want to create, search, and edit SQLite or SQLCipher database files.
+Category: bookmark
+Reference: sqlite
+Namespace: default
+Tags:
+    - sqlite
+    - browser
+    - viewer
+    - database
+    - visualizer
+---
+Key: otel-collector-configuration
+Value: https://opentelemetry.io/docs/collector/configuration
+Notes: |-
+    You can configure the OpenTelemetry Collector to suit your observability needs. Before you learn how Collector configuration works.
+
+    The OpenTelemetry Collector is a vendor-agnostic proxy that can receive, process, and export telemetry data. It supports receiving telemetry data in multiple formats (for example, OTLP, Jaeger, Prometheus, as well as many commercial/proprietary tools) and sending data to one or more backends. It also supports processing and filtering telemetry data before it gets exported.
+Category: bookmark
+Reference: Open Telemetry
+Namespace: default
+Tags:
+    - telemetry
+    - open
+    - collector
+    - configuration
+    - agent
+---
+Key: sqlx-go-library
+Value: https://github.com/jmoiron/sqlx
+Notes: |-
+    sqlx is a library which provides a set of extensions on go's standard database/sql library. The sqlx versions of sql.DB, sql.TX, sql.Stmt, et al. all leave the underlying interfaces untouched, so that their interfaces are a superset on the standard ones.
+
+    Marshal rows into structs (with embedded struct support), maps, and slices
+    Named parameter support including prepared statements
+    Get and Select to go quickly from query to struct/slice
+Category: bookmark
+Reference: ardan labs - robust tx in go
+Namespace: default
+Tags:
+    - library
+    - golang
+    - sqlx
+    - marshal
+---
+Key: devops-sre-quote
+Value: SRE is what happens when you ask Software Engineers to solve operational problems
+Notes: ""
+Category: quote
+Reference: Ben Treynor Sloss
+Namespace: default
+Tags:
+    - devops
+    - site
+    - reliability
+    - practices
+    - operational
+    - problems
+    - solve
+---
+Key: reliability-hidalgo
+Value: People ofte conflate reliability with availability, but they are very different things. Because a service can be available and no reliable
+Notes: tech lead journal
+Category: quote
+Reference: Alex Hidalgo
+Namespace: default
+Tags:
+    - reliability
+    - availability
+    - confusion
+    - differences
+
+---
+Key: reliability-hidalgo-2
+Value: Is this system performing how it was defined to perform? is it doing what it needs to be doing?
+Notes: questions related to reliability. Tech Lead Journal
+Category: quote
+Reference: Alex Hidalgo
+Namespace: default
+Tags:
+    - reliability
+    - questions
+    - hidalgo
+    - journal
+---
+Key: techleadjournal
+Value: https://techleadjournal.dev
+Notes: Great technical leadership requires more than just great coding skills. It requires a variety of other skills that are not well-defined, and they are not something that we can fully learn in any school or book. Hear from experienced technical leaders sharing their journey and philosophy for building great technical teams and achieving technical excellence. Find out what makes them great and how to apply those lessons to your work and team.
+Category: bookmark
+Reference: Henry Suryawirawan
+Namespace: default
+Tags:
+    - techlead
+    - journal
+    - bookmark
+    - suryawirawan
+    - podcast
+---
+Key: reliability-hidalgo-3
+Value: a service is anything that's doing something for something else, reliability means, are you doing that well enough?
+Notes: reliability tech journal
+Category: quote
+Reference: Alex Hidalgo
+Namespace: default
+Tags:
+    - reliability
+    - hidalgo
+    - techlead
+---
+Key: reliability-hidalgo-4
+Value: You dont get to decide what your reliability is. If your customers, if your user, anyone who depends on you thinks you're being unreliable, you are. If you're not meeting the needs of your users, you're not being reliable.
+Notes: reliability tech lead journal
+Category: quote
+Reference: Alex Hidalgo
+Namespace: default
+Tags:
+    - reliability
+    - hidalgo
+    - quote
+    - reliable
+    - customers
+---
+Key: reliability-hidalgo-5
+Value: nothing is ever 100% reliable. don't aim for it. Things fail. People are actually fine with failure, as long as failure does not happen too often
+Notes: reliability tech lead journal
+Category: quote
+Reference: Alex Hidalgo
+Namespace: default
+Tags:
+    - reliability
+    - failures
+    - hidalgo
+    - techlead
+    - journal
+    - podcast
+---
+Key: reliability-hidalgo-6
+Value: if you want to ensure that you're being more reliable, you need to ensure you're having fewer failures
+Notes: reliability
+Category: quote
+Reference: Alex Hidalgo
+Namespace: default
+Tags:
+    - reliability
+    - hidalgo
+    - fewer
+    - failures
+    - podcast
+    - techlead
+    - journal
+---
+Key: management-quote
+Value: The captain can't be at the level of detail. But the captain can say "I expect the deck to be clean" he does not have to say how
+Notes: tech lead journal
+Category: quote
+Reference: tech lead journal
+Namespace: default
+Tags:
+    - management
+    - orders
+    - goals
+    - detail
+    - captain
+---
+Key: software-mancuso-1
+Value: well crafted software is code that we are not scared to change
+Notes: tech lead journal
+Category: quote
+Reference: Sandro Mancuso
+Namespace: default
+Tags:
+    - software
+    - craftmanship
+    - practice
+    - mancuso
+    - change
+    - techlead
+---
+Key: software-mancuso-2
+Value: Another modernization business driver is innovation if you have a streamlined process, your software, your systems and infra is all aligned, you can innovate faster.
+Notes: techlead journal
+Category: quote
+Reference: Sandro Mancuso
+Namespace: default
+Tags:
+    - software
+    - craftmanship
+    - practices
+    - mancuso
+    - techlead
+    - journal
+---
+Key: software-fowler-1
+Value: Any fool can write code that a computer can understand. Good programmers write code that people can understand.
+Notes: refactoring book
+Category: quote
+Reference: Martin Fowler
+Namespace: default
+Tags:
+    - refactoring
+    - writing
+    - programming
+    - understand
+---
+Key: complexity-quote-1
+Value: A computer can easily juggle 10000 things at the same time, and the human brain can juggle maybe 6 or 7 things (5 +/- 2 -- rabbits). So the guiding principle then becomes to see if you can write code that takes into account not the memory limit of the computer, but the memory limit of the reader.
+Notes: tech lead journal
+Category: quote
+Reference: Mark Seeman
+Namespace: default
+Tags:
+    - human
+    - complexity
+    - theory
+    - mark
+    - seeman
+    - techlead
+---
+Key: rest-api-zalando
+Value: https://github.com/zalando/restful-api-guidelines
+Notes: Great RESTful APIs look like they were designed by a single team. This promotes API adoption, reduces friction, and enables clients to use them properly. To build APIs that meet this standard, and to answer many common questions encountered along the way of RESTful API development, the Zalando Tech team has created this comprehensive set of guidelines. We have shared it with you to inspire additional discussion and refinement within and among your teams, and contribute our learnings and suggestions to the tech community at large.
+Category: bookmark
+Reference: zalando
+Namespace: default
+Tags:
+    - zalando
+    - restful
+    - apis
+    - guidelines
+    - comprehensive
+---
+Key: chmod-calculator
+Value: https://chmod-calculator.com/
+Notes: An awesome Chmod Calculator to convert Linux file permissions between different formats.
+Category: bookmark
+Reference: linux
+Namespace: default
+Tags:
+    - linux
+    - command
+    - chmod
+    - calculator
+    - generator
+    - permissions
+

@@ -82,7 +82,13 @@ func (k *storageDummy) Search(ctx context.Context, filter kbs.KBQueryFilter) (*k
 	return args.Get(0).(*kbs.SearchResult), args.Error(1)
 }
 
-func (k *storageDummy) Get(ctx context.Context, id string) (*kbs.KB, error) {
+func (k *storageDummy) GetByID(ctx context.Context, id string) (*kbs.KB, error) {
+	args := k.Called(ctx, id)
+
+	return args.Get(0).(*kbs.KB), args.Error(1)
+}
+
+func (k *storageDummy) GetByKey(ctx context.Context, id string) (*kbs.KB, error) {
 	args := k.Called(ctx, id)
 
 	return args.Get(0).(*kbs.KB), args.Error(1)
@@ -92,4 +98,10 @@ func (k *storageDummy) Update(ctx context.Context, kb *kbs.KB) error {
 	args := k.Called(ctx, kb)
 
 	return args.Error(0)
+}
+
+func (k *storageDummy) GetAll(ctx context.Context, filter kbs.KBQueryFilter) (*kbs.GetAllResult, error) {
+	args := k.Called(ctx, filter)
+
+	return args.Get(0).(*kbs.GetAllResult), args.Error(1)
 }

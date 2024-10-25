@@ -17,13 +17,14 @@ import (
 )
 
 type KB struct {
-	ID        string   `json:"id"`
-	Key       string   `json:"key"`
-	Value     string   `json:"value"`
-	Notes     string   `json:"notes"`
-	Category  string   `json:"category"`
-	Reference string   `json:"reference,omitempty"`
-	Tags      []string `json:"tags"`
+	ID        string   `json:"id" yaml:"-"`
+	Key       string   `json:"key" yaml:"Key"`
+	Value     string   `json:"value" yaml:"Value"`
+	Notes     string   `json:"notes" yaml:"Notes"`
+	Category  string   `json:"category" yaml:"Category"`
+	Reference string   `json:"reference,omitempty" yaml:"Reference"`
+	Namespace string   `json:"namespace,omitempty" yaml:"Namespace"`
+	Tags      []string `json:"tags" yaml:"Tags"`
 }
 
 type NewKB struct {
@@ -33,12 +34,22 @@ type NewKB struct {
 	Category  string   `json:"category" yaml:"Category"`
 	Reference string   `json:"reference,omitempty" yaml:"Reference,omitempty"`
 	MediaType string   `json:"media_type,omitempty" yaml:"MediaType,omitempty"`
+	Namespace string   `json:"namespace,omitempty" yaml:"Namespace"`
 	Tags      []string `json:"tags" yaml:"Tags"`
 }
 
 type SearchResult struct {
 	Items []KBItem `json:"items"`
 	Total int      `json:"total"`
+	// determines the number of rows.
+	Limit uint32 `json:"limit"`
+	// skips the offset rows before beginning to return the rows.
+	Offset uint32 `json:"offset"`
+}
+
+type GetAllResult struct {
+	KBs   []KB `json:"kbs"`
+	Total int  `json:"total"`
 	// determines the number of rows.
 	Limit uint32 `json:"limit"`
 	// skips the offset rows before beginning to return the rows.
@@ -60,16 +71,18 @@ type SyncResult struct {
 }
 
 type KBItem struct {
-	ID       string   `json:"id"`
-	Key      string   `json:"key"`
-	Category string   `json:"category"`
-	Tags     []string `json:"tags"`
+	ID        string   `json:"id"`
+	Key       string   `json:"key"`
+	Category  string   `json:"category"`
+	Namespace string   `json:"namespace,omitempty"`
+	Tags      []string `json:"tags"`
 }
 
 type KBQueryFilter struct {
-	Keyword  string `json:"keyword"`
-	Key      string `json:"key"`
-	Category string `json:"category"`
+	Keyword   string `json:"keyword"`
+	Key       string `json:"key"`
+	Category  string `json:"category"`
+	Namespace string `json:"namespace"`
 	// determines the number of rows.
 	Limit uint32 `json:"limit"`
 	// skips the offset rows before beginning to return the rows.
@@ -105,6 +118,7 @@ const (
 	ValueLabel     = "Value"
 	NotesLabel     = "Notes"
 	CategoryLabel  = "Category"
+	NamespaceLabel = "Namespace"
 	ReferenceLabel = "Reference"
 	MediaTypeLabel = "Media Type"
 	TagsLabel      = "Tags"
@@ -113,6 +127,11 @@ const (
 const (
 	MediaCategory = "media"
 	mediaFolder   = "media"
+)
+
+// magic values
+const (
+	maxAllowedGetAllKBLimit = 100
 )
 
 // media file type
@@ -125,11 +144,13 @@ var (
 )
 
 var (
-	errEmptyKBKey      = errors.New("kb key is empty")
-	errEmptyKBValue    = errors.New("kb value is empty")
-	errEmptyKBCategory = errors.New("kb category is empty")
-	errEmptyKBTags     = errors.New("kb tags is empty")
-	errKBTagValues     = errors.New("kb tag must contain only alphabetic characters")
+	errEmptyKBKey       = errors.New("kb key is empty")
+	errEmptyKBValue     = errors.New("kb value is empty")
+	errEmptyKBCategory  = errors.New("kb category is empty")
+	errEmptyKBNamespace = errors.New("kb namespace is empty")
+	errEmptyKBTags      = errors.New("kb tags is empty")
+	errKBTagValues      = errors.New("kb tag must contain only alphabetic characters")
+	errMinGetAllKBLimit = errors.New("minimum number of records to retrieve is no valid")
 )
 
 var IsLetter = regexp.MustCompile(`^[a-zA-Z0-9-]+$`).MatchString
@@ -158,6 +179,16 @@ func (s *SearchResult) Tags() iter.Seq[string] {
 	return func(yield func(string) bool) {
 		for _, v := range s.Items {
 			if !yield(strings.Join(v.Tags, " ")) {
+				return
+			}
+		}
+	}
+}
+
+func (s *SearchResult) Namespaces() iter.Seq[string] {
+	return func(yield func(string) bool) {
+		for _, v := range s.Items {
+			if !yield(v.Namespace) {
 				return
 			}
 		}
@@ -248,6 +279,10 @@ func (n NewKB) validate() error {
 		err = errors.Join(err, errEmptyKBCategory)
 	}
 
+	if n.Namespace == "" {
+		err = errors.Join(err, errEmptyKBNamespace)
+	}
+
 	if len(n.Tags) == 0 {
 		err = errors.Join(err, errEmptyKBTags)
 	}
@@ -276,6 +311,10 @@ func (k KB) validate() error {
 		err = errors.Join(err, errEmptyKBCategory)
 	}
 
+	if k.Namespace == "" {
+		err = errors.Join(err, errEmptyKBNamespace)
+	}
+
 	if len(k.Tags) == 0 {
 		err = errors.Join(err, errEmptyKBTags)
 	}
@@ -298,6 +337,15 @@ func (n NewKB) toYAML() ([]byte, error) {
 	return kbData, nil
 }
 
+func (k KB) ToYAML() ([]byte, error) {
+	kbData, err := yaml.Marshal(k)
+	if err != nil {
+		return nil, fmt.Errorf("unable to marshal kb to yaml: %w", err)
+	}
+
+	return kbData, nil
+}
+
 func (k KBQueryFilter) validate() error {
 	if IsStringEmpty(k.Key) && IsStringEmpty(k.Keyword) {
 		return fmt.Errorf("invalid data to search kbs")
@@ -313,6 +361,7 @@ func (n NewKB) toKB() KB {
 		Value:     n.Value,
 		Notes:     n.Notes,
 		Category:  n.Category,
+		Namespace: n.Namespace,
 		Reference: n.Reference,
 		Tags:      slices.Clone(n.Tags),
 	}
@@ -320,6 +369,7 @@ func (n NewKB) toKB() KB {
 
 func (k KB) String() string {
 	return fmt.Sprintf(`%s: %s
+%s: %s
 %s: %s
 %s: %s
 %s: %s
@@ -333,6 +383,7 @@ func (k KB) String() string {
 		NotesLabel, k.Notes,
 		CategoryLabel, k.Category,
 		ReferenceLabel, k.Reference,
+		NamespaceLabel, k.Namespace,
 		TagsLabel, k.Tags)
 }
 
@@ -343,17 +394,19 @@ Value: %s
 Notes: %s
 Category: %s
 Reference: %s
+Namespace: %s
 Tags: %+v
-`, n.Key, n.Value, n.Notes, n.Category, n.Reference, n.Tags)
+`, n.Key, n.Value, n.Notes, n.Category, n.Reference, n.Namespace, n.Tags)
 	}
 	return fmt.Sprintf(`Key: %s
 Value: %s
 Notes: %s
 Category: %s
 Reference: %s
+Namespace: %s
 Media Type: %s
 Tags: %+v
-`, n.Key, n.Value, n.Notes, n.Category, n.Reference, n.MediaType, n.Tags)
+`, n.Key, n.Value, n.Notes, n.Category, n.Reference, n.Namespace, n.MediaType, n.Tags)
 }
 
 func (i *ImportResult) Ok() bool {
@@ -398,37 +451,14 @@ func loadSyncFile(syncFile string) ([]NewKB, error) {
 	return kbItems, nil
 }
 
-func (s *SearchResult) GetLongerKey() int {
-	keyLength := len("key")
-	for key := range s.Keys() {
-		if len(key) > keyLength {
-			keyLength = len(key)
+func GetLongerText(title string, iterator iter.Seq[string]) int {
+	textLength := len(title)
+	for value := range iterator {
+		if len(value) > textLength {
+			textLength = len(value)
 		}
 	}
-
-	return keyLength
-}
-
-func (s *SearchResult) GetLongerCategory() int {
-	categoryLength := len("category")
-	for category := range s.Categories() {
-		if len(category) > categoryLength {
-			categoryLength = len(category)
-		}
-	}
-
-	return categoryLength
-}
-
-func (s *SearchResult) GetLongerTags() int {
-	tagLength := len("tag")
-	for tags := range s.Tags() {
-		if len(tags) > tagLength {
-			tagLength = len(tags)
-		}
-	}
-
-	return tagLength
+	return textLength
 }
 
 func (s *SearchResult) TotalPages() int {
@@ -436,13 +466,28 @@ func (s *SearchResult) TotalPages() int {
 }
 
 func (k KBItem) ToArray() []string {
-	return []string{k.ID, k.Key, k.Category, strings.Join(k.Tags, " ")}
+	return []string{k.Key, k.Category, k.Namespace, strings.Join(k.Tags, " ")}
 }
 
 func (k KBQueryFilter) nothingToLookFor() bool {
 	return IsStringEmpty(k.Key) &&
 		IsStringEmpty(k.Keyword) &&
-		IsStringEmpty(k.Category)
+		IsStringEmpty(k.Category) &&
+		IsStringEmpty(k.Namespace)
+}
+
+func (g KBQueryFilter) valid() error {
+	var err error
+
+	if g.Limit < 1 {
+		err = errors.Join(err, errMinGetAllKBLimit)
+	}
+
+	if g.Limit > maxAllowedGetAllKBLimit {
+		err = errors.Join(err, fmt.Errorf("invalid limit number, maximum should be %d", maxAllowedGetAllKBLimit))
+	}
+
+	return err
 }
 
 func isWebURL(anURL string) bool {

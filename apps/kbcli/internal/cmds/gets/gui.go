@@ -126,14 +126,15 @@ func newPaginator(limit uint32, total int) *paginator.Model {
 }
 
 func (m *model) updateTable() {
-	keyLength := m.result.GetLongerKey()
-	categoryLength := m.result.GetLongerCategory()
-	tagLength := m.result.GetLongerTags()
+	keyLength := kbs.GetLongerText(cmds.KeyCol, m.result.Keys())
+	categoryLength := kbs.GetLongerText(cmds.CategoryCol, m.result.Categories())
+	namespaceLength := kbs.GetLongerText(cmds.NamespaceCol, m.result.Namespaces())
+	tagLength := kbs.GetLongerText(cmds.TagCol, m.result.Tags())
 
 	columns := []table.Column{
-		{Title: cmds.IDCol, Width: 36},
 		{Title: cmds.KeyCol, Width: keyLength},
 		{Title: cmds.CategoryCol, Width: categoryLength},
+		{Title: cmds.NamespaceCol, Width: namespaceLength},
 		{Title: cmds.TagCol, Width: tagLength},
 	}
 
@@ -179,7 +180,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			err := m.searchKBItems()
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "unable to search: %w", err)
-				os.Exit(1)
+				return m, tea.Quit
 			}
 		case tea.KeyRight.String():
 			if (uint32(getKBData.offset) + getKBData.limit) >= uint32(m.result.Total) {
@@ -189,7 +190,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			err := m.searchKBItems()
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "unable to search: %w", err)
-				os.Exit(1)
+				return m, tea.Quit
 			}
 		case tea.KeyDown.String():
 			m.table, cmd = m.table.Update(msg)
@@ -201,11 +202,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.mode = searchMode
 			m.selectedItem = nil
 		case tea.KeyEnter.String():
-			selectedRowID := m.table.SelectedRow()[0]
-			err := m.loadKBItem(selectedRowID)
+			selectedRowKey := m.table.SelectedRow()[0]
+			err := m.loadKBItem(selectedRowKey)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "unable to search: %w", err)
-				os.Exit(1)
+				return m, tea.Quit
 			}
 			m.mode = itemMode
 			newItemViewport, cmd := m.itemViewport.Update(msg)
@@ -267,8 +268,8 @@ func (m *model) searchKBItems() error {
 	return nil
 }
 
-func (m *model) loadKBItem(kbID string) error {
-	kb, err := m.service.GetByID(m.ctx, kbID)
+func (m *model) loadKBItem(kbKey string) error {
+	kb, err := m.service.GetByKey(m.ctx, kbKey)
 	if err != nil {
 		return fmt.Errorf("unable to get kb: %w", err)
 	}
@@ -280,19 +281,6 @@ func (m *model) loadKBItem(kbID string) error {
 
 func (m *model) empty() bool {
 	return m.result == nil || len(m.result.Items) == 0
-}
-
-func (m *model) formatItems() []string {
-	var items []string
-	keyLength := m.result.GetLongerKey()
-	categoryLength := m.result.GetLongerCategory()
-
-	for _, kb := range m.result.Items {
-		row := fmt.Sprintln(kb.ID, fmt.Sprintf("%s%*s", kb.Key, keyLength-len(kb.Key), ""), fmt.Sprintf("%s%*s", kb.Category, categoryLength-len(kb.Category), ""), strings.Join(kb.Tags, ","))
-		items = append(items, row)
-	}
-
-	return items
 }
 
 func toTableRow(items []kbs.KBItem) []table.Row {
@@ -322,13 +310,16 @@ func renderKBItem(k *kbs.KB) string {
 %s
 %s
 %s
+%s
+%s
 %+v
 `,
 		inputStyle.Width(30).Render("ID"), k.ID,
 		inputStyle.Width(30).Render("Key"), k.Key,
+		inputStyle.Width(30).Render("Category"), k.Category,
+		inputStyle.Width(30).Render("Namespace"), k.Namespace,
 		inputStyle.Width(30).Render("Value"), k.Value,
 		inputStyle.Width(30).Render("Notes"), k.Notes,
-		inputStyle.Width(30).Render("Category"), k.Category,
 		inputStyle.Width(30).Render("Reference"), k.Reference,
 		inputStyle.Width(30).Render("Tags"), k.Tags)
 }

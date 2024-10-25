@@ -17,15 +17,17 @@ type kb struct {
 	Notes       string
 	Category    string
 	Reference   string
+	Namespace   string
 	Tags        string
 	DateCreated time.Time
 }
 
 type kbItem struct {
-	ID       string
-	Key      string
-	Category string
-	Tags     string
+	ID        string
+	Key       string
+	Category  string
+	Namespace string
+	Tags      string
 }
 
 type filterBuilder struct {
@@ -52,6 +54,7 @@ const (
 const (
 	keyColumn              = "k.KB_KEY"
 	categoryColumn         = "k.CATEGORY"
+	namespaceColumn        = "k.NAMESPACE"
 	tagValuesVirtualColumn = "t.tag_values"
 	rowIDVirtualColum      = "t.rowid"
 	internalIDColumn       = "k.INTERNAL_ID"
@@ -60,6 +63,7 @@ const (
 // errors
 var (
 	errUnableToSearchKBS = errors.New("unable to search kbs")
+	errUnableToGetAllKBS = errors.New("unable to get all kbs")
 )
 
 func (k kb) toKB() *kbs.KB {
@@ -69,6 +73,7 @@ func (k kb) toKB() *kbs.KB {
 		Value:     k.Value,
 		Notes:     k.Notes,
 		Category:  k.Category,
+		Namespace: k.Namespace,
 		Reference: k.Reference,
 		Tags:      strings.Split(k.Tags, aSpace),
 	}
@@ -113,6 +118,7 @@ func toDBKB(akb *kbs.KB) kb {
 		Notes:       akb.Notes,
 		Category:    akb.Category,
 		Reference:   akb.Reference,
+		Namespace:   akb.Namespace,
 		Tags:        strings.Join(akb.Tags, aSpace),
 		DateCreated: time.Now().UTC(),
 	}
@@ -120,10 +126,11 @@ func toDBKB(akb *kbs.KB) kb {
 
 func (k kbItem) toKBItem() kbs.KBItem {
 	return kbs.KBItem{
-		ID:       k.ID,
-		Key:      k.Key,
-		Category: k.Category,
-		Tags:     strings.Split(k.Tags, aSpace),
+		ID:        k.ID,
+		Key:       k.Key,
+		Category:  k.Category,
+		Namespace: k.Namespace,
+		Tags:      strings.Split(k.Tags, aSpace),
 	}
 }
 
@@ -132,6 +139,16 @@ func toKBItems(dbKBItems []kbItem) []kbs.KBItem {
 
 	for _, v := range dbKBItems {
 		result = append(result, v.toKBItem())
+	}
+
+	return result
+}
+
+func toKBs(dbKBs []kb) []kbs.KB {
+	result := make([]kbs.KB, 0, len(dbKBs))
+
+	for _, v := range dbKBs {
+		result = append(result, *v.toKB())
 	}
 
 	return result

@@ -26,15 +26,24 @@ const (
 	sqliteVersion = "sqlite3"
 
 	createKBSQL = `INSERT INTO kbs
-	(KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAG_VALUES, REFERENCE, CREATED_ON)
+	(KB_ID, KB_KEY, KB_VALUE, NOTES, CATEGORY, TAG_VALUES, REFERENCE, NAMESPACE, CREATED_ON)
 VALUES
-	(?, ?, ?, ?, ?, ?, ?, ?)`
+	(?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
-	queryAKBByIDSQL            = "SELECT * FROM kbs WHERE KB_ID = ?"
-	queryKBsByFilterSQL        = "SELECT k.KB_ID, k.KB_KEY, k.CATEGORY, k.TAG_VALUES FROM kbs k %s;"
-	queryKBsByFilterAndTagsSQL = "SELECT k.KB_ID, k.KB_KEY, k.CATEGORY, k.TAG_VALUES FROM kbs k JOIN tags_idx t ON (t.rowid = k.INTERNAL_ID) %s;"
+	updateKBSQL = `UPDATE kbs
+SET KB_KEY = ?, KB_VALUE = ?, NOTES = ?, CATEGORY = ?, TAG_VALUES = ?, REFERENCE = ?, NAMESPACE = ?
+WHERE KB_ID = ?`
+
+	queryAKBByIDSQL            = "SELECT INTERNAL_ID, KB_ID, KB_KEY, KB_VALUE, NOTES, NAMESPACE, CATEGORY, TAG_VALUES, REFERENCE, CREATED_ON FROM kbs WHERE KB_ID = ?"
+	queryAKBByKeySQL           = "SELECT INTERNAL_ID, KB_ID, KB_KEY, KB_VALUE, NOTES, NAMESPACE, CATEGORY, TAG_VALUES, REFERENCE, CREATED_ON FROM kbs WHERE KB_KEY = ?"
+	queryKBsByFilterSQL        = "SELECT k.KB_ID, k.KB_KEY, k.CATEGORY, k.NAMESPACE, k.TAG_VALUES FROM kbs k %s;"
+	queryKBsByFilterAndTagsSQL = "SELECT k.KB_ID, k.KB_KEY, k.CATEGORY, k.NAMESPACE, k.TAG_VALUES FROM kbs k JOIN tags_idx t ON (t.rowid = k.INTERNAL_ID) %s;"
 	countKBsByFilterSQL        = "SELECT COUNT(k.KB_ID) FROM kbs k %s;"
 	countKBsByFilterAndTagsSQL = "SELECT COUNT(k.KB_ID) FROM kbs k JOIN tags_idx t ON (t.rowid = k.INTERNAL_ID) %s;"
+
+	countKBsSQL = "SELECT COUNT(k.KB_ID) FROM kbs k %s;"
+	queryKBsSQL = `SELECT k.INTERNAL_ID, k.KB_ID, k.KB_KEY, k.KB_VALUE, k.NOTES, k.NAMESPACE, k.CATEGORY, k.TAG_VALUES, k.REFERENCE, k.CREATED_ON 
+FROM kbs k %s`
 
 	createKBTableSQL = `DROP TABLE IF EXISTS kbs;
 CREATE TABLE IF NOT EXISTS kbs (
@@ -44,6 +53,7 @@ CREATE TABLE IF NOT EXISTS kbs (
 	KB_VALUE TEXT NOT NULL,
 	NOTES TEXT NOT NULL,
 	CATEGORY VARCHAR(64) NOT NULL,
+	NAMESPACE VARCHAR(64) NOT NULL,
 	TAG_VALUES VARCHAR(256) NOT NULL,
 	REFERENCE VARCHAR(64),
 	CREATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -67,14 +77,14 @@ END;
 
 	createTriggerAfterDeleteSQL = `DROP TRIGGER IF EXISTS kbs_ad;
 CREATE TRIGGER kbs_ad AFTER DELETE ON kbs BEGIN
-INSERT INTO tags_idx(tags_idx, rowid, tag_values) VALUES('delete', old.INTERNAL_ID, old.TAG_VALUES);
+DELETE FROM tags_idx WHERE rowid = old.INTERNAL_ID;
 END;
 `
 
 	createTriggerAfterUpdateSQL = `DROP TRIGGER IF EXISTS kbs_au;
 CREATE TRIGGER kbs_au AFTER UPDATE ON kbs BEGIN
 INSERT INTO tags_idx(tags_idx, rowid, tag_values) VALUES('delete', old.INTERNAL_ID, old.TAG_VALUES);
-INSERT INTO tags_idx(rowid, tag_values) VALUES (new.a, new.b, new.c);
+INSERT INTO tags_idx(rowid, tag_values) VALUES (new.INTERNAL_ID, new.TAG_VALUES);
 END;`
 )
 
@@ -150,7 +160,7 @@ func (s *SQLite) Create(ctx context.Context, newKB kbs.KB) (string, error) {
 	result, err := stmt.ExecContext(ctx,
 		dbKB.KeyID, dbKB.Key, dbKB.Value,
 		dbKB.Notes, dbKB.Category, dbKB.Tags, dbKB.Reference,
-		dbKB.DateCreated,
+		dbKB.Namespace, dbKB.DateCreated,
 	)
 	if err != nil {
 		return "", fmt.Errorf("unable to create kb: %w", err)
@@ -164,6 +174,44 @@ func (s *SQLite) Create(ctx context.Context, newKB kbs.KB) (string, error) {
 	return fmt.Sprintf("%d", lastInserID), nil
 }
 
+func (s *SQLite) GetAll(ctx context.Context, filter kbs.KBQueryFilter) (*kbs.GetAllResult, error) {
+	result := kbs.GetAllResult{
+		Total:  0,
+		Limit:  filter.Limit,
+		Offset: filter.Offset,
+	}
+
+	searchFilters := buildSQLFilters(filter, countKBsSQL, queryKBsSQL)
+
+	count, err := s.queryCount(ctx, searchFilters)
+	if err != nil {
+		slog.Error("running count query to get all kbs",
+			slog.Any("filter", searchFilters),
+			slog.String("query", searchFilters.countStatement),
+			slog.String("error", err.Error()),
+		)
+
+		return nil, errUnableToGetAllKBS
+	}
+
+	result.Total = count
+
+	kbsFound, err := s.queryKBs(ctx, searchFilters)
+	if err != nil {
+		slog.Error("querying all kbs",
+			slog.Any("filter", searchFilters),
+			slog.String("query", searchFilters.query),
+			slog.String("error", err.Error()),
+		)
+
+		return nil, errUnableToGetAllKBS
+	}
+
+	result.KBs = toKBs(kbsFound)
+
+	return &result, nil
+}
+
 func (s *SQLite) Search(ctx context.Context, filter kbs.KBQueryFilter) (*kbs.SearchResult, error) {
 	result := kbs.SearchResult{
 		Total:  0,
@@ -171,7 +219,15 @@ func (s *SQLite) Search(ctx context.Context, filter kbs.KBQueryFilter) (*kbs.Sea
 		Offset: filter.Offset,
 	}
 
-	searchFilters := buildSQLFilters(filter)
+	querySQL := queryKBsByFilterSQL
+	countSQL := countKBsByFilterSQL
+
+	if filter.Keyword != "" {
+		querySQL = queryKBsByFilterAndTagsSQL
+		countSQL = countKBsByFilterAndTagsSQL
+	}
+
+	searchFilters := buildSQLFilters(filter, countSQL, querySQL)
 
 	count, err := s.queryCount(ctx, searchFilters)
 	if err != nil {
@@ -186,7 +242,7 @@ func (s *SQLite) Search(ctx context.Context, filter kbs.KBQueryFilter) (*kbs.Sea
 
 	result.Total = count
 
-	kbsFound, err := s.queryKBs(ctx, searchFilters)
+	kbsFound, err := s.queryKBItems(ctx, searchFilters)
 	if err != nil {
 		slog.Error("checking if rows results has an error",
 			slog.Any("filter", searchFilters),
@@ -202,24 +258,68 @@ func (s *SQLite) Search(ctx context.Context, filter kbs.KBQueryFilter) (*kbs.Sea
 	return &result, nil
 }
 
-func (s *SQLite) Get(ctx context.Context, id string) (*kbs.KB, error) {
-	row := s.db.QueryRowContext(ctx, queryAKBByIDSQL, id)
+func (s *SQLite) GetByID(ctx context.Context, id string) (*kbs.KB, error) {
+	kb, err := s.getKBRecord(ctx, queryAKBByIDSQL, id)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get kb by id: %w", err)
+	}
+
+	return kb, nil
+}
+
+func (s *SQLite) GetByKey(ctx context.Context, key string) (*kbs.KB, error) {
+	kb, err := s.getKBRecord(ctx, queryAKBByKeySQL, key)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get kb by key: %w", err)
+	}
+
+	return kb, nil
+}
+
+func (s *SQLite) getKBRecord(ctx context.Context, sqlQuery, value string) (*kbs.KB, error) {
+	row := s.db.QueryRowContext(ctx, sqlQuery, value)
 
 	var aKB kb
 
-	err := row.Scan(&aKB.InternalID, &aKB.KeyID, &aKB.Key, &aKB.Value, &aKB.Notes, &aKB.Category, &aKB.Tags, &aKB.Reference, &aKB.DateCreated)
+	err := row.Scan(&aKB.InternalID, &aKB.KeyID, &aKB.Key, &aKB.Value, &aKB.Notes, &aKB.Namespace, &aKB.Category, &aKB.Tags, &aKB.Reference, &aKB.DateCreated)
 	if err != nil && err == sql.ErrNoRows {
 		return nil, nil // it does not exist
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("unable to get kb: %w", err)
+		return nil, fmt.Errorf("unable to get kb record: %w", err)
 	}
 
 	return aKB.toKB(), nil
 }
 
 func (s *SQLite) Update(ctx context.Context, kb *kbs.KB) error {
+	stmt, err := s.db.Prepare(updateKBSQL)
+	if err != nil {
+		return fmt.Errorf("unable to update kb: %w", err)
+	}
+
+	defer stmt.Close()
+
+	dbKB := toDBKB(kb)
+
+	result, err := stmt.ExecContext(ctx,
+		dbKB.Key, dbKB.Value, dbKB.Notes,
+		dbKB.Category, dbKB.Tags, dbKB.Reference,
+		dbKB.Namespace, dbKB.KeyID,
+	)
+	if err != nil {
+		return fmt.Errorf("unable to update kb: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		slog.Error("rows affected", slog.String("error", err.Error()))
+
+		return nil
+	}
+
+	slog.Info("rows affected", slog.Int64("rows", rowsAffected))
 
 	return nil
 }
@@ -259,7 +359,7 @@ func (s *SQLite) queryCount(ctx context.Context, searchFilters *filterBuilder) (
 	return count, nil
 }
 
-func (s *SQLite) queryKBs(ctx context.Context, searchFilters *filterBuilder) ([]kbItem, error) {
+func (s *SQLite) queryKBItems(ctx context.Context, searchFilters *filterBuilder) ([]kbItem, error) {
 	rows, err := s.db.QueryContext(ctx, searchFilters.query, searchFilters.queryArgs...)
 	if err != nil {
 		slog.Error("running query to find kbs with given criteria",
@@ -278,7 +378,7 @@ func (s *SQLite) queryKBs(ctx context.Context, searchFilters *filterBuilder) ([]
 	for rows.Next() {
 		kb := new(kbItem)
 		// id, firstname, lastname, nickname, country
-		rowErr := rows.Scan(&kb.ID, &kb.Key, &kb.Category, &kb.Tags)
+		rowErr := rows.Scan(&kb.ID, &kb.Key, &kb.Category, &kb.Namespace, &kb.Tags)
 		if rowErr != nil {
 			slog.Error("scanning rows for searching kbs with search criteria",
 				slog.Any("filter", searchFilters),
@@ -305,19 +405,59 @@ func (s *SQLite) queryKBs(ctx context.Context, searchFilters *filterBuilder) ([]
 	return kbsFound, nil
 }
 
-func buildSQLFilters(filters kbs.KBQueryFilter) *filterBuilder {
+func (s *SQLite) queryKBs(ctx context.Context, searchFilters *filterBuilder) ([]kb, error) {
+	rows, err := s.db.QueryContext(ctx, searchFilters.query, searchFilters.queryArgs...)
+	if err != nil {
+		slog.Error("running query to get all kbs",
+			slog.Any("filter", searchFilters),
+			slog.String("query", searchFilters.query),
+			slog.String("error", err.Error()),
+		)
+
+		return nil, fmt.Errorf("unable to query all kbs: %w", err)
+	}
+
+	defer rows.Close()
+
+	kbsFound := make([]kb, 0)
+
+	for rows.Next() {
+		kb := new(kb)
+		rowErr := rows.Scan(&kb.InternalID, &kb.KeyID, &kb.Key, &kb.Value, &kb.Notes, &kb.Namespace, &kb.Category, &kb.Tags, &kb.Reference, &kb.DateCreated)
+		if rowErr != nil {
+			slog.Error("scanning rows to get all kbs",
+				slog.Any("filter", searchFilters),
+				slog.String("query", searchFilters.query),
+				slog.String("error", rowErr.Error()),
+			)
+
+			return nil, fmt.Errorf("unable to scan kb rows: %w", rowErr)
+		}
+
+		kbsFound = append(kbsFound, *kb)
+	}
+
+	if err := rows.Err(); err != nil {
+		slog.Error("checking if rows results has an error",
+			slog.Any("filter", searchFilters),
+			slog.String("query", searchFilters.query),
+			slog.String("error", err.Error()),
+		)
+
+		return nil, fmt.Errorf("get all kbs query had some errors: %w", err)
+	}
+
+	return kbsFound, nil
+}
+
+func buildSQLFilters(filters kbs.KBQueryFilter, countSQL, querySQL string) *filterBuilder {
 	newFilterBuilder := &filterBuilder{
 		filters:   make([]string, 0),
 		countArgs: make([]interface{}, 0),
 		queryArgs: make([]interface{}, 0),
 	}
 
-	querySQL := queryKBsByFilterSQL
-	countSQL := countKBsByFilterSQL
-
 	if filters.Keyword != "" {
-		querySQL = queryKBsByFilterAndTagsSQL
-		countSQL = countKBsByFilterAndTagsSQL
 		newFilterBuilder.addCondition(tagValuesVirtualColumn, matchOperator, filters.Keyword)
 	}
 
@@ -327,6 +467,10 @@ func buildSQLFilters(filters kbs.KBQueryFilter) *filterBuilder {
 
 	if filters.Category != "" {
 		newFilterBuilder.addCondition(categoryColumn, equalsOperator, filters.Category)
+	}
+
+	if filters.Namespace != "" {
+		newFilterBuilder.addCondition(namespaceColumn, equalsOperator, filters.Namespace)
 	}
 
 	var countWhereClause string
@@ -352,6 +496,10 @@ func buildSQLFilters(filters kbs.KBQueryFilter) *filterBuilder {
 }
 
 func (s *SQLite) Close() {
+	if s == nil || s.db == nil {
+		return // just for initializing app
+	}
+
 	err := s.db.Close()
 	if err != nil {
 		slog.Error("unable to close db connection", slog.String("error", err.Error()))

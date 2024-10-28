@@ -19,6 +19,7 @@ type addKBParams struct {
 	value       string
 	notes       string
 	category    string
+	namespace   string
 	reference   string
 	mediaType   string
 	rawTags     string
@@ -45,7 +46,8 @@ const (
 	keyLabel       = "key%s: "
 	valueLabel     = "value%s: "
 	notesLabel     = "notes%s: "
-	categoryLabel  = "class%s: "
+	categoryLabel  = "category%s: "
+	namespaceLabel = "namespace%s: "
 	tagLabel       = "tags%s: "
 	referenceLabel = "reference%s: "
 	mediaTypeLabel = "media type%s: "
@@ -66,8 +68,9 @@ func MakeAddCommand(service *kbs.Service) *cobra.Command {
 
 	newCmd.PersistentFlags().StringVarP(&addKBData.key, "key", "k", "", "knowledge base key")
 	newCmd.PersistentFlags().StringVarP(&addKBData.value, "value", "v", "", "knowledge base value")
-	newCmd.PersistentFlags().StringVarP(&addKBData.notes, "notes", "n", "", "knowledge base notes")
+	newCmd.PersistentFlags().StringVarP(&addKBData.notes, "notes", "o", "", "knowledge base notes")
 	newCmd.PersistentFlags().StringVarP(&addKBData.category, "category", "c", "", "category of knowledge base")
+	newCmd.PersistentFlags().StringVarP(&addKBData.namespace, "namespace", "n", "default", "namespace of knowledge base")
 	newCmd.PersistentFlags().StringVarP(&addKBData.reference, "reference", "r", "", "author or refence of this kb")
 	newCmd.PersistentFlags().StringSliceVarP(&addKBData.tags, "tags", "t", []string{}, "comma separated tags for this kb")
 	newCmd.PersistentFlags().BoolVarP(&addKBData.interactive, "ux", "u", false, "add KB in interactive mode")
@@ -228,6 +231,9 @@ func fillMissingAddFields() {
 	if kbs.IsStringEmpty(addKBData.category) {
 		addKBData.category = cmds.RequestStringValue(getLabel(categoryLabel, addKBData.category))
 	}
+	if kbs.IsStringEmpty(addKBData.namespace) {
+		addKBData.namespace = strings.ToLower(cmds.RequestStringValue(getLabel(namespaceLabel, addKBData.namespace)))
+	}
 	if kbs.IsStringEmpty(addKBData.reference) {
 		addKBData.reference = cmds.RequestStringValue(getLabel(referenceLabel, addKBData.reference))
 	}
@@ -281,6 +287,7 @@ func fillExistingFields() {
 	addKBData.value = readStringValue(valueLabel, addKBData.value)
 	addKBData.notes = readStringValue(notesLabel, addKBData.notes)
 	addKBData.category = readStringValue(categoryLabel, addKBData.category)
+	addKBData.namespace = readStringValue(namespaceLabel, addKBData.namespace)
 	addKBData.reference = readStringValue(referenceLabel, addKBData.reference)
 	addKBData.rawTags = readStringValue(tagLabel, addKBData.rawTags)
 }
@@ -307,6 +314,7 @@ func (a addKBParams) toNewKB() kbs.NewKB {
 		Key:       a.key,
 		Value:     a.value,
 		Category:  a.category,
+		Namespace: a.namespace,
 		Notes:     a.notes,
 		Reference: a.reference,
 		MediaType: a.mediaType,

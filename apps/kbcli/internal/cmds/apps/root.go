@@ -9,6 +9,7 @@ import (
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/adapters/storages"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/adds"
+	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/exports"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/gets"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/imports"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/setups"
@@ -21,11 +22,18 @@ import (
 )
 
 type Application struct {
-	rootCommand   *cobra.Command
+	// isItSet indicates if application is configured to run.
+	isItSet bool
+	// rootCommand is the main command of this CLI app.
+	rootCommand *cobra.Command
+	// configuration contains the runtime settings for this app.
 	configuration *settings.Configuration
-	storage       *storages.SQLite
-	service       *kbs.Service
-	kbkitClient   *kbkitt.Client
+	// storage reference the storage mechanism for this app.
+	storage *storages.SQLite
+	// service is the object in charge of handling business logic.
+	service *kbs.Service
+	// kbkitClient provides logic related to the central kb server.
+	kbkitClient *kbkitt.Client
 }
 
 func NewApplication() *Application {
@@ -73,10 +81,7 @@ func (a *Application) Execute() error {
 		return fmt.Errorf("unable to start kbkitt: %w", err)
 	}
 
-	err = a.initializeRootCommand()
-	if err != nil {
-		return fmt.Errorf("unable to initialize service commands: %w", err)
-	}
+	a.initializeRootCommand()
 
 	if err := a.rootCommand.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -92,12 +97,23 @@ func (a *Application) initializeConfiguration() error {
 		return fmt.Errorf("unable to load configuration: %w", err)
 	}
 
+	if err != nil && errors.Is(err, cmds.ErrNoConfiguration) {
+		a.isItSet = false
+		return nil
+	}
+
+	a.isItSet = true
+
 	a.configuration = configuration
 
 	return nil
 }
 
 func (a *Application) initializeStorage() error {
+	if !a.itIsSet() {
+		return nil
+	}
+
 	storage, err := cmds.NewStorage(a.configuration)
 	if err != nil {
 		return fmt.Errorf("unable to load service: %w", err)
@@ -109,6 +125,10 @@ func (a *Application) initializeStorage() error {
 }
 
 func (a *Application) initializeKBKittClient() {
+	if !a.itIsSet() {
+		return
+	}
+
 	kbkittSetup := kbkitt.Setup{
 		URL: a.configuration.Server.URL,
 	}
@@ -117,6 +137,10 @@ func (a *Application) initializeKBKittClient() {
 }
 
 func (a *Application) initializeService() error {
+	if !a.itIsSet() {
+		return nil
+	}
+
 	serviceSetup := kbs.ServiceSetup{
 		KBClient:        a.kbkitClient,
 		KBStorage:       a.storage,
@@ -129,12 +153,19 @@ func (a *Application) initializeService() error {
 	return nil
 }
 
-func (a *Application) initializeRootCommand() error {
+func (a *Application) initializeRootCommand() {
+	if !a.itIsSet() {
+		return
+	}
+
 	a.rootCommand.AddCommand(adds.MakeAddCommand(a.service))
 	a.rootCommand.AddCommand(imports.MakeImportCommand(a.service))
+	a.rootCommand.AddCommand(exports.MakeExportCommand(a.service))
 	a.rootCommand.AddCommand(gets.MakeGetCommand(a.service))
 	a.rootCommand.AddCommand(syncs.MakeSyncCommand(a.service))
 	a.rootCommand.AddCommand(updates.MakeUpdateCommand(a.service))
+}
 
-	return nil
+func (a *Application) itIsSet() bool {
+	return a.isItSet
 }

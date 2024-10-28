@@ -14,9 +14,11 @@ import (
 
 type Storage interface {
 	Create(ctx context.Context, newKB KB) (string, error)
-	Get(ctx context.Context, id string) (*KB, error)
+	GetByID(ctx context.Context, id string) (*KB, error)
+	GetByKey(ctx context.Context, key string) (*KB, error)
 	Update(ctx context.Context, kb *KB) error
 	Search(ctx context.Context, filter KBQueryFilter) (*SearchResult, error)
+	GetAll(ctx context.Context, filter KBQueryFilter) (*GetAllResult, error)
 }
 
 type KBServiceClient interface {
@@ -117,6 +119,20 @@ func (s *Service) Import(ctx context.Context, newKBs []NewKB) (*ImportResult, er
 	}
 
 	return &result, nil
+}
+
+func (s *Service) GetAllKBs(ctx context.Context, filter KBQueryFilter) (*GetAllResult, error) {
+	err := filter.valid()
+	if err != nil {
+		return nil, fmt.Errorf("unable to get all kbs, invalid filter values: %w", err)
+	}
+
+	result, err := s.storage.GetAll(ctx, filter)
+	if err != nil {
+		return nil, fmt.Errorf("unable to export kbs: %w", err)
+	}
+
+	return result, nil
 }
 
 func (s *Service) SaveForSync(ctx context.Context, newKB NewKB) error {
@@ -254,7 +270,20 @@ func (s *Service) GetByID(ctx context.Context, id string) (*KB, error) {
 		return nil, fmt.Errorf("the given id is not valid, because it is empty")
 	}
 
-	kb, err := s.storage.Get(ctx, id)
+	kb, err := s.storage.GetByID(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get kb: %w", err)
+	}
+
+	return kb, nil
+}
+
+func (s *Service) GetByKey(ctx context.Context, key string) (*KB, error) {
+	if strings.TrimSpace(key) == "" {
+		return nil, fmt.Errorf("the given key is not valid, because it is empty")
+	}
+
+	kb, err := s.storage.GetByKey(ctx, key)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get kb: %w", err)
 	}

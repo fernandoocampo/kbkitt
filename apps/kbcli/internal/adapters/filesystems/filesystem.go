@@ -108,9 +108,9 @@ func SaveFile(filePath string, content []byte) error {
 	if err != nil {
 		return fmt.Errorf("unable to create file: %w", err)
 	}
+
 	defer f.Close()
 
-	// _, err = io.WriteString(f, string(content))
 	_, err = f.Write(content)
 	if err != nil {
 		return fmt.Errorf("unable to save file: %w", err)
@@ -134,7 +134,6 @@ func SaveOrAppendFile(filePath string, content []byte) error {
 
 	defer file.Close()
 
-	// _, err = io.WriteString(file, string(content))
 	_, err = file.Write(content)
 	if err != nil {
 		return fmt.Errorf("unable to write into file: %w", err)

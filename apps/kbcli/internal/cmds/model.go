@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"strings"
 
@@ -35,16 +36,18 @@ const (
 
 // common labels
 const (
-	TitleSeparator       = "-------------"
-	IDCol                = "ID"
-	IDColSeparator       = "--"
-	KeyCol               = "KEY"
-	KeyColSeparator      = "---"
-	CategoryCol          = "CATEGORY"
-	CategoryColSeparator = "----"
-	TagCol               = "TAGS"
-	TagColSeparator      = "----"
-	GetKBIDLabel         = "id: "
+	TitleSeparator        = "-------------"
+	IDCol                 = "ID"
+	IDColSeparator        = "--"
+	KeyCol                = "KEY"
+	KeyColSeparator       = "---"
+	CategoryCol           = "CATEGORY"
+	CategoryColSeparator  = "----"
+	NamespaceCol          = "NAMESPACE"
+	NamespaceColSeparator = "---------"
+	TagCol                = "TAGS"
+	TagColSeparator       = "----"
+	GetKBIDLabel          = "id: "
 )
 
 var ErrNoConfiguration = errors.New("no configuration has been created yet")
@@ -56,6 +59,7 @@ func GetConfiguration() (*settings.Configuration, error) {
 	}
 
 	if configuration == nil {
+		slog.Info("no configuration yet")
 		return nil, ErrNoConfiguration
 	}
 

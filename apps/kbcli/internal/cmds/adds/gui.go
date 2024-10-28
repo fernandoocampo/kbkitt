@@ -55,7 +55,6 @@ func runInteractive() error {
 }
 
 func initialModel() model {
-	// var inputs []textinput.Model = make([]textinput.Model, 6)
 	var inputs []cmds.InputComponent = make([]cmds.InputComponent, 6)
 	keyInput := textinput.New()
 	keyInput.Placeholder = "key"

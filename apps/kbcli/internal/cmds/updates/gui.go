@@ -222,8 +222,8 @@ func (m *model) prevInput() {
 }
 
 func (m *model) toAddKBParams() {
-	updateKBData.kb.Key = m.inputs[key].Value()
-	updateKBData.kb.Category = m.inputs[category].Value()
+	updateKBData.kb.Key = strings.ToLower(m.inputs[key].Value())
+	updateKBData.kb.Category = strings.ToLower(m.inputs[category].Value())
 	updateKBData.kb.Value = m.inputs[value].Value()
 	updateKBData.kb.Notes = m.inputs[notes].Value()
 	updateKBData.kb.Reference = m.inputs[reference].Value()
@@ -235,5 +235,5 @@ func (m *model) convertTagsToArray() []string {
 		return nil
 	}
 
-	return strings.Split(m.inputs[tags].Value(), " ")
+	return strings.Split(strings.ToLower(m.inputs[tags].Value()), " ")
 }

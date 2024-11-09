@@ -129,6 +129,11 @@ const (
 	mediaFolder   = "media"
 )
 
+// common categories
+const (
+	QuoteCategory = "quote"
+)
+
 // magic values
 const (
 	maxAllowedGetAllKBLimit = 100

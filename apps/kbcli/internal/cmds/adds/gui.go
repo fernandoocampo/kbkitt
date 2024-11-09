@@ -188,7 +188,7 @@ func (m model) viewCategorization() string {
 %s
 %s
 
-• tab next • shift+tab previous • ctrl+c: quit
+• tab: next • shift+tab: previous • ctrl+c: quit
 
 `,
 		inputStyle.Width(8).Render(kbs.CategoryLabel),

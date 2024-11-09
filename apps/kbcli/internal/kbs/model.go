@@ -355,6 +355,10 @@ func (k KBQueryFilter) validate() error {
 }
 
 func (n NewKB) toKB() KB {
+	tags := slices.Clone(n.Tags)
+	slices.Sort(tags)
+	tags = slices.Compact(tags)
+
 	return KB{
 		ID:        uuid.New().String(),
 		Key:       strings.ToLower(n.Key),
@@ -363,7 +367,7 @@ func (n NewKB) toKB() KB {
 		Category:  strings.ToLower(n.Category),
 		Namespace: strings.ToLower(n.Namespace),
 		Reference: n.Reference,
-		Tags:      slices.Clone(n.Tags),
+		Tags:      tags,
 	}
 }
 

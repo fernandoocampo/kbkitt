@@ -37,7 +37,7 @@ func TestAddKB(t *testing.T) {
 		Notes:     "Bitcoins have a finite supply, which makes them a scarce digital commodity",
 		Category:  "bitcoin",
 		Namespace: "cryptos",
-		Tags:      []string{"bitcoin", "halving"},
+		Tags:      []string{"bitcoin", "halving", "bitcoin"},
 	}
 	expectedKB := &kbs.KB{
 		ID:        "88ac1fa1-2cdd-4f64-a4a3-13c6d162f504",

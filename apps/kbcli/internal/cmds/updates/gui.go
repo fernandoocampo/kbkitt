@@ -2,6 +2,7 @@ package updates
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/textarea"
@@ -235,5 +236,9 @@ func (m *model) convertTagsToArray() []string {
 		return nil
 	}
 
-	return strings.Split(strings.ToLower(m.inputs[tags].Value()), " ")
+	tags := strings.Split(strings.ToLower(m.inputs[tags].Value()), " ")
+	slices.Sort(tags)
+	tags = slices.Compact(tags)
+
+	return tags
 }

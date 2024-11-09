@@ -220,7 +220,8 @@ func wantToRetry() bool {
 
 func fillMissingAddFields() {
 	if kbs.IsStringEmpty(addKBData.key) {
-		addKBData.key = cmds.RequestStringValue(getLabel(keyLabel, addKBData.key))
+		newkey := cmds.RequestStringValue(getLabel(keyLabel, addKBData.key))
+		addKBData.key = strings.ToLower(newkey)
 	}
 	if kbs.IsStringEmpty(addKBData.value) {
 		addKBData.value = cmds.RequestStringValue(getLabel(valueLabel, addKBData.value))
@@ -229,10 +230,12 @@ func fillMissingAddFields() {
 		addKBData.notes = cmds.RequestStringValue(getLabel(notesLabel, addKBData.notes))
 	}
 	if kbs.IsStringEmpty(addKBData.category) {
-		addKBData.category = cmds.RequestStringValue(getLabel(categoryLabel, addKBData.category))
+		newcategory := cmds.RequestStringValue(getLabel(categoryLabel, addKBData.category))
+		addKBData.category = strings.ToLower(newcategory)
 	}
 	if kbs.IsStringEmpty(addKBData.namespace) {
-		addKBData.namespace = strings.ToLower(cmds.RequestStringValue(getLabel(namespaceLabel, addKBData.namespace)))
+		newns := strings.ToLower(cmds.RequestStringValue(getLabel(namespaceLabel, addKBData.namespace)))
+		addKBData.namespace = strings.ToLower(newns)
 	}
 	if kbs.IsStringEmpty(addKBData.reference) {
 		addKBData.reference = cmds.RequestStringValue(getLabel(referenceLabel, addKBData.reference))
@@ -327,5 +330,5 @@ func (a addKBParams) toNewKB() kbs.NewKB {
 }
 
 func (a *addKBParams) buildTags() {
-	a.tags = strings.Split(a.rawTags, " ")
+	a.tags = strings.Split(strings.ToLower(a.rawTags), " ")
 }

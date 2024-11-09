@@ -17,7 +17,7 @@ func TestAddKBInvalidValues(t *testing.T) {
 		Notes: "Bitcoins have a finite supply, which makes them a scarce digital commodity",
 		Tags:  []string{"bitcoin", "halving"},
 	}
-	expectedError := errors.New("the given values are not valid: kb value is empty\nkb category is empty")
+	expectedError := errors.New("the given values are not valid: kb value is empty\nkb category is empty\nkb namespace is empty")
 
 	ctx := context.TODO()
 	settings := kbs.ServiceSetup{}
@@ -32,19 +32,21 @@ func TestAddKBInvalidValues(t *testing.T) {
 func TestAddKB(t *testing.T) {
 	// Given
 	newKB := kbs.NewKB{
-		Key:      "halving",
-		Value:    "The number of bitcoins generated per block is decreased 50% every four years",
-		Notes:    "Bitcoins have a finite supply, which makes them a scarce digital commodity",
-		Category: "bitcoin",
-		Tags:     []string{"bitcoin", "halving"},
+		Key:       "halving",
+		Value:     "The number of bitcoins generated per block is decreased 50% every four years",
+		Notes:     "Bitcoins have a finite supply, which makes them a scarce digital commodity",
+		Category:  "bitcoin",
+		Namespace: "cryptos",
+		Tags:      []string{"bitcoin", "halving"},
 	}
 	expectedKB := &kbs.KB{
-		ID:       "88ac1fa1-2cdd-4f64-a4a3-13c6d162f504",
-		Key:      "halving",
-		Value:    "The number of bitcoins generated per block is decreased 50% every four years",
-		Notes:    "Bitcoins have a finite supply, which makes them a scarce digital commodity",
-		Category: "bitcoin",
-		Tags:     []string{"bitcoin", "halving"},
+		ID:        "88ac1fa1-2cdd-4f64-a4a3-13c6d162f504",
+		Key:       "halving",
+		Value:     "The number of bitcoins generated per block is decreased 50% every four years",
+		Notes:     "Bitcoins have a finite supply, which makes them a scarce digital commodity",
+		Category:  "bitcoin",
+		Namespace: "cryptos",
+		Tags:      []string{"bitcoin", "halving"},
 	}
 	ctx := context.TODO()
 	storageMock := newStorageMock()

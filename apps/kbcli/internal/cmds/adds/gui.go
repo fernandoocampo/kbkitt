@@ -23,8 +23,9 @@ type model struct {
 
 // ui form fields
 const (
-	key = iota
-	category
+	category = iota
+	namespace
+	key
 	value
 	notes
 	reference
@@ -55,23 +56,32 @@ func runInteractive() error {
 }
 
 func initialModel() model {
-	var inputs []cmds.InputComponent = make([]cmds.InputComponent, 6)
-	keyInput := textinput.New()
-	keyInput.Placeholder = "key"
-	keyInput.Focus()
-	keyInput.CharLimit = 64
-	keyInput.Width = 70
-	keyInput.Prompt = ""
-	keyInput.SetValue(addKBData.key)
-	inputs[key].TextInput = &keyInput
+	var inputs []cmds.InputComponent = make([]cmds.InputComponent, 7)
 
 	categoryInput := textinput.New()
 	categoryInput.Placeholder = "category"
 	categoryInput.CharLimit = 64
 	categoryInput.Width = 70
 	categoryInput.Prompt = ""
+	categoryInput.Focus()
 	categoryInput.SetValue(addKBData.category)
 	inputs[category].TextInput = &categoryInput
+
+	namespaceInput := textinput.New()
+	namespaceInput.Placeholder = "namespace"
+	namespaceInput.CharLimit = 64
+	namespaceInput.Width = 70
+	namespaceInput.Prompt = ""
+	namespaceInput.SetValue(addKBData.namespace)
+	inputs[namespace].TextInput = &namespaceInput
+
+	keyInput := textinput.New()
+	keyInput.Placeholder = "key"
+	keyInput.CharLimit = 64
+	keyInput.Width = 70
+	keyInput.Prompt = ""
+	keyInput.SetValue(addKBData.key)
+	inputs[key].TextInput = &keyInput
 
 	valueInput := textarea.New()
 	valueInput.Placeholder = "..."
@@ -161,6 +171,34 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
+	if m.focused == category || m.focused == namespace {
+		return m.viewCategorization()
+	}
+
+	return m.viewValues()
+}
+
+func (m model) viewCategorization() string {
+	return fmt.Sprintf(
+		` Adding a new KB:
+
+%s
+%s
+
+%s
+%s
+
+• tab next • shift+tab previous • ctrl+c: quit
+
+`,
+		inputStyle.Width(8).Render(kbs.CategoryLabel),
+		m.inputs[category].View(),
+		inputStyle.Width(9).Render(kbs.NamespaceLabel),
+		m.inputs[namespace].View(),
+	) + "\n"
+}
+
+func (m model) viewValues() string {
 	return fmt.Sprintf(
 		` Adding a new KB:
 
@@ -180,17 +218,12 @@ func (m model) View() string {
 %s
 
 %s
-%s
 
-%s
-
-• tab fields • shift+tab fields • ctrl+c: quit
+• tab next • shift+tab previous •  • ctrl+c: quit
 
 `,
 		inputStyle.Width(30).Render(kbs.KeyLabel),
 		m.inputs[key].View(),
-		inputStyle.Width(8).Render(kbs.CategoryLabel),
-		m.inputs[category].View(),
 		inputStyle.Width(6).Render(kbs.ValueLabel),
 		m.inputs[value].View(),
 		inputStyle.Width(6).Render(kbs.NotesLabel),
@@ -213,7 +246,7 @@ func (m *model) prevInput() {
 	m.focused--
 	// Wrap around
 	if m.focused < 0 {
-		m.focused = len(m.inputs) - 1
+		m.focused = 1
 	}
 }
 
@@ -231,5 +264,9 @@ func (m *model) convertTagsToArray() []string {
 		return nil
 	}
 
-	return strings.Split(strings.ToLower(m.inputs[tags].Value()), " ")
+	cleanedTags := m.inputs[tags].Value()
+	cleanedTags = strings.TrimLeft(cleanedTags, " ")
+	cleanedTags = strings.TrimRight(cleanedTags, " ")
+
+	return strings.Split(strings.ToLower(cleanedTags), " ")
 }

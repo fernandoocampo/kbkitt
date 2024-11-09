@@ -14,6 +14,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
+	"golang.design/x/clipboard"
 )
 
 // mode defines get mode
@@ -169,8 +170,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "esc", "ctrl+c":
+		case "q", "esc", "ctrl+q":
 			return m, tea.Quit
+		case tea.KeyCtrlC.String():
+			m.copyToClipboard()
+			return m, cmd
 		case tea.KeyLeft.String():
 			if (int(getKBData.offset) - int(getKBData.limit)) < 0 {
 				return m, cmd
@@ -241,7 +245,7 @@ func (m *model) drawKBViewer() string {
 }
 
 func (m *model) helpView() string {
-	return helpStyle("\n  ↑/↓: Navigate • Ctrl+R: Return • q: Quit\n")
+	return helpStyle("\n  ↑/↓: Navigate • Ctrl+R: Return • Ctrl+c: Copy • q: Quit\n")
 }
 
 func (m *model) drawTable() string {
@@ -322,4 +326,28 @@ func renderKBItem(k *kbs.KB) string {
 		inputStyle.Width(30).Render("Notes"), k.Notes,
 		inputStyle.Width(30).Render("Reference"), k.Reference,
 		inputStyle.Width(30).Render("Tags"), k.Tags)
+}
+
+func (m *model) copyToClipboard() {
+	if m.selectedItem == nil {
+		return
+	}
+
+	err := clipboard.Init()
+	if err != nil {
+		// let's ignore error
+		return
+	}
+
+	var value string
+
+	switch m.selectedItem.Category {
+	case kbs.QuoteCategory:
+		value = fmt.Sprintf("%q ~ %s", m.selectedItem.Value,
+			m.selectedItem.Reference)
+	default:
+		value = m.selectedItem.Value
+	}
+
+	_ = clipboard.Write(clipboard.FmtText, []byte(value))
 }

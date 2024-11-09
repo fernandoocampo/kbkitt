@@ -357,11 +357,11 @@ func (k KBQueryFilter) validate() error {
 func (n NewKB) toKB() KB {
 	return KB{
 		ID:        uuid.New().String(),
-		Key:       n.Key,
+		Key:       strings.ToLower(n.Key),
 		Value:     n.Value,
 		Notes:     n.Notes,
-		Category:  n.Category,
-		Namespace: n.Namespace,
+		Category:  strings.ToLower(n.Category),
+		Namespace: strings.ToLower(n.Namespace),
 		Reference: n.Reference,
 		Tags:      slices.Clone(n.Tags),
 	}

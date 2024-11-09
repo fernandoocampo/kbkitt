@@ -236,9 +236,13 @@ func (m *model) convertTagsToArray() []string {
 		return nil
 	}
 
-	tags := strings.Split(strings.ToLower(m.inputs[tags].Value()), " ")
-	slices.Sort(tags)
-	tags = slices.Compact(tags)
+	cleanedTags := m.inputs[tags].Value()
+	cleanedTags = strings.TrimLeft(cleanedTags, " ")
+	cleanedTags = strings.TrimRight(cleanedTags, " ")
 
-	return tags
+	stags := strings.Split(cleanedTags, " ")
+	slices.Sort(stags)
+	stags = slices.Compact(stags)
+
+	return stags
 }

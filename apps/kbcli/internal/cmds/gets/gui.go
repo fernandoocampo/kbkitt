@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
+	"runtime"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/paginator"
@@ -175,6 +177,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyCtrlC.String():
 			m.copyToClipboard()
 			return m, cmd
+		case tea.KeyCtrlO.String():
+			m.openBrowser()
+			return m, cmd
 		case tea.KeyLeft.String():
 			if (int(getKBData.offset) - int(getKBData.limit)) < 0 {
 				return m, cmd
@@ -245,7 +250,15 @@ func (m *model) drawKBViewer() string {
 }
 
 func (m *model) helpView() string {
-	return helpStyle("\n  ↑/↓: Navigate • Ctrl+R: Return • Ctrl+c: Copy • q: Quit\n")
+	if m.selectedItem == nil {
+		return helpStyle("\n  • Ctrl+R: Back • q: Quit\n")
+	}
+
+	if m.selectedItem.Category == kbs.BookmarkCategory {
+		return helpStyle("\n  ↑/↓: Navigate • Ctrl+R: Back • Ctrl+c: Copy • Ctrl+o: Open • q: Quit\n")
+	}
+
+	return helpStyle("\n  ↑/↓: Navigate • Ctrl+R: Back • Ctrl+c: Copy • q: Quit\n")
 }
 
 func (m *model) drawTable() string {
@@ -350,4 +363,23 @@ func (m *model) copyToClipboard() {
 	}
 
 	_ = clipboard.Write(clipboard.FmtText, []byte(value))
+}
+
+func (m *model) openBrowser() {
+	if m.selectedItem == nil || m.selectedItem.Category != kbs.BookmarkCategory {
+		return
+	}
+
+	url := m.selectedItem.Value
+
+	switch runtime.GOOS {
+	case "linux":
+		_ = exec.Command("xdg-open", url).Start()
+	case "windows":
+		_ = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	case "darwin":
+		_ = exec.Command("open", url).Start()
+	default:
+		return
+	}
 }

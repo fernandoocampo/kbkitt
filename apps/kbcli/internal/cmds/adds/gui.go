@@ -253,6 +253,7 @@ func (m *model) prevInput() {
 func (m *model) toAddKBParams() {
 	addKBData.key = strings.ToLower(m.inputs[key].Value())
 	addKBData.category = strings.ToLower(m.inputs[category].Value())
+	addKBData.namespace = strings.ToLower(m.inputs[namespace].Value())
 	addKBData.value = m.inputs[value].Value()
 	addKBData.notes = m.inputs[notes].Value()
 	addKBData.reference = m.inputs[reference].Value()

@@ -26,6 +26,7 @@ type model struct {
 const (
 	key = iota
 	category
+	namespace
 	value
 	notes
 	reference
@@ -56,7 +57,7 @@ func runInteractive() error {
 }
 
 func initialModel() model {
-	var inputs []cmds.InputComponent = make([]cmds.InputComponent, 6)
+	var inputs []cmds.InputComponent = make([]cmds.InputComponent, 7)
 	keyInput := textinput.New()
 	keyInput.Placeholder = "key"
 	keyInput.Focus()
@@ -73,6 +74,14 @@ func initialModel() model {
 	categoryInput.Prompt = ""
 	categoryInput.SetValue(updateKBData.kb.Category)
 	inputs[category].TextInput = &categoryInput
+
+	namespaceInput := textinput.New()
+	namespaceInput.Placeholder = "namespace"
+	namespaceInput.CharLimit = 64
+	namespaceInput.Width = 70
+	namespaceInput.Prompt = ""
+	namespaceInput.SetValue(updateKBData.kb.Namespace)
+	inputs[namespace].TextInput = &namespaceInput
 
 	valueInput := textarea.New()
 	valueInput.Prompt = ""
@@ -187,6 +196,9 @@ func (m model) View() string {
 %s
 
 %s
+%s
+
+%s
 
 • tab fields • shift+tab fields • ctrl+s save • ctrl+c: quit
 
@@ -196,6 +208,8 @@ func (m model) View() string {
 		m.inputs[key].View(),
 		inputStyle.Width(8).Render("Category"),
 		m.inputs[category].View(),
+		inputStyle.Width(9).Render("Namespace"),
+		m.inputs[namespace].View(),
 		inputStyle.Width(6).Render("Value"),
 		m.inputs[value].View(),
 		inputStyle.Width(6).Render("Notes"),
@@ -225,6 +239,7 @@ func (m *model) prevInput() {
 func (m *model) toAddKBParams() {
 	updateKBData.kb.Key = strings.ToLower(m.inputs[key].Value())
 	updateKBData.kb.Category = strings.ToLower(m.inputs[category].Value())
+	updateKBData.kb.Namespace = strings.ToLower(m.inputs[namespace].Value())
 	updateKBData.kb.Value = m.inputs[value].Value()
 	updateKBData.kb.Notes = m.inputs[notes].Value()
 	updateKBData.kb.Reference = m.inputs[reference].Value()

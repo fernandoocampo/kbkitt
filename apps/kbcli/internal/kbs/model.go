@@ -131,7 +131,8 @@ const (
 
 // common categories
 const (
-	QuoteCategory = "quote"
+	QuoteCategory    = "quote"
+	BookmarkCategory = "bookmark"
 )
 
 // magic values

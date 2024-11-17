@@ -122,6 +122,7 @@ const (
 	ReferenceLabel = "Reference"
 	MediaTypeLabel = "Media Type"
 	TagsLabel      = "Tags"
+	KeywordLabel   = "Keyword"
 )
 
 const (

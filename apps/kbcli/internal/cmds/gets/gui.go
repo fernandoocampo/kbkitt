@@ -307,11 +307,10 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					fmt.Fprintln(os.Stderr, "searching kbs: %w", err)
 					return m, tea.Quit
 				}
-
-				return m, cmd
+				m.message = fmt.Sprintf("%d", m.searchView.result.Total)
+			} else {
+				m.filterView.nextInput()
 			}
-			m.mode = filterMode
-			m.filterView.nextInput()
 		case tea.KeyEnter:
 			if m.mode != searchMode {
 				return m, cmd

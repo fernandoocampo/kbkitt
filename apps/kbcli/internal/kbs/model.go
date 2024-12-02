@@ -11,6 +11,8 @@ import (
 	"slices"
 	"strings"
 
+	rand "math/rand/v2"
+
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/adapters/filesystems"
 	"github.com/google/uuid"
 	yaml "gopkg.in/yaml.v3"
@@ -126,13 +128,13 @@ const (
 )
 
 const (
-	MediaCategory = "media"
-	mediaFolder   = "media"
+	mediaFolder = "media"
 )
 
 // common categories
 const (
 	QuoteCategory    = "quote"
+	MediaCategory    = "media"
 	BookmarkCategory = "bookmark"
 )
 
@@ -512,4 +514,13 @@ func isWebURL(anURL string) bool {
 	}
 
 	return true
+}
+
+// newRandomNumber generates number from 0 to given number
+func newRandomNumber(n int64) int64 {
+	if n <= 0 {
+		return 0
+	}
+
+	return rand.Int64N(n)
 }

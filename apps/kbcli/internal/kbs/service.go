@@ -19,6 +19,7 @@ type Storage interface {
 	Update(ctx context.Context, kb *KB) error
 	Search(ctx context.Context, filter KBQueryFilter) (*SearchResult, error)
 	GetAll(ctx context.Context, filter KBQueryFilter) (*GetAllResult, error)
+	CountByCategory(ctx context.Context, category string) (int64, error)
 }
 
 type KBServiceClient interface {
@@ -289,6 +290,42 @@ func (s *Service) GetByKey(ctx context.Context, key string) (*KB, error) {
 	}
 
 	return kb, nil
+}
+
+func (s *Service) GetRandomQuote(ctx context.Context) (*KB, error) {
+	// Get the number of quotes we have stored.
+	totalQuotes, err := s.storage.CountByCategory(ctx, QuoteCategory)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get random quote: %w", err)
+	}
+
+	if totalQuotes == 0 {
+		return nil, nil
+	}
+
+	filter := KBQueryFilter{
+		Category: QuoteCategory,
+		Limit:    1,
+	}
+
+	if totalQuotes == 1 {
+		filter.Offset = 0
+	} else {
+		filter.Offset = uint32(newRandomNumber(totalQuotes))
+	}
+
+	kbs, err := s.storage.GetAll(ctx, filter)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get random kb: %w", err)
+	}
+
+	if len(kbs.KBs) == 0 {
+		return nil, nil
+	}
+
+	randomItem := kbs.KBs[0]
+
+	return &randomItem, nil
 }
 
 func (s *Service) Search(ctx context.Context, filter KBQueryFilter) (*SearchResult, error) {

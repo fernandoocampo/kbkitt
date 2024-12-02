@@ -18,7 +18,7 @@ type getKBParams struct {
 	keyword     string
 	limit       uint32
 	offset      uint32
-	interactive bool
+	randomQuote bool
 }
 
 var getKBData getKBParams
@@ -38,7 +38,7 @@ func MakeGetCommand(service *kbs.Service) *cobra.Command {
 	newCmd.PersistentFlags().StringVarP(&getKBData.keyword, "keyword", "w", "", "knowledge base keyword to search based on tags")
 	newCmd.PersistentFlags().Uint32VarP(&getKBData.limit, "limit", "l", 5, "number of rows you want to retrieve")
 	newCmd.PersistentFlags().Uint32VarP(&getKBData.offset, "offset", "o", 0, "number of rows to skip before starting to return result rows")
-	newCmd.PersistentFlags().BoolVarP(&getKBData.interactive, "ux", "u", false, "show result in interactive mode")
+	newCmd.PersistentFlags().BoolVarP(&getKBData.randomQuote, "random-quote", "", false, "get a random kb in the quote category")
 
 	return &newCmd
 }
@@ -58,10 +58,35 @@ func makeGetKBCommand(service *kbs.Service) func(cmd *cobra.Command, args []stri
 }
 
 func search(ctx context.Context, service *kbs.Service) error {
+	if getKBData.randomQuote {
+		err := printRandomQuote(ctx, service)
+		if err != nil {
+			return fmt.Errorf("unable to search: %w", err)
+		}
+
+		return nil
+	}
+
 	err := runInteractive(ctx, service)
 	if err != nil {
-		return fmt.Errorf("unable to run interactive search: %w", err)
+		return fmt.Errorf("unable to run interactive mode: %w", err)
 	}
+	return nil
+}
+
+func printRandomQuote(ctx context.Context, service *kbs.Service) error {
+	kb, err := service.GetRandomQuote(ctx)
+	if err != nil {
+		return fmt.Errorf("unable to get random quote: %w", err)
+	}
+
+	if kb == nil {
+		fmt.Println("not found")
+		return nil
+	}
+
+	fmt.Printf("%q ~ %s\n", kb.Value, kb.Reference)
+
 	return nil
 }
 

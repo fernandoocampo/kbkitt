@@ -38,6 +38,7 @@ WHERE KB_ID = ?`
 	queryAKBByKeySQL           = "SELECT INTERNAL_ID, KB_ID, KB_KEY, KB_VALUE, NOTES, NAMESPACE, CATEGORY, TAG_VALUES, REFERENCE, CREATED_ON FROM kbs WHERE KB_KEY = ?"
 	queryKBsByFilterSQL        = "SELECT k.KB_ID, k.KB_KEY, k.CATEGORY, k.NAMESPACE, k.TAG_VALUES FROM kbs k %s;"
 	queryKBsByFilterAndTagsSQL = "SELECT k.KB_ID, k.KB_KEY, k.CATEGORY, k.NAMESPACE, k.TAG_VALUES FROM kbs k JOIN tags_idx t ON (t.rowid = k.INTERNAL_ID) %s;"
+	countKBsByCategorySQL      = "SELECT COUNT(k.KB_ID) FROM kbs k WHERE k.CATEGORY = ?"
 	countKBsByFilterSQL        = "SELECT COUNT(k.KB_ID) FROM kbs k %s;"
 	countKBsByFilterAndTagsSQL = "SELECT COUNT(k.KB_ID) FROM kbs k JOIN tags_idx t ON (t.rowid = k.INTERNAL_ID) %s;"
 
@@ -448,6 +449,42 @@ func (s *SQLite) queryKBs(ctx context.Context, searchFilters *filterBuilder) ([]
 	}
 
 	return kbsFound, nil
+}
+
+func (s *SQLite) CountByCategory(ctx context.Context, category string) (int64, error) {
+	countStmt, err := s.db.Prepare(countKBsByCategorySQL)
+	if err != nil {
+		slog.Error("building count kbs by category prepared statement",
+			slog.Any("category", category),
+			slog.Any("query", countKBsByCategorySQL),
+			slog.String("error", err.Error()),
+		)
+
+		return -1, fmt.Errorf("unable to build query to count kbs by category: %w", err)
+	}
+
+	defer countStmt.Close()
+
+	row := countStmt.QueryRowContext(ctx, category)
+
+	var count int64
+
+	err = row.Scan(&count)
+	if err != nil {
+		slog.Error("scanning count of kbs by category found",
+			slog.Any("category", category),
+			slog.String("query", countKBsByCategorySQL),
+			slog.String("error", err.Error()),
+		)
+
+		return -1, fmt.Errorf("unable to scanning count of kbs found: %w", err)
+	}
+
+	if row.Err() != nil {
+		return -1, fmt.Errorf("unable to count kbs: %w", row.Err())
+	}
+
+	return count, nil
 }
 
 func buildSQLFilters(filters kbs.KBQueryFilter, countSQL, querySQL string) *filterBuilder {

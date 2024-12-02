@@ -107,3 +107,9 @@ func (k *storageDummy) GetAll(ctx context.Context, filter kbs.KBQueryFilter) (*k
 
 	return args.Get(0).(*kbs.GetAllResult), args.Error(1)
 }
+
+func (k *storageDummy) CountByCategory(ctx context.Context, category string) (int64, error) {
+	args := k.Called(ctx, category)
+
+	return args.Get(0).(int64), args.Error(1)
+}

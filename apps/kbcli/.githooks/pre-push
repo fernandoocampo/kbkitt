@@ -1,0 +1,13 @@
+#!/bin/bash
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+echo "[pre-push] Running unit tests..."
+
+if ! make -C "$REPO_ROOT/apps/kbcli" test; then
+    echo ""
+    echo "ERROR: Tests failed. Push aborted. Fix tests before pushing."
+    exit 1
+fi
+
+echo "[pre-push] All tests passed."

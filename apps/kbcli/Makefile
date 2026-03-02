@@ -10,6 +10,7 @@ help: ## Display this help.
 	@echo "  docker-build        Build docker image"
 	@echo "  build-macos-amd-64  Build binary for MacOS amd64"
 	@echo "  test                Run unit tests"
+	@echo "  install-hooks       Install git hooks (pre-commit, pre-push)"
 	@echo "  run                 Run run app"
 	@echo "  run-add             Run add app"
 	@echo "  run-get             Run get app"
@@ -17,3 +18,12 @@ help: ## Display this help.
 	@echo "  run-export          Run export app"
 	@echo "  run-sync            Run sync app"
 	@echo "  (and more... see run.mk and build.mk)"
+
+.PHONY: install-hooks
+install-hooks: ## Install git hooks to enforce unit tests on commit and push.
+	git config core.hooksPath "$(CURDIR)/.githooks"
+ifneq ($(OS),Windows_NT)
+	sed -i.bak 's/\r//' .githooks/pre-commit .githooks/pre-push
+	rm -f .githooks/pre-commit.bak .githooks/pre-push.bak
+	chmod +x .githooks/pre-commit .githooks/pre-push
+endif

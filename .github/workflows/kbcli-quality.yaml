@@ -1,0 +1,37 @@
+name: quality
+
+on:
+  push:
+    paths:
+      - 'apps/kbcli/**'
+  pull_request:
+    paths:
+      - 'apps/kbcli/**'
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    env:
+      GOPATH_HOST: ${{ github.workspace }}/go-cache
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Go module cache dir
+        run: mkdir -p ${{ github.workspace }}/go-cache
+
+      - name: Pull test image
+        run: docker pull fdocampo/kbcli-test:latest
+
+      - name: Test and lint project
+        working-directory: apps/kbcli
+        run: |
+          touch .test-image-built
+          docker run --rm \
+            -v $(pwd):/app \
+            -v ${{ github.workspace }}/go-cache:/go \
+            -e GOPATH=/go \
+            -w /app \
+            -e CGO_ENABLED \
+            -e GOOS \
+            -e GOARCH \
+            fdocampo/kbcli-test:latest sh -c "make test && make lint"

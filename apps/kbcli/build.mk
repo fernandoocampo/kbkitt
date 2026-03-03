@@ -14,6 +14,10 @@ coverage: ## Run unit tests with coverage report.
 mod-tidy:
 	$(GO_TOOL) mod tidy
 
+.PHONY: lint
+lint:
+	$(GO_SHELL_TOOL) "apt-get update -qq && apt-get install -y -qq libx11-dev && go run github.com/golangci/golangci-lint/$(LINT_MAJOR_VERSION)/cmd/golangci-lint@$(LINT_VERSION) run --allow-parallel-runners -c $(LINT_PATH).golangci.yml"
+
 .PHONY: build-macos-amd-64
 build-macos-amd-64: ## Build binary for MacOS amd64
 	@mkdir -p bin

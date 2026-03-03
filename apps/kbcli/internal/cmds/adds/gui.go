@@ -56,7 +56,7 @@ func runInteractive() error {
 }
 
 func initialModel() model {
-	var inputs []cmds.InputComponent = make([]cmds.InputComponent, 7)
+	inputs := make([]cmds.InputComponent, 7)
 
 	categoryInput := textinput.New()
 	categoryInput.Placeholder = "category"
@@ -129,8 +129,9 @@ func (m model) Init() tea.Cmd {
 	return textinput.Blink
 }
 
+//nolint:ireturn // BubbleTea architecture requires interface return
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmds []tea.Cmd = make([]tea.Cmd, len(m.inputs))
+	cmds := make([]tea.Cmd, len(m.inputs))
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:

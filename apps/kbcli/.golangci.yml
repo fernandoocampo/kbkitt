@@ -1,0 +1,90 @@
+version: "2"
+run:
+  concurrency: 4
+  modules-download-mode: readonly
+linters:
+  default: none
+  enable:
+    - dupl
+    - errcheck
+    - errorlint
+    - goconst
+    - gocritic
+    - gocyclo
+    - gosec
+    - govet
+    - ineffassign
+    - ireturn
+    - lll
+    - makezero
+    - predeclared
+    - revive
+    - staticcheck
+    - thelper
+    - unconvert
+    - unused
+  settings:
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+    errorlint:
+      errorf: true
+    gocyclo:
+      min-complexity: 15
+    gosec:
+      excludes:
+        - G115
+    lll:
+      line-length: 200
+    nakedret:
+      max-func-lines: 60
+    prealloc:
+      simple: true
+      range-loops: true
+      for-loops: false
+    unparam:
+      check-exported: true
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - dupl
+          - gocyclo
+          - gosec
+        path: _test\.go
+    paths:
+      - doc.go
+      - mock.go
+      - ./*_test.go
+      - .pb.go
+      - mock
+      - mocks
+      - test
+      - tests
+      - system_test
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+  exclusions:
+    generated: lax
+    paths:
+      - doc.go
+      - mock.go
+      - ./*_test.go
+      - .pb.go
+      - mock
+      - mocks
+      - test
+      - tests
+      - system_test
+      - third_party$
+      - builtin$
+      - examples$

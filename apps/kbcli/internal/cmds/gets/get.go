@@ -44,7 +44,7 @@ func MakeGetCommand(service *kbs.Service) *cobra.Command {
 }
 
 func makeGetKBCommand(service *kbs.Service) func(cmd *cobra.Command, args []string) {
-	return func(cmd *cobra.Command, args []string) {
+	return func(_ *cobra.Command, _ []string) {
 		ctx := context.Background()
 
 		err := search(ctx, service)

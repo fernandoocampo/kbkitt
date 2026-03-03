@@ -48,8 +48,8 @@ func MakeImportCommand(service *kbs.Service) *cobra.Command {
 	return &newCmd
 }
 
-func makeRunImportKBCommand(service *kbs.Service) func(cmd *cobra.Command, args []string) {
-	return func(cmd *cobra.Command, args []string) {
+func makeRunImportKBCommand(service *kbs.Service) func(_ *cobra.Command, _ []string) {
+	return func(_ *cobra.Command, _ []string) {
 		fillMissingImportFields()
 
 		result, err := importFile(service)
@@ -99,14 +99,6 @@ func fillMissingImportFields() {
 	if kbs.IsStringEmpty(importKBData.file) {
 		importKBData.file = cmds.RequestStringValue(fileLabel)
 	}
-}
-
-func fileExists(filename string) bool {
-	info, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return !info.IsDir()
 }
 
 func printImportedReport(kbs *kbs.ImportResult) {

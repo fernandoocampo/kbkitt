@@ -34,7 +34,7 @@ const (
 
 // http values
 const (
-	appJsonContentType = "application/json"
+	appJSONContentType = "application/json"
 	keyParam           = "key"
 	keywordParam       = "keyword"
 	limitParam         = "limit"
@@ -69,13 +69,14 @@ func (c *Client) Create(ctx context.Context, newKB kbs.NewKB) (string, error) {
 		return "", fmt.Errorf("unable to marshal kb data: %w", err)
 	}
 
-	request, err := http.NewRequest(http.MethodPost, c.getKBURL(), bytes.NewBuffer(postBody))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, c.getKBURL(), bytes.NewBuffer(postBody))
 	if err != nil {
 		return "", fmt.Errorf("unable to create new kb request: %w", err)
 	}
 
 	request.Header.Set("Content-Type", "application/json")
 
+	//nolint:gosec // Trusted domain and controlled requests
 	resp, err := c.client.Do(request)
 	if err != nil {
 		return "", kbs.NewServerErrorWithWrapper("unable to create new kb", err)
@@ -106,7 +107,7 @@ func (c *Client) Create(ctx context.Context, newKB kbs.NewKB) (string, error) {
 }
 
 func (c *Client) Search(ctx context.Context, filter kbs.KBQueryFilter) (*kbs.SearchResult, error) {
-	req, err := http.NewRequest(http.MethodGet, c.getKBURL(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.getKBURL(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("unable to build get kb request: %w", err)
 	}
@@ -119,6 +120,7 @@ func (c *Client) Search(ctx context.Context, filter kbs.KBQueryFilter) (*kbs.Sea
 
 	req.URL.RawQuery = q.Encode()
 
+	//nolint:gosec // Trusted domain and controlled requests
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get kb by key: %w", err)
@@ -145,7 +147,13 @@ func (c *Client) Search(ctx context.Context, filter kbs.KBQueryFilter) (*kbs.Sea
 }
 
 func (c *Client) Get(ctx context.Context, id string) (*kbs.KB, error) {
-	resp, err := c.client.Get(c.getGetKBByIDURL(id))
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.getGetKBByIDURL(id), nil)
+	if err != nil {
+		return nil, fmt.Errorf("unable to create get kb request: %w", err)
+	}
+
+	//nolint:gosec // Trusted domain and controlled requests
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get kb: %w", err)
 	}
@@ -176,13 +184,14 @@ func (c *Client) Update(ctx context.Context, kb *kbs.KB) error {
 		return fmt.Errorf("unable to marshal kb data: %w", err)
 	}
 
-	request, err := http.NewRequest(http.MethodPatch, c.getKBURL(), bytes.NewBuffer(postBody))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPatch, c.getKBURL(), bytes.NewBuffer(postBody))
 	if err != nil {
 		return fmt.Errorf("unable to create update kb request: %w", err)
 	}
 
 	request.Header.Set("Content-Type", "application/json")
 
+	//nolint:gosec // Trusted domain and controlled requests
 	resp, err := c.client.Do(request)
 	if err != nil {
 		return kbs.NewServerErrorWithWrapper("unable to update new kb", err)
@@ -231,5 +240,5 @@ func isServerError(statusCode int) bool {
 }
 
 func isNotSuccess(statusCode int) bool {
-	return !(statusCode >= 200 && statusCode < 300)
+	return statusCode < 200 || statusCode >= 300
 }

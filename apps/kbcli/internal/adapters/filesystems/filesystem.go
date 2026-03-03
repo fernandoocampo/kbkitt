@@ -11,11 +11,11 @@ type MediaInfo struct {
 	Exist bool
 }
 
-const drwxr_xr_x os.FileMode = 0755
+const dirPerms os.FileMode = 0755
 
 func MakeFolder(folderPath string) error {
 	// https://chmod-calculator.com
-	err := os.Mkdir(folderPath, drwxr_xr_x)
+	err := os.Mkdir(folderPath, dirPerms)
 	if err != nil {
 		return fmt.Errorf("unable to make directory: %w", err)
 	}
@@ -120,7 +120,7 @@ func SaveFile(filePath string, content []byte) error {
 }
 
 func SaveOrAppendFile(filePath string, content []byte) error {
-	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, drwxr_xr_x)
+	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, dirPerms)
 	if err != nil && os.IsNotExist(err) {
 		file, err = os.Create(filePath)
 		if err != nil {

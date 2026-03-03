@@ -136,7 +136,7 @@ func (s *Service) GetAllKBs(ctx context.Context, filter KBQueryFilter) (*GetAllR
 	return result, nil
 }
 
-func (s *Service) SaveForSync(ctx context.Context, newKB NewKB) error {
+func (s *Service) SaveForSync(_ context.Context, newKB NewKB) error {
 	newKBYAML, err := newKB.toYAML()
 	if err != nil {
 		return fmt.Errorf("unable to save new kb for later sync: %w", err)
@@ -179,7 +179,9 @@ func (s *Service) Sync(ctx context.Context) (*SyncResult, error) {
 	}
 
 	go func() {
-		_ = filesystems.TruncateFile(s.fileForSyncPath)
+		if errTrunc := filesystems.TruncateFile(s.fileForSyncPath); errTrunc != nil {
+			fmt.Printf("failed to truncate sync file: %v\n", errTrunc)
+		}
 	}()
 
 	result := SyncResult{
@@ -200,7 +202,7 @@ func (s *Service) Sync(ctx context.Context) (*SyncResult, error) {
 	return &result, nil
 }
 
-func (s *Service) SaveMedia(ctx context.Context, newKB NewKB) error {
+func (s *Service) SaveMedia(_ context.Context, newKB NewKB) error {
 	isNotMediaFile, err := isNotMediaFile(newKB.Value)
 	if err != nil {
 		return fmt.Errorf("unable to save media: %w", err)

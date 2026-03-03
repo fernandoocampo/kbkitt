@@ -78,8 +78,8 @@ func MakeAddCommand(service *kbs.Service) *cobra.Command {
 	return &newCmd
 }
 
-func makeRunAddKBCommand(service *kbs.Service) func(cmd *cobra.Command, args []string) {
-	return func(cmd *cobra.Command, args []string) {
+func makeRunAddKBCommand(service *kbs.Service) func(_ *cobra.Command, _ []string) {
+	return func(_ *cobra.Command, _ []string) {
 		err := collectData()
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "collecting data", err)

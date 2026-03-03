@@ -20,7 +20,7 @@ func MakeVersionCommand() *cobra.Command {
 		Use:   "version",
 		Short: "print the version number of kb-kitt",
 		Long:  "print the version number of kb-kitt",
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, _ []string) {
 			fmt.Printf(versionFormat, Version, CommitHash, BuildDate)
 		},
 	}

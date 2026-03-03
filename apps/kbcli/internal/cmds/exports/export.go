@@ -38,8 +38,8 @@ func MakeExportCommand(service *kbs.Service) *cobra.Command {
 	return &newCmd
 }
 
-func makeRunExportedKBCommand(service *kbs.Service) func(cmd *cobra.Command, args []string) {
-	return func(cmd *cobra.Command, args []string) {
+func makeRunExportedKBCommand(service *kbs.Service) func(_ *cobra.Command, _ []string) {
+	return func(_ *cobra.Command, _ []string) {
 		err := exportData(service)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "failed to process import:", err)

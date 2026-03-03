@@ -9,6 +9,7 @@ import (
 
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
 
+	// register sqlite3 driver
 	_ "github.com/ncruces/go-sqlite3/driver"
 	_ "github.com/ncruces/go-sqlite3/embed"
 )

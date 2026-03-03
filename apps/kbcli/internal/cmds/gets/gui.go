@@ -3,6 +3,7 @@ package gets
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 	"runtime"
@@ -143,7 +144,7 @@ func newPaginator(limit uint32, total int) *paginator.Model {
 	p.PerPage = int(limit)
 	p.ActiveDot = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "235", Dark: "252"}).Render("•")
 	p.InactiveDot = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "250", Dark: "238"}).Render("•")
-	p.SetTotalPages(int(total))
+	p.SetTotalPages(total)
 
 	return &p
 }
@@ -231,9 +232,10 @@ func (m *model) Init() tea.Cmd {
 	return nil
 }
 
+//nolint:gocyclo,ireturn // Handling keyboard events often involves large switch statements; bubbletea interface requires returning interface
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
-	var cmds []tea.Cmd = make([]tea.Cmd, len(m.filterView.inputs))
+	cmds := make([]tea.Cmd, len(m.filterView.inputs))
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
@@ -263,7 +265,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if (int(getKBData.offset) - int(getKBData.limit)) < 0 {
 				return m, cmd
 			}
-			getKBData.offset = getKBData.offset - getKBData.limit
+			getKBData.offset -= getKBData.limit
 
 			err := m.searchKBItems()
 			if err != nil {
@@ -271,10 +273,10 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, tea.Quit
 			}
 		case tea.KeyRight:
-			if (uint32(getKBData.offset) + getKBData.limit) >= uint32(m.searchView.result.Total) {
+			if (getKBData.offset + getKBData.limit) >= uint32(m.searchView.result.Total) {
 				return m, cmd
 			}
-			getKBData.offset = getKBData.offset + getKBData.limit
+			getKBData.offset += getKBData.limit
 			err := m.searchKBItems()
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "unable to search: %w", err)
@@ -348,6 +350,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		for i := range m.filterView.inputs {
 			if m.filterView.inputs[i].TextInput != nil {
 				textInputModel, textInputCmd := m.filterView.inputs[i].TextInput.Update(msg)
+				//nolint:gosec // false positive on slice bounds when both are same length
 				m.filterView.inputs[i].TextInput, cmds[i] = &textInputModel, textInputCmd
 			}
 		}
@@ -550,11 +553,17 @@ func (m *model) openBrowser() {
 
 	switch runtime.GOOS {
 	case "linux":
-		_ = exec.Command("xdg-open", url).Start()
+		if err := exec.Command("xdg-open", url).Start(); err != nil {
+			slog.Error("failed to open browser", "error", err)
+		}
 	case "windows":
-		_ = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+		if err := exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start(); err != nil {
+			slog.Error("failed to open browser", "error", err)
+		}
 	case "darwin":
-		_ = exec.Command("open", url).Start()
+		if err := exec.Command("open", url).Start(); err != nil {
+			slog.Error("failed to open browser", "error", err)
+		}
 	default:
 		return
 	}

@@ -45,8 +45,8 @@ func MakeUpdateCommand(service *kbs.Service) *cobra.Command {
 	return &newCmd
 }
 
-func makeRunUpdateCommand() func(cmd *cobra.Command, args []string) {
-	return func(cmd *cobra.Command, args []string) {
+func makeRunUpdateCommand() func(_ *cobra.Command, args []string) {
+	return func(_ *cobra.Command, _ []string) {
 		fillMissingUpdateFields()
 
 		ctx := context.Background()

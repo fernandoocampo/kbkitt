@@ -106,7 +106,9 @@ func RequestStringValue(label string) string {
 func AreYouSure(label string) bool {
 	var done string
 	fmt.Print(label)
-	fmt.Scan(&done)
+	if _, err := fmt.Scan(&done); err != nil {
+		slog.Error("failed to scan input", "error", err)
+	}
 
 	return Yes(done)
 }

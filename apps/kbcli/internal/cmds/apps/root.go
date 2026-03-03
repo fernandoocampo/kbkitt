@@ -47,7 +47,7 @@ func makeRootCommand() *cobra.Command {
 		Use:   "kb",
 		Short: "kb is a knowledge base manager",
 		Long:  `A knowledge base manager to manage the concepts you use every day.`,
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, _ []string) {
 			if err := cmd.Help(); err != nil {
 				fmt.Println(err)
 			}

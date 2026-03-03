@@ -43,7 +43,7 @@ func MakeSyncCommand(service *kbs.Service) *cobra.Command {
 }
 
 func makeRunSyncCommand(service *kbs.Service) func(cmd *cobra.Command, args []string) {
-	return func(cmd *cobra.Command, args []string) {
+	return func(_ *cobra.Command, _ []string) {
 		ctx := context.Background()
 
 		result, err := service.Sync(ctx)

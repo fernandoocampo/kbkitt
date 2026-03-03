@@ -127,9 +127,7 @@ const (
 	KeywordLabel   = "Keyword"
 )
 
-const (
-	mediaFolder = "media"
-)
+// (removed unused mediaFolder constant)
 
 // common categories
 const (
@@ -489,14 +487,14 @@ func (k KBQueryFilter) nothingToLookFor() bool {
 		IsStringEmpty(k.Namespace)
 }
 
-func (g KBQueryFilter) valid() error {
+func (k KBQueryFilter) valid() error {
 	var err error
 
-	if g.Limit < 1 {
+	if k.Limit < 1 {
 		err = errors.Join(err, errMinGetAllKBLimit)
 	}
 
-	if g.Limit > maxAllowedGetAllKBLimit {
+	if k.Limit > maxAllowedGetAllKBLimit {
 		err = errors.Join(err, fmt.Errorf("invalid limit number, maximum should be %d", maxAllowedGetAllKBLimit))
 	}
 
@@ -522,5 +520,6 @@ func newRandomNumber(n int64) int64 {
 		return 0
 	}
 
+	//nolint:gosec // Not used for security cryptography
 	return rand.Int64N(n)
 }

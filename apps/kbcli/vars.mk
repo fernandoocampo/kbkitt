@@ -18,3 +18,7 @@ LDFLAGS?="-X github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds/versions.
 # Docker variables
 IMAGE_NAME?=kbcli-image
 DOCKER_RUN=docker run --rm -it -v $(CURDIR):/app -w /app $(IMAGE_NAME)
+
+LINT_MAJOR_VERSION=v2
+LINT_VERSION=v2.10.1
+LINT_PATH ?= ./

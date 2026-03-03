@@ -34,7 +34,7 @@ func MakeConfigureCommand() *cobra.Command {
 }
 
 func makeRunConfigureCommand() func(cmd *cobra.Command, args []string) {
-	return func(cmd *cobra.Command, args []string) {
+	return func(_ *cobra.Command, _ []string) {
 		err := settings.CheckAndCreateKBKittFolder()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "unable to verify kbkitt folder: %s", err)
@@ -92,7 +92,9 @@ func saveConfiguration(ctx context.Context) error {
 func startConfiguration() bool {
 	var yesOrNot string
 	fmt.Print(startConfigurationMessage)
-	fmt.Scan(&yesOrNot)
+	if _, err := fmt.Scan(&yesOrNot); err != nil {
+		fmt.Fprintf(os.Stderr, "failed to read input: %v\n", err)
+	}
 
 	return cmds.Yes(yesOrNot)
 }

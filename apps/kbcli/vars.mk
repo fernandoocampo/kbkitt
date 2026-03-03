@@ -1,5 +1,6 @@
 GOPATH_HOST?=$(GOPATH)
 GO_IMAGE?=golang:1.25.7
+GO_TEST_IMAGE?=kbcli-test-env:1.25.7
 GO_TOOL=docker run --rm -v $(CURDIR):/app -v $(GOPATH_HOST):/go -e GOPATH=/go -w /app -e CGO_ENABLED -e GOOS -e GOARCH $(GO_IMAGE) go
 GO_BUILD=$(GO_TOOL) build
 ADD_ARGS?=

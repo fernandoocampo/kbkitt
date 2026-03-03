@@ -107,7 +107,7 @@ server:
 
 ## How to contribute?
 
-1. install githooks first
+1. install githooks first.
 
 ```sh
 make install-githooks

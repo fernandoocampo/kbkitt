@@ -11,8 +11,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env:
-      DOCKER_USER: ${{ secrets.DOCKER_USER }}
 
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +24,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.DOCKER_USER }}/kbcli-test
+          images: docker.io/${{ secrets.DOCKER_USER }}/kbcli-test
           tags: |
             type=sha,prefix=,format=short
             type=raw,value=latest

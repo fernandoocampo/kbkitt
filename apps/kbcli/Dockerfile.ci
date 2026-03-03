@@ -1,6 +1,13 @@
 FROM golang:1.25.7
 
+ARG LINT_MAJOR_VERSION
+ARG LINT_VERSION
+
 # Install dependencies for running tests.
 RUN apt-get update -qq \
     && apt-get install -y -qq --no-install-recommends libx11-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# Pre-install golangci-lint to avoid downloading on every lint run
+# Install to a custom GOBIN location to avoid conflicts with mounted GOPATH volume
+RUN GOBIN=/usr/local/bin go install github.com/golangci/golangci-lint/${LINT_MAJOR_VERSION}/cmd/golangci-lint@${LINT_VERSION}

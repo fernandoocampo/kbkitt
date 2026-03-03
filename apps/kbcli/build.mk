@@ -9,10 +9,13 @@ TEST_IMAGE_SENTINEL=.test-image-built
 
 .PHONY: test-image
 test-image: ## Build the CI test image (auto-triggered by test/lint/coverage).
-	docker build -f Dockerfile.ci -t $(GO_TEST_IMAGE) .
+	docker build -f Dockerfile.ci \
+		--build-arg LINT_MAJOR_VERSION=$(LINT_MAJOR_VERSION) \
+		--build-arg LINT_VERSION=$(LINT_VERSION) \
+		-t $(GO_TEST_IMAGE) .
 	@touch $(TEST_IMAGE_SENTINEL)
 
-$(TEST_IMAGE_SENTINEL): Dockerfile.ci
+$(TEST_IMAGE_SENTINEL): Dockerfile.ci vars.mk
 	$(MAKE) test-image
 
 .PHONY: test
@@ -33,11 +36,11 @@ mod-tidy:
 
 .PHONY: lint
 lint: $(TEST_IMAGE_SENTINEL) ## Run linter.
-	$(GO_SHELL_TEST_TOOL) "go run github.com/golangci/golangci-lint/$(LINT_MAJOR_VERSION)/cmd/golangci-lint@$(LINT_VERSION) run --allow-parallel-runners -c $(LINT_PATH).golangci.yml"
+	$(GO_SHELL_TEST_TOOL) "golangci-lint run --allow-parallel-runners -c $(LINT_PATH).golangci.yml"
 
 .PHONY: lint-ci
 lint-ci: ## Run linter in CI (assumes already in container).
-	go run github.com/golangci/golangci-lint/$(LINT_MAJOR_VERSION)/cmd/golangci-lint@$(LINT_VERSION) run --allow-parallel-runners -c $(LINT_PATH).golangci.yml
+	golangci-lint run --allow-parallel-runners -c $(LINT_PATH).golangci.yml
 
 .PHONY: build-macos-amd-64
 build-macos-amd-64: ## Build binary for MacOS amd64

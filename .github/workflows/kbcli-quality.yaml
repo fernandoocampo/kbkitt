@@ -4,9 +4,6 @@ on:
   push:
     paths:
       - 'apps/kbcli/**'
-  pull_request:
-    paths:
-      - 'apps/kbcli/**'
 
 jobs:
   quality:
@@ -34,4 +31,5 @@ jobs:
             -e CGO_ENABLED \
             -e GOOS \
             -e GOARCH \
-            fdocampo/kbcli-test:latest sh -c "make test && make lint"
+            fdocampo/kbcli-test:latest sh -c \
+            "make test-ci && make lint-ci"

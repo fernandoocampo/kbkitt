@@ -19,6 +19,10 @@ $(TEST_IMAGE_SENTINEL): Dockerfile.ci
 test: $(TEST_IMAGE_SENTINEL) ## Run unit tests.
 	$(GO_SHELL_TEST_TOOL) "go test -race -count=1 ./..."
 
+.PHONY: test-ci
+test-ci: ## Run unit tests in CI (assumes already in container).
+	go test -race -count=1 ./...
+
 .PHONY: coverage
 coverage: $(TEST_IMAGE_SENTINEL) ## Run unit tests with coverage report.
 	$(GO_SHELL_TEST_TOOL) "go test -race -count=1 -coverprofile=coverage.out ./... && go tool cover -func=coverage.out"
@@ -30,6 +34,10 @@ mod-tidy:
 .PHONY: lint
 lint: $(TEST_IMAGE_SENTINEL) ## Run linter.
 	$(GO_SHELL_TEST_TOOL) "go run github.com/golangci/golangci-lint/$(LINT_MAJOR_VERSION)/cmd/golangci-lint@$(LINT_VERSION) run --allow-parallel-runners -c $(LINT_PATH).golangci.yml"
+
+.PHONY: lint-ci
+lint-ci: ## Run linter in CI (assumes already in container).
+	go run github.com/golangci/golangci-lint/$(LINT_MAJOR_VERSION)/cmd/golangci-lint@$(LINT_VERSION) run --allow-parallel-runners -c $(LINT_PATH).golangci.yml
 
 .PHONY: build-macos-amd-64
 build-macos-amd-64: ## Build binary for MacOS amd64

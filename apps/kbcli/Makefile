@@ -9,6 +9,7 @@ help: ## Display this help.
 	@echo "Available targets:"
 	@echo "  docker-build        Build docker image"
 	@echo "  build-macos-amd-64  Build binary for MacOS amd64"
+	@echo "  build-macos-arm-64  Build binary for MacOS arm64 (Apple Silicon)"
 	@echo "  test                Run unit tests"
 	@echo "  install-hooks       Install git hooks (pre-commit, pre-push)"
 	@echo "  run                 Run run app"

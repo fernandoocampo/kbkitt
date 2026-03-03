@@ -1,3 +1,5 @@
+# Read the file content first to understand how build-macos-arm-64 is defined.
+
 export MSYS_NO_PATHCONV := 1
 GOPATH_FWD=$(subst \,/,$(GOPATH_HOST))
 GO_SHELL_TOOL=docker run --rm -v $(CURDIR):/app -v $(GOPATH_FWD):/go -e GOPATH=/go -w /app -e CGO_ENABLED -e GOOS -e GOARCH $(GO_IMAGE) sh -c
@@ -21,7 +23,12 @@ lint:
 .PHONY: build-macos-amd-64
 build-macos-amd-64: ## Build binary for MacOS amd64
 	@mkdir -p bin
-	env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 ${GO_BUILD} -ldflags ${LDFLAGS} -o bin/${BINARY_DARWIN}-amd64 ./cmd/kbcli/main.go
+	env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -ldflags ${LDFLAGS} -o bin/${BINARY_DARWIN}-amd64 ./cmd/kbcli/main.go
+
+.PHONY: build-macos-arm-64
+build-macos-arm-64: ## Build binary for MacOS arm64 (Apple Silicon)
+	@mkdir -p bin
+	env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -ldflags ${LDFLAGS} -o bin/${BINARY_DARWIN}-arm64 ./cmd/kbcli/main.go
 
 .PHONY: docker-build
 docker-build: ## Build docker image

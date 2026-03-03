@@ -4,6 +4,7 @@
 
 ## Table of Contents
 
+- [How to build?](#how-to-build)
 - [How to run?](#how-to-run)
 - [How to test?](#how-to-test)
 - [How to setup?](#how-to-setup)
@@ -20,6 +21,29 @@
 - [Media Management](#media-management)
 - [Technology Stack](#technology-stack)
 - [References](#references)
+
+---
+
+## How to build?
+
+* Build for macOS (Apple Silicon / ARM64) using Docker (will result in a CGO compilation error if CGO is enabled because of lack of macOS toolchains in the Linux container):
+
+```sh
+CGO_ENABLED=0 make build-macos-arm-64
+```
+
+* Build for macOS (AMD64) using Docker:
+
+```sh
+CGO_ENABLED=0 make build-macos-amd-64
+```
+
+> [!NOTE]
+> The `make build-macos-arm-64` and `make build-macos-amd-64` commands execute the build inside a **Linux Docker container**. Because of this, it cannot access the Xcode command line tools on your Mac. Trying to build with `CGO_ENABLED=1` for macOS from within this Linux container will fail with a `cgo: C compiler "clang" not found` error, because it lacks an Apple cross-compiler.
+> 
+> To fix this, you have two options:
+> 1. Keep using `make` but disable CGO: `CGO_ENABLED=0 make build-macos-arm-64` (or `amd-64`)
+> 2. Build natively on your Mac (which will use your local clang and CGO): `CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -o bin/kbkitt-darwin-arm64 ./cmd/kbcli/main.go`
 
 ---
 

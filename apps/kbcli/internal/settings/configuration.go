@@ -34,11 +34,12 @@ type Server struct {
 }
 
 const (
-	folderName      = ".kbkitt"
-	mediaFolderName = "media"
-	fileName        = "config.yaml"
-	syncFileName    = "sync.yaml"
-	dbName          = "kbkitt.db"
+	folderName       = ".kbkitt"
+	mediaFolderName  = "media"
+	fileName         = "config.yaml"
+	syncFileName     = "sync.yaml"
+	dbName           = "kbkitt.db"
+	defaultServerURL = "http://localhost:8080"
 )
 
 func (c *Configuration) Invalid() bool {
@@ -103,6 +104,15 @@ func Save(newConf *Configuration) error {
 	err := newConf.setKBKittFolderPath()
 	if err != nil {
 		return fmt.Errorf("unable to get kbkitt folder path: %w", err)
+	}
+
+	if newConf.Server == nil {
+		newConf.Server = &Server{}
+	}
+
+	if newConf.Server.URL == "" {
+		slog.Info("using default server url", slog.String("url", defaultServerURL))
+		newConf.Server.URL = defaultServerURL
 	}
 
 	if newConf.DirForMediaPath == "" {

@@ -4,6 +4,7 @@ debug/
 target/
 bin/
 
+.claude
 .kiro
 .DS_Store
 .vscode

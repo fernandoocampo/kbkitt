@@ -5,10 +5,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/textarea"
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/textarea"
+	"charm.land/bubbles/v2/textinput"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
 )
@@ -33,8 +33,8 @@ const (
 	tags
 )
 
-// ui constants
-const (
+// ui colors
+var (
 	hotGreen = lipgloss.Color("#3aeb34")
 	darkGray = lipgloss.Color("#767676")
 )
@@ -62,7 +62,7 @@ func initialModel() model {
 	keyInput.Placeholder = "key"
 	keyInput.Focus()
 	keyInput.CharLimit = 64
-	keyInput.Width = 70
+	keyInput.SetWidth(70)
 	keyInput.Prompt = ""
 	keyInput.SetValue(updateKBData.kb.Key)
 	inputs[key].TextInput = &keyInput
@@ -70,7 +70,7 @@ func initialModel() model {
 	categoryInput := textinput.New()
 	categoryInput.Placeholder = "category"
 	categoryInput.CharLimit = 64
-	categoryInput.Width = 70
+	categoryInput.SetWidth(70)
 	categoryInput.Prompt = ""
 	categoryInput.SetValue(updateKBData.kb.Category)
 	inputs[category].TextInput = &categoryInput
@@ -78,7 +78,7 @@ func initialModel() model {
 	namespaceInput := textinput.New()
 	namespaceInput.Placeholder = "namespace"
 	namespaceInput.CharLimit = 64
-	namespaceInput.Width = 70
+	namespaceInput.SetWidth(70)
 	namespaceInput.Prompt = ""
 	namespaceInput.SetValue(updateKBData.kb.Namespace)
 	inputs[namespace].TextInput = &namespaceInput
@@ -105,7 +105,7 @@ func initialModel() model {
 	refInput := textinput.New()
 	refInput.Placeholder = ""
 	refInput.CharLimit = 64
-	refInput.Width = 70
+	refInput.SetWidth(70)
 	refInput.Prompt = ""
 	refInput.SetValue(updateKBData.kb.Reference)
 	inputs[reference].TextInput = &refInput
@@ -133,17 +133,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	cmds := make([]tea.Cmd, len(m.inputs))
 
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyCtrlC, tea.KeyEsc:
+	case tea.KeyPressMsg:
+		switch msg.String() {
+		case "ctrl+c", "esc":
 			exitGUI = true
 			return m, tea.Quit
-		case tea.KeyShiftTab, tea.KeyCtrlP:
+		case "shift+tab", "ctrl+p":
 			m.prevInput()
-		case tea.KeyCtrlS:
+		case "ctrl+s":
 			m.toAddKBParams()
 			return m, tea.Quit
-		case tea.KeyTab, tea.KeyCtrlN:
+		case "tab", "ctrl+n":
 			if m.focused == len(m.inputs)-1 {
 				m.toAddKBParams()
 				return m, tea.Quit
@@ -174,8 +174,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-func (m model) View() string {
-	return fmt.Sprintf(
+func (m model) View() tea.View {
+	return tea.NewView(fmt.Sprintf(
 		` Updating KB [%s] - %s:
 
 %s
@@ -220,7 +220,7 @@ func (m model) View() string {
 		inputStyle.Width(9).Render("Tags"),
 		m.inputs[tags].View(),
 		continueStyle.Render("Continue ->"),
-	)
+	))
 }
 
 // nextInput focuses the next input field

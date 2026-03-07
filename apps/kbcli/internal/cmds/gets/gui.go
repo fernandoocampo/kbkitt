@@ -9,13 +9,14 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/paginator"
-	"github.com/charmbracelet/bubbles/table"
-	"github.com/charmbracelet/bubbles/textinput"
-	"github.com/charmbracelet/bubbles/viewport"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/paginator"
+	"charm.land/bubbles/v2/table"
+	"charm.land/bubbles/v2/textinput"
+	"charm.land/bubbles/v2/viewport"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+	lipglosscompat "charm.land/lipgloss/v2/compat"
 	"github.com/charmbracelet/glamour"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/cmds"
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
 	"golang.design/x/clipboard"
@@ -64,7 +65,7 @@ const (
 	keyword
 )
 
-const (
+var (
 	hotGreen = lipgloss.Color("#3aeb34")
 	darkGray = lipgloss.Color("#767676")
 )
@@ -114,7 +115,7 @@ func newModel(ctx context.Context, service *kbs.Service) *model {
 func newItemViewport() (*viewport.Model, error) {
 	const width = 98
 
-	vp := viewport.New(width, 20)
+	vp := viewport.New(viewport.WithWidth(width), viewport.WithHeight(20))
 	vp.Style = lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
 		BorderForeground(lipgloss.Color("62")).
@@ -142,8 +143,8 @@ func newPaginator(limit uint32, total int) *paginator.Model {
 	p := paginator.New()
 	p.Type = paginator.Dots
 	p.PerPage = int(limit)
-	p.ActiveDot = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "235", Dark: "252"}).Render("•")
-	p.InactiveDot = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "250", Dark: "238"}).Render("•")
+	p.ActiveDot = lipgloss.NewStyle().Foreground(lipglosscompat.AdaptiveColor{Light: lipgloss.Color("235"), Dark: lipgloss.Color("252")}).Render("•")
+	p.InactiveDot = lipgloss.NewStyle().Foreground(lipglosscompat.AdaptiveColor{Light: lipgloss.Color("250"), Dark: lipgloss.Color("238")}).Render("•")
 	p.SetTotalPages(total)
 
 	return &p
@@ -155,7 +156,7 @@ func newFilterViewModel() *filterView {
 	categoryInput := textinput.New()
 	categoryInput.Placeholder = "category"
 	categoryInput.CharLimit = 64
-	categoryInput.Width = 70
+	categoryInput.SetWidth(70)
 	categoryInput.Prompt = ""
 	categoryInput.Focus()
 	categoryInput.SetValue(getKBData.category)
@@ -164,7 +165,7 @@ func newFilterViewModel() *filterView {
 	namespaceInput := textinput.New()
 	namespaceInput.Placeholder = "namespace"
 	namespaceInput.CharLimit = 64
-	namespaceInput.Width = 70
+	namespaceInput.SetWidth(70)
 	namespaceInput.Prompt = ""
 	namespaceInput.SetValue(getKBData.namespace)
 	inputs[namespace].TextInput = &namespaceInput
@@ -172,7 +173,7 @@ func newFilterViewModel() *filterView {
 	keyInput := textinput.New()
 	keyInput.Placeholder = "key"
 	keyInput.CharLimit = 64
-	keyInput.Width = 70
+	keyInput.SetWidth(70)
 	keyInput.Prompt = ""
 	keyInput.SetValue(getKBData.key)
 	inputs[key].TextInput = &keyInput
@@ -180,7 +181,7 @@ func newFilterViewModel() *filterView {
 	keywordInput := textinput.New()
 	keywordInput.Placeholder = "key"
 	keywordInput.CharLimit = 64
-	keywordInput.Width = 70
+	keywordInput.SetWidth(70)
 	keywordInput.Prompt = ""
 	keywordInput.SetValue(getKBData.keyword)
 	inputs[keyword].TextInput = &keywordInput
@@ -237,14 +238,14 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	cmds := make([]tea.Cmd, len(m.filterView.inputs))
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyEsc, tea.KeyCtrlQ:
+	case tea.KeyPressMsg:
+		switch msg.String() {
+		case "esc", "ctrl+q":
 			return m, tea.Quit
-		case tea.KeyCtrlC:
+		case "ctrl+c":
 			m.copyToClipboard()
 			return m, cmd
-		case tea.KeyCtrlF:
+		case "ctrl+f":
 			switch m.mode {
 			case filterMode:
 				m.mode = searchMode
@@ -258,10 +259,10 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case searchMode:
 				m.mode = filterMode
 			}
-		case tea.KeyCtrlO:
+		case "ctrl+o":
 			m.openBrowser()
 			return m, cmd
-		case tea.KeyLeft:
+		case "left":
 			if (int(getKBData.offset) - int(getKBData.limit)) < 0 {
 				return m, cmd
 			}
@@ -272,7 +273,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				fmt.Fprintln(os.Stderr, "unable to search: %w", err)
 				return m, tea.Quit
 			}
-		case tea.KeyRight:
+		case "right":
 			if (getKBData.offset + getKBData.limit) >= uint32(m.searchView.result.Total) {
 				return m, cmd
 			}
@@ -282,22 +283,22 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				fmt.Fprintln(os.Stderr, "unable to search: %w", err)
 				return m, tea.Quit
 			}
-		case tea.KeyDown:
+		case "down":
 			m.searchView.table, cmd = m.searchView.table.Update(msg)
 			return m, cmd
-		case tea.KeyUp:
+		case "up":
 			m.searchView.table, cmd = m.searchView.table.Update(msg)
 			return m, cmd
-		case tea.KeyCtrlR:
+		case "ctrl+r":
 			m.mode = searchMode
 			m.itemView.selectedItem = nil
-		case tea.KeyShiftTab, tea.KeyCtrlP:
+		case "shift+tab", "ctrl+p":
 			if m.mode != filterMode {
 				return m, cmd
 			}
 			m.mode = filterMode
 			m.filterView.prevInput()
-		case tea.KeyTab, tea.KeyCtrlN:
+		case "tab", "ctrl+n":
 			if m.mode != filterMode {
 				return m, cmd
 			}
@@ -313,7 +314,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				m.filterView.nextInput()
 			}
-		case tea.KeyEnter:
+		case "enter":
 			if m.mode != searchMode {
 				return m, cmd
 			}
@@ -360,16 +361,16 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 }
 
-func (m *model) View() string {
+func (m *model) View() tea.View {
 	switch m.mode {
 	case itemMode:
-		return m.drawKBViewer()
+		return tea.NewView(m.drawKBViewer())
 	case filterMode:
-		return m.renderFilters()
+		return tea.NewView(m.renderFilters())
 	case searchMode:
 		fallthrough
 	default:
-		return m.drawTable()
+		return tea.NewView(m.drawTable())
 	}
 }
 

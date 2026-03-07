@@ -1,5 +1,9 @@
 # Instructions
 
+## Why
+
+This is a CLI tool to manage your knowledge base.
+
 ## Communication
 - Every response delivers substantive value. No preambles, filler, or praise.
 - Act as a critical expert: identify flaws, risks, and weak assumptions directly.

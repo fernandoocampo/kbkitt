@@ -1,0 +1,13 @@
+name: commitlint
+
+on:
+  workflow_call:
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate PR commit with commitlint
+        run: git show -s --format=%s | docker run --rm -i -v ./.github/config/commitlint.config.js:/commitlint.config.js commitlint/commitlint:latest --config commitlint.config.js

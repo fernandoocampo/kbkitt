@@ -1,0 +1,19 @@
+#!/bin/bash
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+COMMIT_MSG_FILE="$1"
+COMMIT_MSG="$(cat "$COMMIT_MSG_FILE")"
+COMMITLINT_CONFIG="$REPO_ROOT/.github/config/commitlint.config.js"
+
+echo "[commit-msg] Validating commit message with commitlint..."
+
+if ! echo "$COMMIT_MSG" | docker run --rm -i \
+    -v "$COMMITLINT_CONFIG":/commitlint.config.js \
+    commitlint/commitlint:latest --config commitlint.config.js; then
+    echo ""
+    echo "ERROR: Commit message does not follow Conventional Commits format."
+    echo "       See https://www.conventionalcommits.org for details."
+    exit 1
+fi
+
+echo "[commit-msg] Commit message is valid."

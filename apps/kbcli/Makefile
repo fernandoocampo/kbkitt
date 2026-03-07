@@ -11,7 +11,7 @@ help: ## Display this help.
 	@echo "  build-macos-amd-64  Build binary for MacOS amd64"
 	@echo "  build-macos-arm-64  Build binary for MacOS arm64 (Apple Silicon)"
 	@echo "  test                Run unit tests"
-	@echo "  install-hooks       Install git hooks (pre-commit, pre-push)"
+	@echo "  install-hooks       Install git hooks (pre-commit, pre-push, commit-msg)"
 	@echo "  run                 Run run app"
 	@echo "  run-add             Run add app"
 	@echo "  run-get             Run get app"
@@ -21,10 +21,10 @@ help: ## Display this help.
 	@echo "  (and more... see run.mk and build.mk)"
 
 .PHONY: install-hooks
-install-hooks: ## Install git hooks to enforce unit tests on commit and push.
+install-hooks: ## Install git hooks to enforce unit tests on commit and push, and commitlint on commit-msg.
 	git config core.hooksPath "$(CURDIR)/.githooks"
 ifneq ($(OS),Windows_NT)
-	sed -i.bak 's/\r//' .githooks/pre-commit .githooks/pre-push
-	rm -f .githooks/pre-commit.bak .githooks/pre-push.bak
-	chmod +x .githooks/pre-commit .githooks/pre-push
+	sed -i.bak 's/\r//' .githooks/pre-commit .githooks/pre-push .githooks/commit-msg
+	rm -f .githooks/pre-commit.bak .githooks/pre-push.bak .githooks/commit-msg.bak
+	chmod +x .githooks/pre-commit .githooks/pre-push .githooks/commit-msg
 endif

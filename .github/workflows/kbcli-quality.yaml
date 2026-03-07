@@ -6,7 +6,11 @@ on:
       - 'apps/kbcli/**'
 
 jobs:
+  commitlint:
+    uses: ./.github/workflows/commitlint.yaml
+
   quality:
+    needs: commitlint
     runs-on: ubuntu-latest
     env:
       GOPATH_HOST: ${{ github.workspace }}/go-cache

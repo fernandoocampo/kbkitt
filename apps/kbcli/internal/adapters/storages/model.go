@@ -34,8 +34,8 @@ type filterBuilder struct {
 	query          string
 	countStatement string
 	filters        []string
-	queryArgs      []interface{}
-	countArgs      []interface{}
+	queryArgs      []any
+	countArgs      []any
 }
 
 const (
@@ -81,7 +81,7 @@ func (k kb) toKB() *kbs.KB {
 	return &newKB
 }
 
-func (f *filterBuilder) addCondition(field, operator string, value interface{}) *filterBuilder {
+func (f *filterBuilder) addCondition(field, operator string, value any) *filterBuilder {
 	isHint := false
 	condition := whereOperator
 
@@ -94,7 +94,7 @@ func (f *filterBuilder) addCondition(field, operator string, value interface{}) 
 	return f.addFilter(newStatement, value, isHint)
 }
 
-func (f *filterBuilder) addFilter(statement string, value interface{}, isHint bool) *filterBuilder {
+func (f *filterBuilder) addFilter(statement string, value any, isHint bool) *filterBuilder {
 	index := len(f.filters) + 1
 
 	statement = fmt.Sprintf("%s $%d", statement, index)

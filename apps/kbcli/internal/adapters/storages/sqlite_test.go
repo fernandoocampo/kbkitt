@@ -230,7 +230,7 @@ func TestGetAllPagination(t *testing.T) {
 	storage := newTestDB(t)
 	ctx := context.Background()
 
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		kb := kbs.KB{
 			ID:        fmt.Sprintf("test-uuid-page-%04d", i),
 			Key:       fmt.Sprintf("key-%d", i),
@@ -510,7 +510,7 @@ func TestCountByCategoryMultiple(t *testing.T) {
 	storage := newTestDB(t)
 	ctx := context.Background()
 
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		kb := kbs.KB{
 			ID:        fmt.Sprintf("test-uuid-cat-%04d", i),
 			Key:       fmt.Sprintf("quote-%d", i),

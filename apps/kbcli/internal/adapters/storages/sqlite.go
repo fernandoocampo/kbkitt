@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"strings"
 
 	"github.com/fernandoocampo/kbkitt/apps/kbcli/internal/kbs"
 
@@ -491,8 +492,8 @@ func (s *SQLite) CountByCategory(ctx context.Context, category string) (int64, e
 func buildSQLFilters(filters kbs.KBQueryFilter, countSQL, querySQL string) *filterBuilder {
 	newFilterBuilder := &filterBuilder{
 		filters:   make([]string, 0),
-		countArgs: make([]interface{}, 0),
-		queryArgs: make([]interface{}, 0),
+		countArgs: make([]any, 0),
+		queryArgs: make([]any, 0),
 	}
 
 	if filters.Keyword != "" {
@@ -511,23 +512,23 @@ func buildSQLFilters(filters kbs.KBQueryFilter, countSQL, querySQL string) *filt
 		newFilterBuilder.addCondition(namespaceColumn, equalsOperator, filters.Namespace)
 	}
 
-	var countWhereClause string
+	var countWhereClause strings.Builder
 	for _, v := range newFilterBuilder.filters {
-		countWhereClause += v
+		countWhereClause.WriteString(v)
 	}
 
-	countStatement := fmt.Sprintf(countSQL, countWhereClause)
+	countStatement := fmt.Sprintf(countSQL, countWhereClause.String())
 	newFilterBuilder.countStatement = countStatement
 
 	newFilterBuilder.addFilter(fmt.Sprintf(" %s", limitOperator), filters.Limit, true)
 	newFilterBuilder.addFilter(fmt.Sprintf(" %s", offsetOperator), filters.Offset, true)
 
-	var whereClause string
+	var whereClause strings.Builder
 	for _, v := range newFilterBuilder.filters {
-		whereClause += v
+		whereClause.WriteString(v)
 	}
 
-	queryStatement := fmt.Sprintf(querySQL, whereClause)
+	queryStatement := fmt.Sprintf(querySQL, whereClause.String())
 	newFilterBuilder.query = queryStatement
 
 	return newFilterBuilder

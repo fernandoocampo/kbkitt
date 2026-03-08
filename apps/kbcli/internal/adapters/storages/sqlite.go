@@ -497,7 +497,7 @@ func buildSQLFilters(filters kbs.KBQueryFilter, countSQL, querySQL string) *filt
 	}
 
 	if filters.Keyword != "" {
-		newFilterBuilder.addCondition(tagValuesVirtualColumn, matchOperator, filters.Keyword)
+		newFilterBuilder.addCondition(tagValuesVirtualColumn, matchOperator, filters.Keyword+"*")
 	}
 
 	if filters.Key != "" {

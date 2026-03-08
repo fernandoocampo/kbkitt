@@ -506,6 +506,34 @@ func TestCreateSQLiteConnection(t *testing.T) {
 	db.Close()
 }
 
+func TestSearchByKeywordPrefix(t *testing.T) {
+	storage := newTestDB(t)
+	ctx := context.Background()
+
+	kb := kbs.KB{
+		ID:        "test-uuid-bubbletea-0001",
+		Key:       "bubbletea-intro",
+		Value:     "Bubbletea is a Go framework for terminal UIs",
+		Notes:     "Used for building TUI applications",
+		Category:  "go",
+		Namespace: "frameworks",
+		Tags:      []string{"bubbletea", "cli", "gui"},
+	}
+	_, err := storage.Create(ctx, kb)
+	require.NoError(t, err)
+
+	// Search with partial keyword "bubble" — should match "bubbletea"
+	filter := kbs.KBQueryFilter{Keyword: "bubble", Limit: 10}
+
+	result, err := storage.Search(ctx, filter)
+
+	require.NoError(t, err)
+	require.NotNil(t, result)
+	assert.Equal(t, 1, result.Total)
+	assert.Len(t, result.Items, 1)
+	assert.Equal(t, kb.Key, result.Items[0].Key)
+}
+
 func TestCountByCategoryMultiple(t *testing.T) {
 	storage := newTestDB(t)
 	ctx := context.Background()
